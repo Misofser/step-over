@@ -4,4 +4,10 @@ obj/
 *.dll
 *.pdb
 *.db
+*.db-shm
+*.db-wal
 *.http
+
+# Node/React
+node_modules/
+.env*
