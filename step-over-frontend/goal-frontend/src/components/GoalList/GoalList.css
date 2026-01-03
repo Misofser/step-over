@@ -1,0 +1,29 @@
+.delete-button {
+  background-color: #fff7f7;
+  border: none;
+  border-radius: 20px;
+  padding: 0.3rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.delete-button:hover {
+  background-color: #f8bec0;
+}
+
+.goal-list ul {
+  width: 100%;
+}
+
+.goal-list ul li {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-between;
+}
+
+.completed {
+  text-decoration: line-through;
+  color: #888;
+  font-style: italic;
+}

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import "../styles/forms.css"
+import "./NewGoalForm.css"
 
 type NewGoalFormProps = {
   onAddGoal: (title: string) => void;

@@ -1,4 +1,5 @@
-import type { Goal } from '../api/goals';
+import type { Goal } from "../../api/goals";
+import './GoalList.css';
 
 type Props = {
   goals: Goal[];
@@ -11,7 +12,11 @@ export default function GoalList({ goals, onDelete }: Props) {
       <ul>
         {goals.map(goal => (
           <li key={goal.id}>
-            {goal.title}
+            <span
+              className={`${goal.isCompleted ? "completed" : ""}`}
+            >
+              {goal.title}
+            </span>
             <button
               className="delete-button"
               onClick={() => onDelete?.(goal.id)}

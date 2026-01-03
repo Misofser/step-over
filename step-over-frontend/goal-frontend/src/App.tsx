@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 
-import './styles/app.css'
+import './App.css'
 import type { Goal } from './api/goals';
-import GoalList from './components/GoalList';
-import NewGoalForm from './components/NewGoalForm';
+import GoalList from './components/GoalList/GoalList';
+import NewGoalForm from './components/NewGoalForm/NewGoalForm';
 import { addGoal as apiAddGoal, fetchGoals, deleteGoal } from "./api/goals";
 
 function App() {
