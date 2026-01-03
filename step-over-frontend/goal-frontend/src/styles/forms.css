@@ -1,0 +1,35 @@
+.add-goal-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.add-goal-form input {
+  flex: 1;
+  padding: 0.6rem 0.8rem;
+  font-size: 1rem;
+
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  outline: none;
+}
+
+.add-goal-form input:focus {
+  border-color: #4bc7b5;
+}
+
+.add-goal-form button {
+  padding: 0 1rem;
+  font-size: 1.2rem;
+
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+
+  background:  #27b5a0;
+  color: white;
+}
+
+.add-goal-form button:hover {
+  background: #169174;
+}
