@@ -4,7 +4,7 @@ import './styles/app.css'
 import type { Goal } from './api/goals';
 import GoalList from './components/GoalList';
 import NewGoalForm from './components/NewGoalForm';
-import { addGoal as apiAddGoal, fetchGoals } from "./api/goals";
+import { addGoal as apiAddGoal, fetchGoals, deleteGoal } from "./api/goals";
 
 function App() {
   const [goals, setGoals] = useState<Goal[]>([]);
@@ -18,12 +18,24 @@ function App() {
     setGoals(prev => [...prev, newGoal]);
   };
 
+  const handleDeleteGoal = async (id: number) => {
+    try {
+      await deleteGoal(id);
+      setGoals(prev => prev.filter(goal => goal.id !== id));
+    } catch (e) {
+      alert("Could not delete goal");
+    }
+  };
+
   return (
     <div className="app-container">
       <h1>StepOver</h1>
       <h2>Goals List</h2>
       <NewGoalForm onAddGoal={addGoal} />
-      <GoalList goals={goals} />
+      <GoalList
+        goals={goals}
+        onDelete={handleDeleteGoal}
+      />
     </div>
   );
 }

@@ -26,3 +26,13 @@ export async function addGoal(title: string): Promise<Goal> {
 
   return res.json();
 }
+
+export async function deleteGoal(id: number): Promise<void> {
+  const res = await fetch(`${API_URL}/goals/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to delete goal");
+  }
+}
