@@ -1,5 +1,6 @@
 using GoalApi.Data;
 using GoalApi.Models;
+using GoalApi.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,14 +31,18 @@ public class GoalsController : ControllerBase
         return Ok(goal);
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, Goal updatedGoal)
+    [HttpPatch("{id}")]
+    public async Task<IActionResult> Update(int id, [FromBody] GoalUpdateDto updatedGoal, [FromServices] AppDbContext db)
     {
         var goal = await _db.Goals.FindAsync(id);
         if (goal == null) return NotFound();
 
-        goal.Title = updatedGoal.Title;
-        goal.IsCompleted = updatedGoal.IsCompleted;
+        if (updatedGoal.Title != null)
+            goal.Title = updatedGoal.Title;
+
+        if (updatedGoal.IsCompleted.HasValue)
+            goal.IsCompleted = updatedGoal.IsCompleted.Value;
+
         await _db.SaveChangesAsync();
 
         return NoContent();
