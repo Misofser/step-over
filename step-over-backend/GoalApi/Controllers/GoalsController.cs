@@ -24,8 +24,15 @@ public class GoalsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Goal>> Create(Goal goal)
+    public async Task<IActionResult> Create([FromBody] GoalCreateDto dto)
     {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
+        var goal = new Goal
+        {
+            Title = dto.Title,
+        };
+
         _db.Goals.Add(goal);
         await _db.SaveChangesAsync();
         return Ok(goal);
