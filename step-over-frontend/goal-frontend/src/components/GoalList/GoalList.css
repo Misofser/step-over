@@ -27,3 +27,42 @@
   color: #888;
   font-style: italic;
 }
+
+.goal-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.goal-checkbox input {
+  display: none;
+}
+
+.goal-checkbox label {
+  position: relative;
+  padding-left: 32px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.goal-checkbox label::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  border: 1px solid #666;
+  border-radius: 4px;
+  transform: translateY(-50%);
+}
+
+.goal-checkbox input:checked + label::after {
+  content: "✔";
+  position: absolute;
+  left: 4px;
+  top: 50%;
+  transform: translateY(-55%);
+  font-size: 14px;
+  color: #386d66;
+}

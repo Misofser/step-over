@@ -4,7 +4,7 @@ import './App.css'
 import type { Goal } from './api/goals';
 import GoalList from './components/GoalList/GoalList';
 import NewGoalForm from './components/NewGoalForm/NewGoalForm';
-import { addGoal as apiAddGoal, fetchGoals, deleteGoal } from "./api/goals";
+import { addGoal as apiAddGoal, fetchGoals, deleteGoal, toggleGoalCompletion } from "./api/goals";
 
 function App() {
   const [goals, setGoals] = useState<Goal[]>([]);
@@ -27,6 +27,19 @@ function App() {
     }
   };
 
+  const handleToggleGoal = async (goal: Goal) => {
+    try {
+      await toggleGoalCompletion(goal);
+      setGoals(prev =>
+        prev.map(g =>
+          g.id === goal.id ? { ...g, isCompleted: !goal.isCompleted } : g
+        )
+      );
+    } catch (e) {
+      alert("Could not update goal")
+    }
+  };
+
   return (
     <div className="app-container">
       <h1>StepOver</h1>
@@ -35,6 +48,7 @@ function App() {
       <GoalList
         goals={goals}
         onDelete={handleDeleteGoal}
+        onToggle={handleToggleGoal}
       />
     </div>
   );
