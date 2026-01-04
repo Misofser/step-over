@@ -36,3 +36,13 @@ export async function deleteGoal(id: number): Promise<void> {
     throw new Error("Failed to delete goal");
   }
 }
+
+export async function toggleGoalCompletion(goal: Goal): Promise<void> {
+  const res = await fetch(`${API_URL}/goals/${goal.id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ isCompleted: !goal.isCompleted }),
+  });
+
+  if (!res.ok) throw new Error("Failed to update goal");
+}
