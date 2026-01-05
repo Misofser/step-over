@@ -1,7 +1,6 @@
 .add-goal-form {
   display: flex;
   gap: 0.5rem;
-  margin-bottom: 1.5rem;
 }
 
 .add-goal-form input {
@@ -32,4 +31,15 @@
 
 .add-goal-form button:hover {
   background: #169174;
+}
+
+.add-goal-form input.error {
+  border-color: rgb(255, 100, 100);
+}
+
+.error-message {
+  color: rgb(255, 100, 100);
+  text-align: start;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
 }
