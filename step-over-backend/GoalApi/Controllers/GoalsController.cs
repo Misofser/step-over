@@ -18,9 +18,18 @@ public class GoalsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<List<Goal>> Get()
+    public async Task<ActionResult<List<GoalReadDto>>> GetGoals()
     {
-        return await _db.Goals.ToListAsync();
+        var goals = await _db.Goals
+            .Select(g => new GoalReadDto
+            {
+                Id = g.Id,
+                Title = g.Title,
+                IsCompleted = g.IsCompleted
+            })
+            .ToListAsync();
+
+        return Ok(goals);
     }
 
     [HttpPost]
