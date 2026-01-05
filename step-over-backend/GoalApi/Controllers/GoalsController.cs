@@ -32,6 +32,20 @@ public class GoalsController : ControllerBase
         return Ok(goals);
     }
 
+    [HttpGet("{id}")]
+    public async Task<ActionResult<GoalReadDto>> GetGoal(int id)
+    {
+        var goal = await _db.Goals.FindAsync(id);
+        if (goal == null) return NotFound();
+
+        return new GoalReadDto
+        {
+            Id = goal.Id,
+            Title = goal.Title,
+            IsCompleted = goal.IsCompleted,
+        };
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] GoalCreateDto dto)
     {
