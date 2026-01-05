@@ -23,6 +23,14 @@ export default function NewGoalForm({ onAddGoal }: NewGoalFormProps) {
     setError("");
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.target.value);
+
+    if (error && e.target.value.trim() !== "") {
+      setError("");
+    }
+  };
+
   return (
     <div>
       <form className="add-goal-form" onSubmit={handleSubmit}>
@@ -30,7 +38,7 @@ export default function NewGoalForm({ onAddGoal }: NewGoalFormProps) {
           type="text"
           value={title}
           placeholder="What’s your next audacious goal?"
-          onChange={e => setTitle(e.target.value)}
+          onChange={handleChange}
           className={error ? "error" : ""}
         />
         <button type="submit">Add Goal</button>
