@@ -76,11 +76,14 @@ public class GoalsController : ControllerBase
     [HttpPatch("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] GoalUpdateDto updatedGoal, [FromServices] AppDbContext db)
     {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
         var goal = await _db.Goals.FindAsync(id);
         if (goal == null) return NotFound();
 
-        if (updatedGoal.Title != null)
-            goal.Title = updatedGoal.Title;
+        if (!string.IsNullOrWhiteSpace(updatedGoal.Title)) {
+            goal.Title = updatedGoal.Title.Trim();
+        }
 
         if (updatedGoal.IsCompleted.HasValue)
             goal.IsCompleted = updatedGoal.IsCompleted.Value;
