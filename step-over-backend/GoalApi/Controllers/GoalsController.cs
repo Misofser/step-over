@@ -47,7 +47,7 @@ public class GoalsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] GoalCreateDto dto)
+    public async Task<ActionResult<GoalReadDto>> Create([FromBody] GoalCreateDto dto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -58,7 +58,19 @@ public class GoalsController : ControllerBase
 
         _db.Goals.Add(goal);
         await _db.SaveChangesAsync();
-        return Ok(goal);
+
+        var readDto = new GoalReadDto
+        {
+            Id = goal.Id,
+            Title = goal.Title,
+            IsCompleted = goal.IsCompleted,
+        };
+
+        return CreatedAtAction(
+            nameof(GetGoal),
+            new { id = goal.Id },
+            readDto
+        );
     }
 
     [HttpPatch("{id}")]
