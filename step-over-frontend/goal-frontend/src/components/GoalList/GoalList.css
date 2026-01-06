@@ -1,7 +1,7 @@
 .delete-button {
-  background-color: #fff7f7;
+  background-color: transparent;
   border: none;
-  border-radius: 20px;
+  border-radius: 10px;
   padding: 0.3rem;
   cursor: pointer;
   font-size: 0.9rem;
@@ -9,7 +9,26 @@
 }
 
 .delete-button:hover {
-  background-color: #f8bec0;
+  background-color: #fffefe;
+}
+
+.edit-button {
+  background-color: transparent;
+  border: none;
+  border-radius: 10px;
+  padding: 0.3rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.edit-button:hover {
+  background-color: #fffaf5;
+}
+
+.buttons-block {
+  display: flex;
+  gap: 4px;
 }
 
 .goal-list ul {

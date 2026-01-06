@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 
 import './App.css'
-import type { Goal } from './api/goals';
+import type { Goal } from './api/goals.types';
 import GoalList from './components/GoalList/GoalList';
+import { EditGoalModal } from "./components/EditGoalModal/EditGoalModal";
 import NewGoalForm from './components/NewGoalForm/NewGoalForm';
-import { addGoal as apiAddGoal, fetchGoals, deleteGoal, toggleGoalCompletion } from "./api/goals";
+import { addGoal as apiAddGoal, fetchGoals, deleteGoal, updateGoal } from "./api/goals";
 
 function App() {
   const [goals, setGoals] = useState<Goal[]>([]);
+  const [editingGoalId, setEditingGoalId] = useState<number | null>(null);
 
   useEffect(() => {
     fetchGoals().then(setGoals);
@@ -29,7 +31,7 @@ function App() {
 
   const handleToggleGoal = async (goal: Goal) => {
     try {
-      await toggleGoalCompletion(goal);
+      await updateGoal(goal.id, {isCompleted: !goal.isCompleted});
       setGoals(prev =>
         prev.map(g =>
           g.id === goal.id ? { ...g, isCompleted: !goal.isCompleted } : g
@@ -38,6 +40,14 @@ function App() {
     } catch (e) {
       alert("Could not update goal")
     }
+  };
+
+  const handleSavedGoal = (id: number, newTitle: string) => {
+    setGoals(prev =>
+      prev.map(g =>
+        g.id === id ? { ...g, title: newTitle } : g
+      )
+    );
   };
 
   return (
@@ -49,7 +59,15 @@ function App() {
         goals={goals}
         onDelete={handleDeleteGoal}
         onToggle={handleToggleGoal}
-      />
+        onEdit={goal => setEditingGoalId(goal.id)}
+      />    
+      {editingGoalId && (
+        <EditGoalModal
+          goalId={editingGoalId}
+          onClose={() => setEditingGoalId(null)}
+          onSave={handleSavedGoal}
+        />
+      )}
     </div>
   );
 }
