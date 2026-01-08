@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace GoalApi.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/goals")]
 public class GoalsController : ControllerBase
 {
     private readonly AppDbContext _db;
@@ -25,7 +25,7 @@ public class GoalsController : ControllerBase
             {
                 Id = g.Id,
                 Title = g.Title,
-                IsCompleted = g.IsCompleted
+                IsCompleted = g.IsCompleted,
             })
             .ToListAsync();
 
