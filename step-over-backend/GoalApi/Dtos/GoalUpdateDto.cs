@@ -5,6 +5,6 @@ namespace GoalApi.Dtos;
 public class GoalUpdateDto
 {
     [MinLength(1, ErrorMessage = "Title cannot be empty")]
-    public string? Title { get; set; }
+    public string? Title { get; set; } = null!;
     public bool? IsCompleted { get; set; }
 }

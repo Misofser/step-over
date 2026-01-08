@@ -6,5 +6,5 @@ public class GoalCreateDto
 {
     [Required(ErrorMessage = "Title is required")]
     [MinLength(1, ErrorMessage = "Title cannot be empty")]
-    public string Title { get; set; } = "";
+    public string Title { get; set; } = null!;
 }

@@ -1,12 +1,14 @@
 namespace GoalApi.Models;
 
-public class Goal
+public class Goal : IHasTimestamps
 {
     public int Id { get; set; }
 
-    public string Title { get; set; } = string.Empty;
+    public string Title { get; set; } = null!;
 
     public bool IsCompleted { get; set; } = false;
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; }
+
+    public DateTime UpdatedAt { get; set; }
 }
