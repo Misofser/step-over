@@ -1,13 +1,16 @@
 using GoalApi.Data;
 using GoalApi.Models;
-using GoalApi.Dtos;
+using GoalApi.Dtos.Goal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace GoalApi.Controllers;
 
 [ApiController]
 [Route("api/goals")]
+[Authorize]
 public class GoalsController : ControllerBase
 {
     private readonly AppDbContext _db;
@@ -46,14 +49,22 @@ public class GoalsController : ControllerBase
         };
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult<GoalReadDto>> Create([FromBody] GoalCreateDto dto)
     {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userIdClaim == null)
+            return Unauthorized();
+
+        int userId = int.Parse(userIdClaim);
+
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
         var goal = new Goal
         {
             Title = dto.Title,
+            UserId = userId,
         };
 
         _db.Goals.Add(goal);
@@ -93,6 +104,7 @@ public class GoalsController : ControllerBase
         return NoContent();
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
