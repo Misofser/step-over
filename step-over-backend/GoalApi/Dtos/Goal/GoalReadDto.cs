@@ -1,4 +1,4 @@
-namespace GoalApi.Dtos;
+namespace GoalApi.Dtos.Goal;
 
 public class GoalReadDto
 {

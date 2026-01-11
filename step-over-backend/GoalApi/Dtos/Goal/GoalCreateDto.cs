@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace GoalApi.Dtos;
+namespace GoalApi.Dtos.Goal;
 
 public class GoalCreateDto
 {
