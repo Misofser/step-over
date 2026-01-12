@@ -8,6 +8,9 @@ obj/
 *.db-wal
 *.http
 
+# local dev settings
+appsettings.Development.json
+
 # Node/React
 node_modules/
 .env*
