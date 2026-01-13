@@ -1,4 +1,5 @@
 using GoalApi.Data;
+using GoalApi.Middleware;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using GoalApi.Models;
@@ -23,6 +24,7 @@ if (string.IsNullOrEmpty(jwtSecret))
 var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret));
 
 builder.Services.AddScoped<IGoalService, GoalService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddSingleton<JwtService>();
 
@@ -80,8 +82,8 @@ if (app.Environment.IsDevelopment())
     app.UseCors(MyAllowSpecificOrigins);
 }
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
