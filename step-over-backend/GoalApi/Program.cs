@@ -22,6 +22,7 @@ if (string.IsNullOrEmpty(jwtSecret))
 
 var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret));
 
+builder.Services.AddScoped<IGoalService, GoalService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddSingleton<JwtService>();
 
