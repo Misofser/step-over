@@ -25,7 +25,7 @@ public class UserService(AppDbContext db, IPasswordHasher<User> passwordHasher) 
     public async Task<UserReadDto> GetUserByIdAsync(int id)
     {
         var user = await _db.Users.FindAsync(id);
-        if (user == null) throw new UserNotFoundException();
+        if (user == null) throw new NotFoundException("User");
 
         return new UserReadDto
         {
@@ -39,7 +39,7 @@ public class UserService(AppDbContext db, IPasswordHasher<User> passwordHasher) 
     {
         if (await _db.Users.AnyAsync(u => u.Username == dto.Username))
         {
-            throw new UserAlreadyExistsException();
+            throw new ConflictException("User with this username already exists");
         }
 
         var user = new User
@@ -63,13 +63,13 @@ public class UserService(AppDbContext db, IPasswordHasher<User> passwordHasher) 
     public async Task UpdateUserAsync(int id, UserUpdateDto updatedUser)
     {
         var user = await _db.Users.FindAsync(id);
-        if (user == null) throw new UserNotFoundException();
+        if (user == null) throw new NotFoundException("User");
 
         if (!string.IsNullOrWhiteSpace(updatedUser.Username))
         {
             bool usernameExists = await _db.Users.AnyAsync(u => u.Username == updatedUser.Username && u.Id != id);
 
-            if (usernameExists) throw new UserAlreadyExistsException();
+            if (usernameExists) throw new ConflictException("User with this username already exists");
             user.Username = updatedUser.Username.Trim();
         }
 
@@ -79,7 +79,7 @@ public class UserService(AppDbContext db, IPasswordHasher<User> passwordHasher) 
     public async Task DeleteUserAsync(int id)
     {
         var user = await _db.Users.FindAsync(id);
-        if (user == null) throw new UserNotFoundException();
+        if (user == null) throw new NotFoundException("User");
 
         _db.Users.Remove(user);
         await _db.SaveChangesAsync();

@@ -23,7 +23,7 @@ public class GoalService(AppDbContext db) : IGoalService
     public async Task<GoalReadDto> GetGoalByIdAsync(int id)
     {
         var goal = await _db.Goals.FindAsync(id);
-        if (goal == null) throw new GoalNotFoundException();
+        if (goal == null) throw new NotFoundException("Goal");
 
         return new GoalReadDto
         {
@@ -55,7 +55,7 @@ public class GoalService(AppDbContext db) : IGoalService
     public async Task UpdateGoalAsync(int goalId, GoalUpdateDto dto)
     {
         var goal = await _db.Goals.FindAsync(goalId);
-        if (goal == null) throw new GoalNotFoundException();
+        if (goal == null) throw new NotFoundException("Goal");
 
         if (!string.IsNullOrWhiteSpace(dto.Title))
             goal.Title = dto.Title.Trim();
@@ -69,7 +69,7 @@ public class GoalService(AppDbContext db) : IGoalService
     public async Task DeleteGoalAsync(int id)
     {
         var goal = await _db.Goals.FindAsync(id);
-        if (goal == null) throw new GoalNotFoundException();
+        if (goal == null) throw new NotFoundException("Goal");
 
         _db.Goals.Remove(goal);
         await _db.SaveChangesAsync();

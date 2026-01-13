@@ -29,19 +29,14 @@ namespace GoalApi.Middleware
 
             switch (ex)
             {
-                case UserNotFoundException:
+                case NotFoundException:
                     status = HttpStatusCode.NotFound;
                     message = null;
                     break;
 
-                case UserAlreadyExistsException:
+                case ConflictException:
                     status = HttpStatusCode.Conflict;
                     message = ex.Message;
-                    break;
-                
-                case GoalNotFoundException:
-                    status = HttpStatusCode.NotFound;
-                    message = null;
                     break;
                 
                 default:

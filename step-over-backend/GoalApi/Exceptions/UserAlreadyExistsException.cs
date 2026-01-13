@@ -2,8 +2,8 @@ using System;
 
 namespace GoalApi.Exceptions
 {
-    public class UserAlreadyExistsException : Exception
+    public class ConflictException : Exception
     {
-        public UserAlreadyExistsException() : base("User with this username already exists") { }
+        public ConflictException(string message) : base(message) { }
     }
 }
