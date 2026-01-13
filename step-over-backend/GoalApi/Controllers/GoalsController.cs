@@ -23,7 +23,6 @@ public class GoalsController(IGoalService goalService) : ControllerBase
     public async Task<ActionResult<GoalReadDto>> GetGoal(int id)
     {
         var goal = await _goalService.GetGoalByIdAsync(id);
-        if (goal == null) return NotFound();
         return Ok(goal);
     }
 
@@ -47,9 +46,7 @@ public class GoalsController(IGoalService goalService) : ControllerBase
     [HttpPatch("{id}")]
     public async Task<IActionResult> Update(int id, GoalUpdateDto dto)
     {
-        bool updated = await _goalService.UpdateGoalAsync(id, dto);
-        if (!updated) return NotFound();
-
+        await _goalService.UpdateGoalAsync(id, dto);
         return NoContent();
     }
 
@@ -57,9 +54,7 @@ public class GoalsController(IGoalService goalService) : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        bool deleted = await _goalService.DeleteGoalAsync(id);
-        if (!deleted) return NotFound();
-
+        await _goalService.DeleteGoalAsync(id);
         return NoContent();
     }
 

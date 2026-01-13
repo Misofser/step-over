@@ -39,6 +39,11 @@ namespace GoalApi.Middleware
                     message = ex.Message;
                     break;
                 
+                case GoalNotFoundException:
+                    status = HttpStatusCode.NotFound;
+                    message = null;
+                    break;
+                
                 default:
                     status = HttpStatusCode.InternalServerError;
                     message = "Internal server error";

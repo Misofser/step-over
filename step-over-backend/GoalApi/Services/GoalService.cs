@@ -1,6 +1,7 @@
 using GoalApi.Dtos.Goal;
 using GoalApi.Data;
 using GoalApi.Models;
+using GoalApi.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 public class GoalService(AppDbContext db) : IGoalService
@@ -19,10 +20,10 @@ public class GoalService(AppDbContext db) : IGoalService
             .ToListAsync();
     }
 
-    public async Task<GoalReadDto?> GetGoalByIdAsync(int id)
+    public async Task<GoalReadDto> GetGoalByIdAsync(int id)
     {
         var goal = await _db.Goals.FindAsync(id);
-        if (goal == null) return null;
+        if (goal == null) throw new GoalNotFoundException();
 
         return new GoalReadDto
         {
@@ -51,10 +52,10 @@ public class GoalService(AppDbContext db) : IGoalService
         };
     }
 
-    public async Task<bool> UpdateGoalAsync(int goalId, GoalUpdateDto dto)
+    public async Task UpdateGoalAsync(int goalId, GoalUpdateDto dto)
     {
         var goal = await _db.Goals.FindAsync(goalId);
-        if (goal == null) return false;
+        if (goal == null) throw new GoalNotFoundException();
 
         if (!string.IsNullOrWhiteSpace(dto.Title))
             goal.Title = dto.Title.Trim();
@@ -63,16 +64,14 @@ public class GoalService(AppDbContext db) : IGoalService
             goal.IsCompleted = dto.IsCompleted.Value;
 
         await _db.SaveChangesAsync();
-        return true;
     }
 
-    public async Task<bool> DeleteGoalAsync(int id)
+    public async Task DeleteGoalAsync(int id)
     {
         var goal = await _db.Goals.FindAsync(id);
-        if (goal == null) return false;
+        if (goal == null) throw new GoalNotFoundException();
 
         _db.Goals.Remove(goal);
         await _db.SaveChangesAsync();
-        return true;
     }
 }
