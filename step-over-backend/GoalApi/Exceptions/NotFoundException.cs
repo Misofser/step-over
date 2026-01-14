@@ -1,9 +1,8 @@
 using System;
 
-namespace GoalApi.Exceptions
+namespace GoalApi.Exceptions;
+
+public class NotFoundException : Exception
 {
-    public class NotFoundException : Exception
-    {
-        public NotFoundException(string entity) : base($"{entity} not found") { }
-    }
+    public NotFoundException(string entity) : base($"{entity} not found") { }
 }

@@ -39,6 +39,16 @@ namespace GoalApi.Middleware
                     message = ex.Message;
                     break;
                 
+                case AuthenticationException:
+                    status = HttpStatusCode.Unauthorized;
+                    message = ex.Message;
+                    break;
+                
+                case UnauthorizedAccessException:
+                    status = HttpStatusCode.Unauthorized;
+                    message = null;
+                    break;
+                
                 default:
                     status = HttpStatusCode.InternalServerError;
                     message = "Internal server error";

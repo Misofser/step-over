@@ -2,8 +2,12 @@ using GoalApi.Data;
 using GoalApi.Dtos.User;
 using GoalApi.Models;
 using GoalApi.Exceptions;
+using GoalApi.Services.Interfaces;
+using GoalApi.Services.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+
+namespace GoalApi.Services;
 
 public class UserService(AppDbContext db, IPasswordHasher<User> passwordHasher) : IUserService
 {

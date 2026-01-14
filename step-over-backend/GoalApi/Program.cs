@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using GoalApi.Models;
 using GoalApi.Services;
+using GoalApi.Services.Interfaces;
+using GoalApi.Services.Infrastructure;
+using GoalApi.Services.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -23,10 +26,14 @@ if (string.IsNullOrEmpty(jwtSecret))
 
 var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret));
 
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddScoped<IGoalService, GoalService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
-builder.Services.AddSingleton<JwtService>();
+builder.Services.AddSingleton<IJwtService, JwtService>();
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 

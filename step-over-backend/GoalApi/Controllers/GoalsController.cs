@@ -1,4 +1,5 @@
 using GoalApi.Dtos.Goal;
+using GoalApi.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
@@ -28,19 +29,10 @@ public class GoalsController(IGoalService goalService) : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
-    public async Task<ActionResult<GoalReadDto>> Create([FromBody] GoalCreateDto dto)
+    public async Task<ActionResult<GoalReadDto>> Create(GoalCreateDto dto)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (userIdClaim == null) return Unauthorized();
-
-        int userId = int.Parse(userIdClaim);
-        var goal = await _goalService.CreateGoalAsync(userId, dto);
-
-        return CreatedAtAction(
-            nameof(GetGoal),
-            new { id = goal.Id },
-            goal
-        );
+        var goal = await _goalService.CreateGoalAsync(dto);
+        return CreatedAtAction(nameof(GetGoal), new { id = goal.Id }, goal);
     }
 
     [HttpPatch("{id}")]

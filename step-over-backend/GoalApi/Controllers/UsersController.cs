@@ -1,5 +1,6 @@
 using GoalApi.Exceptions;
 using GoalApi.Dtos.User;
+using GoalApi.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 

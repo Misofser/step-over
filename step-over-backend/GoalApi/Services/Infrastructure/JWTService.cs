@@ -2,25 +2,21 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using GoalApi.Models;
+using GoalApi.Services.Infrastructure.Interfaces;
 
-namespace GoalApi.Services;
+namespace GoalApi.Services.Infrastructure;
 
-public class JwtService
+public class JwtService(IConfiguration configuration) : IJwtService
 {
-    private readonly IConfiguration _configuration;
+    private readonly IConfiguration _configuration = configuration;
 
-    public JwtService(IConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
-    public string GenerateToken(User user)
+    public string GenerateToken(int userId, string username, string role)
     {
         var claims = new[]
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Role, user.Role)
+            new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+            new Claim(ClaimTypes.Name, username),
+            new Claim(ClaimTypes.Role, role)
         };
 
         var secret = _configuration["Jwt:Secret"]!;

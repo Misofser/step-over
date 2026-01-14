@@ -1,68 +1,42 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using GoalApi.Data;
 using GoalApi.Dtos.User;
-using GoalApi.Models;
-using GoalApi.Services;
+using GoalApi.Services.Interfaces;
+using GoalApi.Services.Infrastructure.Interfaces;
+
+namespace GoalApi.Controllers;
 
 [ApiController]
 [Route("api/auth")]
 [Authorize]
-public class AuthController : ControllerBase
+public class AuthController(IAuthService authService, IJwtService jwt) : ControllerBase
 {
-    private readonly AppDbContext _db;
-    private readonly JwtService _jwt;
-
-    public AuthController(AppDbContext db, JwtService jwt)
-    {
-        _db = db;
-        _jwt = jwt;
-    }
+    private readonly IAuthService _authService = authService;
+    private readonly IJwtService _jwt = jwt;
 
     [AllowAnonymous]
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginDto dto)
     {
-        var user = await _db.Users.FirstOrDefaultAsync(u => u.Username == dto.Username);
-        if (user == null) return Unauthorized();
-
-        var hasher = new PasswordHasher<User>();
-        var result = hasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
-        if (result == PasswordVerificationResult.Failed) return Unauthorized();
-
-        var token = _jwt.GenerateToken(user);
+        var readDto = await _authService.LoginAsync(dto);
+        var token = _jwt.GenerateToken(userId: readDto.Id, username: readDto.Username, role: readDto.Role);
 
         Response.Cookies.Append("jwt", token, new CookieOptions
         {
             HttpOnly = true,
-            Secure = false, // true in production (https)
+            Secure = false, // TODO: set true in production
             SameSite = SameSiteMode.Strict,
             Expires = DateTime.UtcNow.AddHours(1)
         });
 
-        return Ok(new { role = user.Role });
+        return Ok(readDto);
     }
 
     [HttpGet("me")]
-    public ActionResult<MeDto> Me()
+    public ActionResult<UserReadDto> Me()
     {
-        var username = User.FindFirst(ClaimTypes.Name)?.Value;
-        var role = User.FindFirst(ClaimTypes.Role)?.Value;
-
-        if (username == null || role == null)
-        {
-            return Unauthorized();
-        }
-
-        var dto = new MeDto
-        {
-            Username = username,
-            Role = role,
-        };
-
+        var dto = _authService.GetCurrentUser();
         return Ok(dto);
     }
 
@@ -70,7 +44,6 @@ public class AuthController : ControllerBase
     public IActionResult Logout()
     {
         Response.Cookies.Delete("jwt");
-
         return Ok();
     }
 }
