@@ -1,0 +1,15 @@
+{
+  "DevAdmin": {
+    "Username": "YOUR_ADMIN_USERNAME",
+    "Password": "YOUR_ADMIN_PASSWORD"
+  },
+  "Jwt": {
+    "Secret": "YOUR_JWT_SECRET_HERE"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  }
+}
