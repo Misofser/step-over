@@ -43,9 +43,9 @@ public class AuthController(IAuthService authService, IJwtService jwt, ICurrentU
         Response.Cookies.Append("jwt", token, new CookieOptions
         {
             HttpOnly = true,
-            Secure = false, // TODO: set true in production
+            Secure = true,
             SameSite = SameSiteMode.Strict,
-            Expires = DateTime.UtcNow.AddHours(1)
+            MaxAge = TimeSpan.FromHours(1)
         });
 
         return Ok(readDto);
