@@ -3,17 +3,15 @@ using GoalApi.Data;
 using GoalApi.Models;
 using GoalApi.Exceptions;
 using GoalApi.Services.Interfaces;
-using GoalApi.Services.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 
 namespace GoalApi.Services;
 
-public class AuthService(AppDbContext db, IPasswordHasher<User> passwordHasher, ICurrentUserService currentUser) : IAuthService
+public class AuthService(AppDbContext db, IPasswordHasher<User> passwordHasher) : IAuthService
 {
     private readonly AppDbContext _db = db;
     private readonly IPasswordHasher<User> _passwordHasher = passwordHasher;
-    private readonly ICurrentUserService _currentUser = currentUser;
 
     public async Task<UserReadDto> LoginAsync(LoginDto dto)
     {
@@ -34,16 +32,6 @@ public class AuthService(AppDbContext db, IPasswordHasher<User> passwordHasher, 
             Id = user.Id,
             Username = user.Username,
             Role = user.Role
-        };
-    }
-
-    public UserReadDto GetCurrentUser()
-    {
-        return new UserReadDto
-        {
-            Id = _currentUser.GetUserId(),
-            Username = _currentUser.GetUsername(),
-            Role = _currentUser.GetRole()
         };
     }
 }

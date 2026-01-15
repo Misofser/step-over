@@ -1,5 +1,6 @@
 using GoalApi.Dtos.Goal;
 using GoalApi.Services.Interfaces;
+using GoalApi.Services.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
@@ -15,9 +16,10 @@ namespace GoalApi.Controllers;
 [Route("api/goals")]
 [Authorize]
 [Produces("application/json")]
-public class GoalsController(IGoalService goalService) : ControllerBase
+public class GoalsController(IGoalService goalService, ICurrentUserService currentUser) : ControllerBase
 {
     private readonly IGoalService _goalService = goalService;
+    private readonly ICurrentUserService _currentUser = currentUser;
 
     /// <summary>
     /// Retrieves all goals.
@@ -69,7 +71,8 @@ public class GoalsController(IGoalService goalService) : ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<GoalReadDto>> Create(GoalCreateDto dto)
     {
-        var goal = await _goalService.CreateGoalAsync(dto);
+        var userId = _currentUser.GetUserId();
+        var goal = await _goalService.CreateGoalAsync(userId, dto);
         return CreatedAtAction(nameof(GetGoal), new { id = goal.Id }, goal);
     }
 

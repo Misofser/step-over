@@ -16,9 +16,10 @@ namespace GoalApi.Controllers;
 [Route("api/auth")]
 [Authorize]
 [Produces("application/json")]
-public class AuthController(IAuthService authService, IJwtService jwt) : ControllerBase
+public class AuthController(IAuthService authService, IJwtService jwt, ICurrentUserService currentUser) : ControllerBase
 {
     private readonly IAuthService _authService = authService;
+    private readonly ICurrentUserService _currentUser = currentUser;
     private readonly IJwtService _jwt = jwt;
 
     /// <summary>
@@ -61,7 +62,13 @@ public class AuthController(IAuthService authService, IJwtService jwt) : Control
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     public ActionResult<UserReadDto> Me()
     {
-        var dto = _authService.GetCurrentUser();
+        var dto = new UserReadDto
+        {
+            Id = _currentUser.GetUserId(),
+            Username = _currentUser.GetUsername(),
+            Role = _currentUser.GetRole()
+        };
+
         return Ok(dto);
     }
 

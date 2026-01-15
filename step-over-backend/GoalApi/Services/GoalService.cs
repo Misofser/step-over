@@ -3,15 +3,13 @@ using GoalApi.Data;
 using GoalApi.Models;
 using GoalApi.Exceptions;
 using GoalApi.Services.Interfaces;
-using GoalApi.Services.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace GoalApi.Services;
 
-public class GoalService(AppDbContext db, ICurrentUserService currentUser) : IGoalService
+public class GoalService(AppDbContext db) : IGoalService
 {
     private readonly AppDbContext _db = db;
-    private readonly ICurrentUserService _currentUser = currentUser;
 
     public async Task<List<GoalReadDto>> GetAllGoalsAsync()
     {
@@ -38,10 +36,8 @@ public class GoalService(AppDbContext db, ICurrentUserService currentUser) : IGo
         };
     }
 
-    public async Task<GoalReadDto> CreateGoalAsync(GoalCreateDto dto)
+    public async Task<GoalReadDto> CreateGoalAsync(int userId, GoalCreateDto dto)
     {
-        var userId = _currentUser.GetUserId();
-
         var goal = new Goal
         {
             Title = dto.Title,
