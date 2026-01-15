@@ -1,11 +1,12 @@
 import { createContext, useState, useEffect } from "react"
 import type { ReactNode } from "react"
 import { getMe, logout as logoutApi } from "../api/auth"
+import type { User } from "../api/auth.types";
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  userRole: string | null;
-  login: (role: string) => void;
+  user: User | null;
+  login: (user: User) => void;
   logout: () => void;
   loading: boolean,
 }
@@ -15,16 +16,16 @@ export const AuthContext = createContext<AuthContextType>(
 );
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [userRole, setUserRole] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function checkAuth() {
       try {
         const data = await getMe();
-        setUserRole(data.role);
+        setUser(data);
       } catch {
-        setUserRole(null);
+        setUser(null);
       } finally {
         setLoading(false);
       }
@@ -33,21 +34,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     checkAuth();
   }, []);
 
-  const login = (role: string) => setUserRole(role);
+  const login = (user: User) => setUser(user);
 
   const logout = async () => {
     try {
       await logoutApi();
     } finally {
-      setUserRole(null);
+      setUser(null);
     }
   };
 
   return (
     <AuthContext.Provider
       value={{
-        isAuthenticated: !!userRole,
-        userRole,
+        isAuthenticated: !!user,
+        user,
         login,
         logout,
         loading,

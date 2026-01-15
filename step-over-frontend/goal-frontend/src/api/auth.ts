@@ -1,6 +1,7 @@
 import { API_URL } from '../config';
+import type { User } from './auth.types';
 
-export async function login(username: string, password: string) {
+export async function login(username: string, password: string): Promise<User> {
   const response = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
     headers: {
@@ -10,21 +11,17 @@ export async function login(username: string, password: string) {
     body: JSON.stringify({ username, password })
   });
 
-  if (!response.ok) {
-    throw new Error("Login failed");
-  }
+  if (!response.ok) throw new Error("Login failed");
 
   return response.json();
 }
 
-export async function getMe() {
+export async function getMe(): Promise<User> {
   const res = await fetch(`${API_URL}/auth/me`, {
     credentials: "include"
   });
 
-  if (!res.ok) {
-    throw new Error("Not authenticated");
-  }
+  if (!res.ok) throw new Error("Not authenticated");
 
   return res.json();
 }

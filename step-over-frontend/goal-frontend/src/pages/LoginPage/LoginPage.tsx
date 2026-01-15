@@ -25,7 +25,7 @@ export function LoginPage() {
 
     try {
       const data = await loginApi(username, password);
-      login(data.role);
+      login(data);
       navigate("/goals");
     } catch (err: any) {
       setError(err.message || "Invalid username or password");

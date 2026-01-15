@@ -5,7 +5,7 @@ import { AuthContext } from "../../auth/AuthContext";
 import "./Navbar.css";
 
 export const Navbar = () => {
-  const { userRole, isAuthenticated, logout } = useContext(AuthContext);
+  const { user, isAuthenticated, logout } = useContext(AuthContext);
 
   return (
     <nav className="navbar">
@@ -13,9 +13,9 @@ export const Navbar = () => {
         <Link to="/" className="navbar-logo">StepOver</Link>
       </div>
       <div className="navbar-right">
-        {isAuthenticated ? (
+        {isAuthenticated && user ? (
           <>
-            <span className="navbar-user">Hi, {userRole}!</span>
+            <span className="navbar-user">Hi, {user.username}!</span>
             <button onClick={logout} className="navbar-button">Logout</button>
           </>
         ) : (

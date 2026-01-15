@@ -10,7 +10,7 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children, role }: ProtectedRouteProps) {
-  const { isAuthenticated, userRole, loading } = useContext(AuthContext);
+  const { isAuthenticated, user, loading } = useContext(AuthContext);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -20,7 +20,7 @@ export function ProtectedRoute({ children, role }: ProtectedRouteProps) {
     return <Navigate to="/login" replace />;
   }
 
-  if (role && userRole !== role) {
+  if (!user || (role && user.role !== role)) {
     return <Navigate to="/unauthorized" replace />;
   }
 
