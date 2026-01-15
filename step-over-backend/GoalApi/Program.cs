@@ -103,6 +103,8 @@ if (app.Environment.IsDevelopment())
     app.UseCors(MyAllowSpecificOrigins);
 }
 
+await DbSeeder.SeedAsync(app.Services);
+
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthentication();
