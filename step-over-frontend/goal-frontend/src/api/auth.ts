@@ -1,5 +1,5 @@
-import { API_URL } from '../config';
-import type { User } from './auth.types';
+import { API_URL } from '../config'
+import type { User } from './users.types'
 
 export async function login(username: string, password: string): Promise<User> {
   const response = await fetch(`${API_URL}/auth/login`, {

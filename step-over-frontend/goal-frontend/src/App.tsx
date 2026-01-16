@@ -2,6 +2,7 @@ import './App.css'
 import { BrowserRouter, Routes, Route, Navigate } from "react-router"
 import { LoginPage } from './pages/LoginPage/LoginPage'
 import { GoalsPage } from "./pages/GoalsPage"
+import { AdminUsersPage } from './pages/AdminUsersPage/AdminUsersPage'
 import { ProtectedRoute } from "./auth/ProtectedRoute"
 import { Navbar } from './components/Navbar/Navbar'
 import { NotFoundPage } from './pages/NotFoundPage/NotFoundPage'
@@ -13,6 +14,14 @@ function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/admin/users"
+          element={
+            <ProtectedRoute role="Admin">
+              <AdminUsersPage />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/goals"
           element={

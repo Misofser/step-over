@@ -1,0 +1,29 @@
+.users-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 1.6rem;
+  padding: 0 2rem;
+  table-layout: fixed;
+}
+
+.users-table td {
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid #666;
+}
+
+.users-table th {
+  padding: 0.6rem 1rem;
+  background-color: #e0f7fa;
+  color: #00796b;
+  font-weight: 600;
+  border-bottom: 1px solid #666;
+}
+
+.users-table th:first-child {
+  border-top-left-radius: 12px;
+}
+
+.users-table th:last-child {
+  border-top-right-radius: 12px;
+}

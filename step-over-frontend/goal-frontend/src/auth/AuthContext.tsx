@@ -1,7 +1,7 @@
 import { createContext, useState, useEffect } from "react"
 import type { ReactNode } from "react"
 import { getMe, logout as logoutApi } from "../api/auth"
-import type { User } from "../api/auth.types";
+import type { User } from "../api/users.types"
 
 interface AuthContextType {
   isAuthenticated: boolean;
