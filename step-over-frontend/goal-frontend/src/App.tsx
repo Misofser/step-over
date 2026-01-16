@@ -4,6 +4,7 @@ import { LoginPage } from './pages/LoginPage/LoginPage'
 import { GoalsPage } from "./pages/GoalsPage"
 import { ProtectedRoute } from "./auth/ProtectedRoute"
 import { Navbar } from './components/Navbar/Navbar'
+import { NotFoundPage } from './pages/NotFoundPage/NotFoundPage'
 
 function App() {
   return (
@@ -17,6 +18,14 @@ function App() {
           element={
             <ProtectedRoute>
               <GoalsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="*"
+          element={
+            <ProtectedRoute>
+              <NotFoundPage />
             </ProtectedRoute>
           }
         />

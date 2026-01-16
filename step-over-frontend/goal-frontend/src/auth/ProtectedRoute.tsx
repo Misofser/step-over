@@ -21,7 +21,7 @@ export function ProtectedRoute({ children, role }: ProtectedRouteProps) {
   }
 
   if (!user || (role && user.role !== role)) {
-    return <Navigate to="/unauthorized" replace />;
+    return <Navigate to="/notfound" replace />;
   }
 
   return children;
