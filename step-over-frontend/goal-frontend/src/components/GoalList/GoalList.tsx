@@ -1,5 +1,7 @@
-import type { Goal } from "../../api/goals.types";
-import './GoalList.css';
+import { useContext } from "react"
+import type { Goal } from "../../api/goals.types"
+import './GoalList.css'
+import { AuthContext } from "../../auth/AuthContext"
 
 type Props = {
   goals: Goal[];
@@ -9,6 +11,8 @@ type Props = {
 };
 
 export default function GoalList({ goals, onDelete, onToggle, onEdit }: Props) {
+  const { user } = useContext(AuthContext);
+
   return (
     <div className="goal-list">
       <ul>
@@ -35,12 +39,14 @@ export default function GoalList({ goals, onDelete, onToggle, onEdit }: Props) {
               >
                 ✏️
               </button>
-              <button
-                className="delete-button"
-                onClick={() => onDelete?.(goal.id)}
-              >
-                ❌
-              </button>
+              {user?.role === "Admin" && (
+                <button
+                  className="delete-button"
+                  onClick={() => onDelete?.(goal.id)}
+                >
+                  ❌
+                </button>
+              )}
             </span>
           </li>
         ))}
