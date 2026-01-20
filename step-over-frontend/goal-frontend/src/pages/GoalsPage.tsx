@@ -1,10 +1,11 @@
 import { useEffect, useState, useContext } from "react"
 import type { Goal } from '../api/goals.types'
 import GoalList from '../components/GoalList/GoalList'
-import { EditGoalModal } from "../components/EditGoalModal/EditGoalModal"
+import { EditGoalForm } from "../components/EditGoalForm/EditGoalForm"
 import NewGoalForm from '../components/NewGoalForm/NewGoalForm'
 import { AuthContext } from "../auth/AuthContext"
 import { addGoal as apiAddGoal, fetchGoals, deleteGoal, updateGoal } from "../api/goals"
+import { Modal } from "../components/Modal/Modal"
 
 export function GoalsPage() {
   const [goals, setGoals] = useState<Goal[]>([]);
@@ -64,11 +65,13 @@ export function GoalsPage() {
         onEdit={goal => setEditingGoalId(goal.id)}
       />    
       {editingGoalId && (
-        <EditGoalModal
-          goalId={editingGoalId}
-          onClose={() => setEditingGoalId(null)}
-          onSave={handleSavedGoal}
-        />
+        <Modal title="Edit Goal">
+          <EditGoalForm
+            goalId={editingGoalId}
+            onClose={() => setEditingGoalId(null)}
+            onSave={handleSavedGoal}
+          />
+        </Modal>
       )}
     </div>
   );

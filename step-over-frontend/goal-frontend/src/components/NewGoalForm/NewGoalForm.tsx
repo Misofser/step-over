@@ -1,5 +1,5 @@
-import { useState } from "react";
-
+import { useState } from "react"
+import { Button } from "../Button/Button"
 import "./NewGoalForm.css"
 
 type NewGoalFormProps = {
@@ -41,7 +41,7 @@ export default function NewGoalForm({ onAddGoal }: NewGoalFormProps) {
           onChange={handleChange}
           className={error ? "error" : ""}
         />
-        <button type="submit">Add Goal</button>
+        <Button type="submit">Add Goal</Button>
       </form>
       {error && <p className="error-message">{error}</p>}
     </div>

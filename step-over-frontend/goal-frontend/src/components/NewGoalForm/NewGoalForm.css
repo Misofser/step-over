@@ -17,22 +17,6 @@
   border-color: #4bc7b5;
 }
 
-.add-goal-form button {
-  padding: 0 1rem;
-  font-size: 1rem;
-
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-
-  background:  #27b5a0;
-  color: white;
-}
-
-.add-goal-form button:hover {
-  background: #169174;
-}
-
 .add-goal-form input.error {
   border-color: rgb(255, 100, 100);
 }
