@@ -26,3 +26,14 @@ export async function addUser(data: {
 
   return res.json();
 }
+
+export async function deleteUser(id: number): Promise<void> {
+  const res = await fetch(`${API_URL}/users/${id}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to delete user");
+  }
+}

@@ -33,3 +33,68 @@
   display: flex;
   justify-content: flex-end;
 }
+
+.id-col {
+  width: 15%;
+}
+
+.username-col {
+  width: 35%;
+}
+
+.role-col {
+  width: 30%;
+}
+
+.actions-col {
+  width: 20%;
+}
+
+@media (max-width: 768px) {
+  .users-table {
+    display: block;
+    padding: 0 1rem;
+    table-layout: auto;
+  }
+
+  .id-col {
+    display: none !important;
+  }
+
+  .users-table thead {
+    display: none;
+  }
+
+  .users-table tbody,
+  .users-table tr {
+    display: block;
+    width: 100%;
+  }
+
+  .users-table tr {
+    background: #e0f7fa;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    padding: 0.6rem 0;
+  }
+
+  .users-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.2rem 1rem;
+    border-bottom: none;
+  }
+
+  .users-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #00796b;
+    margin-right: 1rem;
+  }
+
+  .users-btn-block {
+    margin: 0 1rem 1rem;
+    justify-content: center;
+  }
+}
