@@ -1,6 +1,7 @@
 using GoalApi.Exceptions;
 using GoalApi.Dtos.User;
 using GoalApi.Services.Interfaces;
+using GoalApi.Services.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 
@@ -15,9 +16,10 @@ namespace GoalApi.Controllers;
 [Route("api/users")]
 [Authorize(Roles = "Admin")]
 [Produces("application/json")]
-public class UsersController(IUserService userService) : ControllerBase
+public class UsersController(IUserService userService, ICurrentUserService currentUser) : ControllerBase
 {
     private readonly IUserService _userService = userService;
+    private readonly ICurrentUserService _currentUser = currentUser;
 
     /// <summary>
     /// Retrieves all users. Admin role required.
@@ -107,17 +109,19 @@ public class UsersController(IUserService userService) : ControllerBase
     /// </summary>
     /// <param name="id">The ID of the user to delete</param>
     /// <response code="204">User successfully deleted</response>
+    /// <response code="400">Invalid request data</response>
     /// <response code="401">User is unauthorized</response>
     /// <response code="403">User does not have permission</response>
     /// <response code="404">User not found</response>
     [HttpDelete("{id}")]
-    [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)] 
+    [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id)
     {
-        await _userService.DeleteUserAsync(id);
+        await _userService.DeleteUserAsync(_currentUser.GetUserId(), id);
         return NoContent();
     }
 }

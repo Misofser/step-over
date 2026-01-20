@@ -80,8 +80,10 @@ public class UserService(AppDbContext db, IPasswordHasher<User> passwordHasher) 
         await _db.SaveChangesAsync();
     }
 
-    public async Task DeleteUserAsync(int id)
+    public async Task DeleteUserAsync(int currentUserId, int id)
     {
+        if (id == currentUserId) throw new BadRequestException("You cannot delete your own account.");
+
         var user = await _db.Users.FindAsync(id);
         if (user == null) throw new NotFoundException("User");
 
