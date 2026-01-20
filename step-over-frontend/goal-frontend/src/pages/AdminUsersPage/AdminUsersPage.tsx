@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useContext } from "react"
 import "./AdminUsersPage.css"
 import { fetchUsers, addUser, deleteUser } from "../../api/users"
 import { Modal } from "../../components/Modal/Modal"
 import { Button } from "../../components/Button/Button"
 import { UserForm } from "../../components/UserForm/UserForm"
+import { AuthContext } from "../../auth/AuthContext"
 
 interface User {
   id: number;
@@ -14,6 +15,7 @@ interface User {
 export function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [showModal, setShowModal] = useState(false);
+  const { user: currentUser } = useContext(AuthContext);
 
   useEffect(() => {
     async function load() {
@@ -62,10 +64,12 @@ export function AdminUsersPage() {
               <td data-label="Username">{user.username}</td>
               <td data-label="Role">{user.role}</td>
               <td data-label="Actions">
-                <Button
-                  onClick={() => handleDelete(user.id)}
-                  variant="delete"
-                >❌</Button>
+                {user.id !== currentUser?.id && (
+                  <Button
+                    onClick={() => handleDelete(user.id)}
+                    variant="delete"
+                  >❌</Button>
+                )}
               </td>
             </tr>
           ))}
