@@ -5,17 +5,15 @@ import { Modal } from "../../components/Modal/Modal"
 import { Button } from "../../components/Button/Button"
 import { UserForm } from "../../components/UserForm/UserForm"
 import { AuthContext } from "../../auth/AuthContext"
-
-interface User {
-  id: number;
-  username: string;
-  role: string;
-}
+import type { User } from "../../api/users.types"
+import { EditUserForm } from "../../components/EditUserForm/EditUserForm"
 
 export function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [showModal, setShowModal] = useState(false);
   const { user: currentUser } = useContext(AuthContext);
+
+  const [editingUserId, setEditingUserId] = useState<number | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -29,6 +27,14 @@ export function AdminUsersPage() {
     const newUser = await addUser(data);
     setUsers((prev) => [...prev, newUser]);
     setShowModal(false);
+  };
+
+  const handleSavedUser = (id: number, newUsername: string) => {
+    setUsers(prev =>
+      prev.map(g =>
+        g.id === id ? { ...g, username: newUsername } : g
+      )
+    );
   };
 
   const handleDelete = async (id: number) => {
@@ -65,10 +71,18 @@ export function AdminUsersPage() {
               <td data-label="Role">{user.role}</td>
               <td data-label="Actions">
                 {user.id !== currentUser?.id && (
-                  <Button
-                    onClick={() => handleDelete(user.id)}
-                    variant="delete"
-                  >❌</Button>
+                  <div className="actions-block">
+                    <Button
+                      variant="edit"
+                      onClick={() => setEditingUserId(user.id)}
+                    >
+                      ✏️
+                    </Button>
+                    <Button
+                      onClick={() => handleDelete(user.id)}
+                      variant="delete"
+                    >❌</Button>
+                  </div>
                 )}
               </td>
             </tr>
@@ -76,8 +90,19 @@ export function AdminUsersPage() {
         </tbody>
       </table>
       {showModal && <Modal title="Add New User" >
-        <UserForm onSubmit={handleCreateUser} onCancel={() => setShowModal(false)}/>
+        <UserForm
+          onSubmit={handleCreateUser}
+          onCancel={() => setShowModal(false)}/>
       </Modal>}
+      {editingUserId && (
+        <Modal title="Edit User">
+          <EditUserForm
+            userId={editingUserId}
+            onClose={() => setEditingUserId(null)}
+            onSave={handleSavedUser}
+          />
+        </Modal>
+      )}
     </div>
   );
 }

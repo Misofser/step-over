@@ -26,3 +26,15 @@
 .btn-delete:hover {
   background-color: #fff1f1;
 }
+
+.btn-edit {
+  background-color: transparent;
+  border-radius: 10px;
+  padding: 0.3rem;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.btn-edit:hover {
+  background-color: #fef5ec;
+}

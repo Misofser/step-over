@@ -3,3 +3,7 @@ export type User = {
   username: string;
   role: string;
 };
+
+export type UserToUpdate ={
+  username?: string;
+};

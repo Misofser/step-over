@@ -34,12 +34,12 @@ export default function GoalList({ goals, onDelete, onToggle, onEdit }: Props) {
               </label>
             </span>
             <span className="buttons-block">
-              <button
-                className="edit-button"
-                onClick={() => onEdit(goal)}
-              >
-                ✏️
-              </button>
+              <Button
+                  variant="edit"
+                  onClick={() => onEdit(goal)}
+                >
+                  ✏️
+              </Button>
               {user?.role === "Admin" && (
                 <Button
                   variant="delete"

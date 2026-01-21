@@ -2,7 +2,7 @@ import "./Button.css"
 
 type ButtonProps = {
   children: React.ReactNode;
-  variant?: "primary" | "secondary" | "delete";
+  variant?: "primary" | "secondary" | "delete" | "edit";
   type?: "button" | "submit";
   onClick?: () => void;
 };
