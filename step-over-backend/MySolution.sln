@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoalApi", "GoalApi\GoalApi.csproj", "{593507B5-39A7-42DD-912F-F9CAEFEA9970}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoalApi.Tests", "GoalApi.Tests\GoalApi.Tests.csproj", "{60DDB34D-3598-49A9-8E88-75B0D061B0AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{593507B5-39A7-42DD-912F-F9CAEFEA9970}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{593507B5-39A7-42DD-912F-F9CAEFEA9970}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{593507B5-39A7-42DD-912F-F9CAEFEA9970}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60DDB34D-3598-49A9-8E88-75B0D061B0AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60DDB34D-3598-49A9-8E88-75B0D061B0AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60DDB34D-3598-49A9-8E88-75B0D061B0AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60DDB34D-3598-49A9-8E88-75B0D061B0AB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
