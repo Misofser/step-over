@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 
+namespace GoalApi.Tests.Fakes;
+
 public sealed class FakePasswordHasher(bool success = true) : IPasswordHasher<User>
 {
     private readonly bool _success = success;
