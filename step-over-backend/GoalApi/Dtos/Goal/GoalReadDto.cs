@@ -1,3 +1,5 @@
+using GoalApi.Enums;
+
 namespace GoalApi.Dtos.Goal;
 
 /// <summary>
@@ -19,4 +21,9 @@ public class GoalReadDto
     /// Indicates whether the goal has been completed.
     /// </summary>
     public bool IsCompleted { get; set; }
+
+    /// <summary>
+    /// Type of the goal. Can be "Project" for result-based goals or "Process" for ongoing routines.
+    /// </summary>
+    public GoalType Type { get; set; }
 }

@@ -19,6 +19,7 @@ public class GoalService(AppDbContext db) : IGoalService
                 Id = g.Id,
                 Title = g.Title,
                 IsCompleted = g.IsCompleted,
+                Type = g.Type
             })
             .ToListAsync();
     }
@@ -32,7 +33,8 @@ public class GoalService(AppDbContext db) : IGoalService
         {
             Id = goal.Id,
             Title = goal.Title,
-            IsCompleted = goal.IsCompleted
+            IsCompleted = goal.IsCompleted,
+            Type = goal.Type
         };
     }
 
@@ -41,7 +43,8 @@ public class GoalService(AppDbContext db) : IGoalService
         var goal = new Goal
         {
             Title = dto.Title,
-            UserId = userId
+            UserId = userId,
+            Type = dto.Type
         };
 
         _db.Goals.Add(goal);
@@ -51,7 +54,8 @@ public class GoalService(AppDbContext db) : IGoalService
         {
             Id = goal.Id,
             Title = goal.Title,
-            IsCompleted = goal.IsCompleted
+            IsCompleted = goal.IsCompleted,
+            Type = goal.Type
         };
     }
 
