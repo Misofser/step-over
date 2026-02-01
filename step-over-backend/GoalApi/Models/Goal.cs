@@ -1,3 +1,5 @@
+using GoalApi.Enums;
+
 namespace GoalApi.Models;
 
 public class Goal : IHasTimestamps
@@ -5,6 +7,7 @@ public class Goal : IHasTimestamps
     public int Id { get; set; }
     public string Title { get; set; } = null!;
     public bool IsCompleted { get; set; } = false;
+    public GoalType Type { get; set; }
 
     public int UserId { get; set; }
     public User User { get; set; } = null!;

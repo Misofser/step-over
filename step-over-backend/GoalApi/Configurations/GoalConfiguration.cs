@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using GoalApi.Models;
+using GoalApi.Enums;
 
 namespace GoalApi.Configurations;
 
@@ -18,6 +19,13 @@ public class GoalConfiguration : IEntityTypeConfiguration<Goal>
         builder.Property(g => g.IsCompleted)
             .IsRequired()
             .HasDefaultValue(false);
+        
+        builder.Property(g => g.Type)
+            .HasConversion(
+                v => v.ToString().ToLower(),
+                v => Enum.Parse<GoalType>(v, true)
+            )
+            .IsRequired();
 
         builder.Property(g => g.CreatedAt)
             .IsRequired();
