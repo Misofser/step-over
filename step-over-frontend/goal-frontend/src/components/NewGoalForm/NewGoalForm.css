@@ -17,7 +17,7 @@
   border-color: #4bc7b5;
 }
 
-.add-goal-form input.error {
+.add-goal-form input.error, select.error {
   border-color: rgb(255, 100, 100);
 }
 
@@ -26,4 +26,33 @@
   text-align: start;
   font-size: 0.85rem;
   margin-top: 0.25rem;
+}
+
+.goal-type-select {
+  padding: 0.6rem 1.6rem 0.6rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+  color: #757575;
+  appearance: none;
+}
+
+.goal-type-select:focus {
+  outline: none;
+  border-color: #4bc7b5;
+}
+
+.select-wrapper {
+  position: relative;
+  display: inline-block;
+} 
+
+.select-wrapper::after {
+  content: "▾";
+  position: absolute;
+  right: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #666;
 }

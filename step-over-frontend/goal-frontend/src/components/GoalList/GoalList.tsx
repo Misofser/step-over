@@ -26,11 +26,11 @@ export default function GoalList({ goals, onDelete, onToggle, onEdit }: Props) {
                 checked={goal.isCompleted}
                 onChange={() => onToggle?.(goal)}
               />
-              <label
-                htmlFor={`goal-${goal.id}`}
-                className={`${goal.isCompleted ? "completed" : ""}`}
-              >
-                {goal.title}
+              <label htmlFor={`goal-${goal.id}`}>
+                <span className={`${goal.isCompleted ? "completed" : ""}`}>{goal.title}</span>
+                <span className="goal-type">
+                  [{goal.type}]
+              </span>
               </label>
             </span>
             <span className="buttons-block">

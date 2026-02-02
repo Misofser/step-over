@@ -1,5 +1,5 @@
 import { API_URL } from '../config'
-import type { Goal, DataToUpdate } from './goals.types'
+import type { Goal, DataToUpdate, GoalToCreate } from './goals.types'
 
 export async function fetchGoals(): Promise<Goal[]> {
   const res = await fetch(`${API_URL}/goals`, {
@@ -17,11 +17,11 @@ export async function fetchGoal(id: number): Promise<Goal> {
   return res.json();
 }
 
-export async function addGoal(title: string): Promise<Goal> {
+export async function addGoal(goalToCreate: GoalToCreate): Promise<Goal> {
   const res = await fetch(`${API_URL}/goals`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title }),
+    body: JSON.stringify(goalToCreate),
     credentials: "include",
   });
 

@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from "react"
-import type { Goal } from '../api/goals.types'
+import type { Goal, GoalToCreate } from '../api/goals.types'
 import GoalList from '../components/GoalList/GoalList'
 import { EditGoalForm } from "../components/EditGoalForm/EditGoalForm"
 import NewGoalForm from '../components/NewGoalForm/NewGoalForm'
@@ -16,8 +16,8 @@ export function GoalsPage() {
     fetchGoals().then(setGoals);
   }, []);
 
-  const addGoal = async (title: string) => {
-    const newGoal = await apiAddGoal(title);
+  const addGoal = async (goalToCreate: GoalToCreate) => {
+    const newGoal = await apiAddGoal(goalToCreate);
     setGoals(prev => [...prev, newGoal]);
   };
 

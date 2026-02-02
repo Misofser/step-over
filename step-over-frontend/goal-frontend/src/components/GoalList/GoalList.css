@@ -57,3 +57,9 @@
   font-size: 14px;
   color: #386d66;
 }
+
+.goal-type {
+  margin-left: 4px;
+  font-size: 0.8em;
+  color: gray;
+}
