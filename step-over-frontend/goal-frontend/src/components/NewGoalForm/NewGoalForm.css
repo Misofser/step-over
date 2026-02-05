@@ -56,3 +56,18 @@
   pointer-events: none;
   color: #666;
 }
+
+@media (max-width: 600px) {
+  .add-goal-form {
+    flex-direction: column;
+  }
+
+  .add-goal-form input,
+  .goal-type-select {
+    padding: 0.75rem 0.9rem;
+  }
+
+  .goal-type-select {
+    width: 100%;
+  }
+}
