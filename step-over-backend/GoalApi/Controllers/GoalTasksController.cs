@@ -7,7 +7,7 @@ namespace GoalApi.Controllers;
 
 /// <summary>
 /// Manages goal tasks.
-/// Provides endpoints to create, update, delete, and retrieve tasks associated with a specific goal.
+/// Provides endpoints to create, and retrieve tasks associated with a specific goal.
 /// All endpoints require <b>authentication</b>.
 /// </summary>
 [ApiController]
