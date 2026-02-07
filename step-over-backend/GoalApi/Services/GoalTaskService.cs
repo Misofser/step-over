@@ -42,4 +42,13 @@ public class GoalTaskService(AppDbContext db) : IGoalTaskService
         _db.GoalTasks.Add(task);
         await _db.SaveChangesAsync();
     }
+
+    public async Task UpdateCompletionAsync(int taskId, GoalTaskUpdateCompletionDto dto)
+    {
+        var task = await _db.GoalTasks.FindAsync(taskId);
+        if (task == null) throw new NotFoundException("GoalTask");
+
+        task.IsCompleted = dto.IsCompleted!.Value;
+        await _db.SaveChangesAsync();
+    }
 }

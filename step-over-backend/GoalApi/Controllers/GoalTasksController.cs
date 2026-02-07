@@ -6,8 +6,9 @@ using Microsoft.AspNetCore.Authorization;
 namespace GoalApi.Controllers;
 
 /// <summary>
-/// Manages goal tasks.
-/// Provides endpoints to create, and retrieve tasks associated with a specific goal.
+/// Manages tasks.
+/// Provides endpoints to create and retrieve tasks for a specific goal.
+/// Provides endpoints to update the completion status of individual tasks.
 /// All endpoints require <b>authentication</b>.
 /// </summary>
 [ApiController]
@@ -56,5 +57,23 @@ public class GoalTasksController(IGoalTaskService goalTaskService) : ControllerB
     {
         await _goalTaskService.AddTaskAsync(goalId, dto);
         return Ok();
+    }
+
+    /// <summary>Updates the completion status of a specific task</summary>
+    /// <param name="taskId">The ID of the task to update</param>
+    /// <param name="dto">The data containing the new completion status</param>
+    /// <response code="204">The task completion status was updated successfully</response>
+    /// <response code="400">Invalid request data</response>
+    /// <response code="401">User is unauthorized</response>
+    /// <response code="404">Task with the specified id was not found</response>
+    [HttpPatch("/api/tasks/{taskId}/completion")]
+    [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)] 
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateCompletion(int taskId, [FromBody] GoalTaskUpdateCompletionDto dto)
+    {
+        await _goalTaskService.UpdateCompletionAsync(taskId, dto);
+        return NoContent();
     }
 }
