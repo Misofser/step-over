@@ -51,4 +51,13 @@ public class GoalTaskService(AppDbContext db) : IGoalTaskService
         task.IsCompleted = dto.IsCompleted!.Value;
         await _db.SaveChangesAsync();
     }
+
+    public async Task DeleteTaskAsync(int taskId)
+    {
+        var task = await _db.GoalTasks.FindAsync(taskId);
+        if (task == null) throw new NotFoundException("GoalTask");
+
+        _db.GoalTasks.Remove(task);
+        await _db.SaveChangesAsync();
+    }
 }

@@ -8,8 +8,8 @@ namespace GoalApi.Controllers;
 /// <summary>
 /// Manages tasks.
 /// Provides endpoints to create and retrieve tasks for a specific goal.
-/// Provides endpoints to update the completion status of individual tasks.
-/// All endpoints require <b>authentication</b>.
+/// Provides endpoints to update the completion status of individual tasks and delete tasks.
+/// All endpoints require <b>authentication</b>. Deleting tasks requires an admin role.
 /// </summary>
 [ApiController]
 [Route("api/goals/{goalId}/tasks")]
@@ -74,6 +74,26 @@ public class GoalTasksController(IGoalTaskService goalTaskService) : ControllerB
     public async Task<IActionResult> UpdateCompletion(int taskId, [FromBody] GoalTaskUpdateCompletionDto dto)
     {
         await _goalTaskService.UpdateCompletionAsync(taskId, dto);
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Deletes a task. Admin role required.
+    /// </summary>
+    /// <param name="taskId">The ID of the task to delete</param>
+    /// <response code="204">Task successfully deleted</response>
+    /// <response code="401">User is unauthorized</response>
+    /// <response code="403">User does not have permission</response>
+    /// <response code="404">Task not found</response>
+    [Authorize(Roles = "Admin")]
+    [HttpDelete("/api/tasks/{taskId}")]
+    [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)] 
+    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(int taskId)
+    {
+        await _goalTaskService.DeleteTaskAsync(taskId);
         return NoContent();
     }
 }

@@ -115,5 +115,4 @@ public class GoalsController(IGoalService goalService, ICurrentUserService curre
         await _goalService.DeleteGoalAsync(id);
         return NoContent();
     }
-
 }
