@@ -7,9 +7,9 @@ namespace GoalApi.Controllers;
 
 /// <summary>
 /// Manages tasks.
-/// Provides endpoints to create and retrieve tasks for a specific goal.
-/// Provides endpoints to update the completion status of individual tasks and delete tasks.
-/// All endpoints require <b>authentication</b>. Deleting tasks requires an admin role.
+/// Provides endpoints for creating, retrieving, updating, and deleting tasks,
+/// including updating task details and managing task completion status.
+/// All endpoints require <b>authentication</b>. Deleting tasks requires an <b>admin</b> role.
 /// </summary>
 [ApiController]
 [Route("api/goals/{goalId}/tasks")]
@@ -35,6 +35,24 @@ public class GoalTasksController(IGoalTaskService goalTaskService) : ControllerB
     {
         var tasks = await _goalTaskService.GetTasksByGoalAsync(goalId);
         return Ok(tasks);
+    }
+
+    /// <summary>
+    /// Retrieves a specific task by its ID.
+    /// </summary>
+    /// <param name="taskId">The ID of the task to retrieve</param>
+    /// <returns>The requested task.</returns>
+    /// <response code="200">Returns the requested task</response>
+    /// <response code="401">User is unauthorized</response>
+    /// <response code="404">Task not found</response>
+    [HttpGet("/api/tasks/{taskId}")]
+    [ProducesResponseType(typeof(GoalTaskReadDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<GoalTaskReadDto>> GetTask(int taskId)
+    {
+        var task = await _goalTaskService.GetTaskByIdAsync(taskId);
+        return Ok(task);
     }
 
     /// <summary>Creates a new task for a specific goal. Admin role required</summary>
@@ -74,6 +92,26 @@ public class GoalTasksController(IGoalTaskService goalTaskService) : ControllerB
     public async Task<IActionResult> UpdateCompletion(int taskId, [FromBody] GoalTaskUpdateCompletionDto dto)
     {
         await _goalTaskService.UpdateCompletionAsync(taskId, dto);
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Updates an existing task.
+    /// </summary>
+    /// <param name="taskId">The ID of the task to update</param>
+    /// <param name="dto">Data for updating the task</param>
+    /// <response code="204">Task successfully updated</response>
+    /// <response code="400">Invalid request data</response>
+    /// <response code="401">User is unauthorized</response>
+    /// <response code="404">Task not found</response>
+    [HttpPatch("/api/tasks/{taskId}")]
+    [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Update(int taskId, GoalTaskUpdateDto dto)
+    {
+        await _goalTaskService.UpdateTaskAsync(taskId, dto);
         return NoContent();
     }
 

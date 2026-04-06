@@ -30,6 +30,19 @@ public class GoalTaskService(AppDbContext db) : IGoalTaskService
             .ToListAsync();
     }
 
+    public async Task<GoalTaskReadDto> GetTaskByIdAsync(int taskId)
+    {
+        var task = await _db.GoalTasks.FindAsync(taskId);
+        if (task == null) throw new NotFoundException("GoalTask");
+
+        return new GoalTaskReadDto
+        {
+            Id = task.Id,
+            Title = task.Title,
+            IsCompleted = task.IsCompleted,
+        };
+    }
+
     public async Task AddTaskAsync(int goalId, GoalTaskCreateDto dto)
     {
         var goal = await _db.Goals.FindAsync(goalId);
@@ -49,6 +62,17 @@ public class GoalTaskService(AppDbContext db) : IGoalTaskService
         if (task == null) throw new NotFoundException("GoalTask");
 
         task.IsCompleted = dto.IsCompleted!.Value;
+        await _db.SaveChangesAsync();
+    }
+
+    public async Task UpdateTaskAsync(int taskId, GoalTaskUpdateDto dto)
+    {
+        var task = await _db.GoalTasks.FindAsync(taskId);
+        if (task == null) throw new NotFoundException("GoalTask");
+
+        if (!string.IsNullOrWhiteSpace(dto.Title))
+            task.Title = dto.Title.Trim();
+
         await _db.SaveChangesAsync();
     }
 
