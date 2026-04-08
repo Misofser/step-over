@@ -43,7 +43,7 @@ public class GoalTaskService(AppDbContext db) : IGoalTaskService
         };
     }
 
-    public async Task AddTaskAsync(int goalId, GoalTaskCreateDto dto)
+    public async Task<GoalTaskReadDto> AddTaskAsync(int goalId, GoalTaskCreateDto dto)
     {
         var goal = await _db.Goals.FindAsync(goalId);
 
@@ -54,6 +54,13 @@ public class GoalTaskService(AppDbContext db) : IGoalTaskService
 
         _db.GoalTasks.Add(task);
         await _db.SaveChangesAsync();
+
+        return new GoalTaskReadDto
+        {
+            Id = task.Id,
+            Title = task.Title,
+            IsCompleted = task.IsCompleted,
+        };
     }
 
     public async Task UpdateCompletionAsync(int taskId, GoalTaskUpdateCompletionDto dto)

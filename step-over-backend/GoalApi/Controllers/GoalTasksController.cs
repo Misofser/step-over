@@ -9,7 +9,7 @@ namespace GoalApi.Controllers;
 /// Manages tasks.
 /// Provides endpoints for creating, retrieving, updating, and deleting tasks,
 /// including updating task details and managing task completion status.
-/// All endpoints require <b>authentication</b>. Deleting tasks requires an <b>admin</b> role.
+/// All endpoints require <b>authentication</b>. Deleting and creating tasks requires an <b>admin</b> role.
 /// </summary>
 [ApiController]
 [Route("api/goals/{goalId}/tasks")]
@@ -58,23 +58,22 @@ public class GoalTasksController(IGoalTaskService goalTaskService) : ControllerB
     /// <summary>Creates a new task for a specific goal. Admin role required</summary>
     /// <param name="goalId">The identifier of the goal to which the task will be added</param>
     /// <param name="dto">Task data required to create a new goal task</param>
-    /// <returns>Returns <c>200 OK</c> if the task was successfully created</returns>
-    /// <response code="200">Task was created successfully</response>
+    /// <response code="201">Task successfully created</response>
     /// <response code="400">Invalid request data</response>
     /// <response code="401">User is unauthorized</response>
     /// <response code="403">User does not have permission</response>
     /// <response code="404">Goal with the specified id was not found</response>
     [Authorize(Roles = "Admin")]
     [HttpPost]
-    [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(GoalTaskReadDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Create(int goalId, GoalTaskCreateDto dto)
+    public async Task<ActionResult<GoalTaskReadDto>> Create(int goalId, GoalTaskCreateDto dto)
     {
-        await _goalTaskService.AddTaskAsync(goalId, dto);
-        return Ok();
+        var task = await _goalTaskService.AddTaskAsync(goalId, dto);
+        return CreatedAtAction(nameof(GetTask), new { taskId = task.Id }, task);
     }
 
     /// <summary>Updates the completion status of a specific task</summary>
