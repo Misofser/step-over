@@ -11,6 +11,8 @@ public class AppDbContext : DbContext
     public DbSet<Goal> Goals { get; set; } = null!;
     public DbSet<User> Users { get; set; } = null!;
     public DbSet<GoalTask> GoalTasks { get; set; } = null!;
+    public DbSet<Habit> Habits { get; set; } = null!;
+    public DbSet<HabitCompletion> HabitCompletions { get; set; } = null!;
 
     public override int SaveChanges()
     {
