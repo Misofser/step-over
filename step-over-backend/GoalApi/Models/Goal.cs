@@ -16,4 +16,5 @@ public class Goal : IHasTimestamps
     public DateTime UpdatedAt { get; set; }
 
     public List<GoalTask> GoalTasks { get; set; } = new();
+    public List<Habit> Habits { get; set; } = new();
 }
