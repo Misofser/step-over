@@ -20,9 +20,9 @@ public class GoalTasksController(IGoalTaskService goalTaskService) : ControllerB
     private readonly IGoalTaskService _goalTaskService = goalTaskService;
 
     /// <summary>Retrieves all tasks associated with a specific goal.</summary>
-    /// <param name="goalId">The identifier of the goal to which the task will be added</param>
+    /// <param name="goalId">The ID of the goal to retrieve tasks for.</param>
     /// <returns>A list of goal tasks.</returns>
-    /// <response code="200">Returns the list of goals</response>
+    /// <response code="200">Returns the list of tasks</response>
     /// <response code="400">Invalid request data</response>
     /// <response code="401">User is unauthorized</response>
     /// <response code="404">Goal with the specified id was not found</response>
