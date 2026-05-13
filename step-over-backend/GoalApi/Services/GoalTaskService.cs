@@ -17,7 +17,6 @@ public class GoalTaskService(AppDbContext db) : IGoalTaskService
         var goal = await _db.Goals.FindAsync(goalId);
 
         if (goal == null) throw new NotFoundException("Goal");
-        if (goal.Type != GoalType.Project) throw new BadRequestException("Tasks are supported only for project goals");
 
         return await _db.GoalTasks
             .Where(t => t.GoalId == goalId)
@@ -48,7 +47,6 @@ public class GoalTaskService(AppDbContext db) : IGoalTaskService
         var goal = await _db.Goals.FindAsync(goalId);
 
         if (goal == null) throw new NotFoundException("Goal");
-        if (goal.Type != GoalType.Project) throw new BadRequestException("Tasks are supported only for project goals");
 
         var task = new GoalTask { GoalId = goalId, Title = dto.Title.Trim() };
 
