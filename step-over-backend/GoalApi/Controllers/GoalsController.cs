@@ -9,16 +9,18 @@ namespace GoalApi.Controllers;
 
 /// <summary>
 /// Manages goals.
-/// Provides endpoints to create, update, delete, and retrieve goals.
+/// Manages goals and their lifecycle.
+/// Provides CRUD operations and heatmap-based progress visualization.
 /// All endpoints require <b>authentication</b>.
 /// </summary>
 [ApiController]
 [Route("api/goals")]
 [Authorize]
 [Produces("application/json")]
-public class GoalsController(IGoalService goalService, ICurrentUserService currentUser) : ControllerBase
+public class GoalsController(IGoalService goalService, IGoalAnalyticsService goalAnalyticsService, ICurrentUserService currentUser) : ControllerBase
 {
     private readonly IGoalService _goalService = goalService;
+    private readonly IGoalAnalyticsService _goalAnalyticsService = goalAnalyticsService;
     private readonly ICurrentUserService _currentUser = currentUser;
 
     /// <summary>
@@ -114,5 +116,29 @@ public class GoalsController(IGoalService goalService, ICurrentUserService curre
     {
         await _goalService.DeleteGoalAsync(id);
         return NoContent();
+    }
+
+    /// <summary>
+    /// Returns a heatmap of habit completion for a specific goal.
+    /// Each day contains the number of completed habits compared to the total habits in the goal.
+    /// </summary>
+    /// <param name="goalId">The ID of the goal.</param>
+    /// <param name="query">Query parameters for heatmap generation (e.g. number of days).</param>
+    /// <returns>A list of daily heatmap data for the goal.</returns>
+    /// <response code="200">Returns heatmap data for the specified goal</response>
+    /// <response code="400">Invalid request data</response>
+    /// <response code="401">User is unauthorized</response>
+    /// <response code="404">Goal not found</response>
+    [HttpGet("{goalId}/heatmap")]
+    [ProducesResponseType(typeof(IEnumerable<GoalHeatmapDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<IEnumerable<GoalHeatmapDto>>> GetHeatmap(
+        int goalId,
+        [FromQuery] GoalHeatmapQuery query)
+    {
+        var result = await _goalAnalyticsService.GetGoalHeatmapAsync(goalId, query.Days);
+        return Ok(result);
     }
 }
