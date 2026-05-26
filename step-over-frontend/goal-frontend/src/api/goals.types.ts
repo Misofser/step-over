@@ -1,7 +1,7 @@
 export type Goal = {
   id: number;
   title: string;
-  type: "Project" | "Process";
+  type: GoalType;
   isCompleted: boolean;
 };
 
@@ -12,5 +12,7 @@ export type DataToUpdate = {
 
 export type GoalToCreate = {
   title: string;
-  type: "Project" | "Process";
+  type: GoalType;
 };
+
+export type GoalType = "Project" | "Process";
