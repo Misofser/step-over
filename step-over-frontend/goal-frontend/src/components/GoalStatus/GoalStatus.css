@@ -1,0 +1,47 @@
+.goal-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0rem;
+}
+
+.completed-badge {
+  background: #e6f7f3;
+  color: #1f7a6d;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.complete-button {
+  background: #4bc7b5;
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.complete-button:hover {
+  background: #3db3a2;
+}
+
+.reopen-button {
+  background: transparent;
+  border: 1px solid #9af2e5;
+  color: #333;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.reopen-button:hover {
+  background: #ddfbf7;
+  border: 1px solid #ddfbf7;
+  color: #333;
+}
