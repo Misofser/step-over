@@ -1,0 +1,28 @@
+.heatmap-tooltip {
+  position: fixed;
+  z-index: 5;
+
+  background: #1d2f2c;
+  color: #fff;
+
+  padding: 8px 10px;
+  border-radius: 8px;
+
+  font-size: 12px;
+  line-height: 1.4;
+
+  pointer-events: none;
+
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+
+  transform: translate(0, 0);
+}
+
+.tooltip-date {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.tooltip-progress {
+  opacity: 0.85;
+}
