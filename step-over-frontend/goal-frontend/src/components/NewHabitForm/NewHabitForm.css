@@ -1,0 +1,71 @@
+.add-habit-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.add-habit-form input {
+  flex: 1;
+  padding: 0.6rem 0.8rem;
+  font-size: 1rem;
+
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+
+  transition: border-color 0.2s ease;
+}
+
+.add-habit-form input:focus {
+  border-color: #4bc7b5;
+}
+
+.add-habit-form input.error {
+  border-color: rgb(255, 100, 100);
+}
+
+.error-message {
+  color: rgb(255, 100, 100);
+  text-align: start;
+  font-size: 0.85rem;
+}
+
+.frequency-selector {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+  font-size: 0.85rem;
+}
+
+.frequency-chip {
+  border: none;
+  background: none;
+
+  padding: 0;
+  cursor: pointer;
+
+  color: #999;
+  position: relative;
+  margin-bottom: 4px;
+
+  transition: color 0.15s ease;
+}
+
+.frequency-chip:hover {
+  color: #386d66;
+}
+
+.frequency-chip.active {
+  color: #3ea394;
+  font-weight: 500;
+}
+
+@media (max-width: 600px) {
+  .add-habit-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .add-habit-form input {
+    padding: 0.75rem 0.9rem;
+  }
+}
