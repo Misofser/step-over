@@ -1,0 +1,22 @@
+.goal-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.progress-bar-wrapper {
+  height: 10px;
+  background: #f0f0f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    #4bc7b5 0%,
+    #5fd5c5 100%
+  );
+  transition: width 0.35s ease;
+}
