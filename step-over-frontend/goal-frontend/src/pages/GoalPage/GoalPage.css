@@ -1,0 +1,11 @@
+.app-container.goal-completed .progress-bar-fill {
+  opacity: 0.3;
+}
+
+.app-container.goal-completed li {
+  opacity: 0.8;
+}
+
+.app-container.goal-completed .goal-heatmap-card {
+  opacity: 0.8;
+}
