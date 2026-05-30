@@ -1,15 +1,12 @@
 import { useEffect, useState, useContext } from "react"
 import type { Goal, GoalToCreate } from '../api/goals.types'
 import GoalList from '../components/GoalList/GoalList'
-import { EditGoalForm } from "../components/EditGoalForm/EditGoalForm"
 import NewGoalForm from '../components/NewGoalForm/NewGoalForm'
 import { AuthContext } from "../auth/AuthContext"
-import { addGoal as apiAddGoal, fetchGoals, deleteGoal, updateGoal } from "../api/goals"
-import { Modal } from "../components/Modal/Modal"
+import { addGoal as apiAddGoal, fetchGoals } from "../api/goals"
 
 export function GoalsPage() {
   const [goals, setGoals] = useState<Goal[]>([]);
-  const [editingGoalId, setEditingGoalId] = useState<number | null>(null);
   const { user } = useContext(AuthContext);
 
   useEffect(() => {
@@ -21,36 +18,6 @@ export function GoalsPage() {
     setGoals(prev => [...prev, newGoal]);
   };
 
-  const handleDeleteGoal = async (id: number) => {
-    try {
-      await deleteGoal(id);
-      setGoals(prev => prev.filter(goal => goal.id !== id));
-    } catch (e) {
-      alert("Could not delete goal");
-    }
-  };
-
-  const handleToggleGoal = async (goal: Goal) => {
-    try {
-      await updateGoal(goal.id, {isCompleted: !goal.isCompleted});
-      setGoals(prev =>
-        prev.map(g =>
-          g.id === goal.id ? { ...g, isCompleted: !goal.isCompleted } : g
-        )
-      );
-    } catch (e) {
-      alert("Could not update goal")
-    }
-  };
-
-  const handleSavedGoal = (id: number, newTitle: string) => {
-    setGoals(prev =>
-      prev.map(g =>
-        g.id === id ? { ...g, title: newTitle } : g
-      )
-    );
-  };
-
   return (
     <div className="app-container">
       <h1>StepOver</h1>
@@ -58,21 +25,7 @@ export function GoalsPage() {
       {user?.role === "Admin" && (
         <NewGoalForm onAddGoal={addGoal} />
       )}
-      <GoalList
-        goals={goals}
-        onDelete={handleDeleteGoal}
-        onToggle={handleToggleGoal}
-        onEdit={goal => setEditingGoalId(goal.id)}
-      />    
-      {editingGoalId && (
-        <Modal title="Edit Goal">
-          <EditGoalForm
-            goalId={editingGoalId}
-            onClose={() => setEditingGoalId(null)}
-            onSave={handleSavedGoal}
-          />
-        </Modal>
-      )}
+      <GoalList goals={goals} />
     </div>
   );
 }

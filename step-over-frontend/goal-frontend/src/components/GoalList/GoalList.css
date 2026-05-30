@@ -1,65 +1,55 @@
-.buttons-block {
+.goal-list {
+  margin-top: 1rem;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+}
+
+.goal-card {
+  position: relative;
+  display: block;
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: #e0f7fa;
+  text-decoration: none;
+  color: #00796b;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.goal-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.goal-header {
   display: flex;
+  justify-content: space-between;
   gap: 4px;
 }
 
-.goal-list ul {
-  width: 100%;
-}
-
-.goal-list ul li {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: space-between;
-}
-
-.completed {
-  text-decoration: line-through;
-  color: #888;
-  font-style: italic;
-}
-
-.goal-checkbox {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.goal-checkbox input {
-  display: none;
-}
-
-.goal-checkbox label {
-  position: relative;
-  padding-left: 32px;
-  cursor: pointer;
-  user-select: none;
-}
-
-.goal-checkbox label::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 50%;
-  width: 18px;
-  height: 18px;
-  border: 1px solid #666;
-  border-radius: 4px;
-  transform: translateY(-50%);
-}
-
-.goal-checkbox input:checked + label::after {
-  content: "✔";
-  position: absolute;
-  left: 4px;
-  top: 50%;
-  transform: translateY(-55%);
-  font-size: 14px;
-  color: #386d66;
+.goal-title {
+  font-weight: 600;
+  font-size: 1.1rem;
+  text-align: start;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .goal-type {
-  margin-left: 4px;
-  font-size: 0.8em;
-  color: gray;
+  justify-items: end;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.goal-completed-badge {
+  color: #00796b;
+  font-weight: bold;
+  font-size: 1rem;
+  position: absolute;
+  bottom: 8px;
+  right: 18px;
 }

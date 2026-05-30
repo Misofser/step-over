@@ -1,57 +1,24 @@
-import { useContext } from "react"
-import type { Goal } from "../../api/goals.types"
-import './GoalList.css'
-import { AuthContext } from "../../auth/AuthContext"
-import { Button } from "../Button/Button"
+import { Link } from "react-router";
+import type { Goal } from "../../api/goals.types";
+import './GoalList.css';
 
 type Props = {
   goals: Goal[];
-  onDelete?: (id: number) => void;
-  onToggle?: (goal: Goal) => void;
-  onEdit: (goal: Goal) => void;
 };
 
-export default function GoalList({ goals, onDelete, onToggle, onEdit }: Props) {
-  const { user } = useContext(AuthContext);
+export default function GoalList({ goals }: Props) {
 
   return (
     <div className="goal-list">
-      <ul>
-        {goals.map(goal => (
-          <li key={goal.id}>
-            <span className="goal-checkbox">
-              <input
-                id={`goal-${goal.id}`}
-                type="checkbox"
-                checked={goal.isCompleted}
-                onChange={() => onToggle?.(goal)}
-              />
-              <label htmlFor={`goal-${goal.id}`}>
-                <span className={`${goal.isCompleted ? "completed" : ""}`}>{goal.title}</span>
-                <span className="goal-type">
-                  [{goal.type}]
-              </span>
-              </label>
-            </span>
-            <span className="buttons-block">
-              <Button
-                  variant="edit"
-                  onClick={() => onEdit(goal)}
-                >
-                  ✏️
-              </Button>
-              {user?.role === "Admin" && (
-                <Button
-                  variant="delete"
-                  onClick={() => onDelete?.(goal.id)}
-                >
-                  ❌
-                </Button>
-              )}
-            </span>
-          </li>
-        ))}
-      </ul>
+      {goals.map(goal => (
+        <Link to={`/goals/${goal.id}`} key={goal.id} className="goal-card">
+          <div className="goal-header">
+            <span className={`goal-title ${goal.isCompleted ? "completed" : ""}`}>{goal.title}</span>
+            <span className="goal-type">[{goal.type}]</span>
+          </div>
+          {goal.isCompleted && <div className="goal-completed-badge">✔</div>}
+        </Link>
+      ))}
     </div>
   );
 }
