@@ -1,5 +1,6 @@
 using GoalApi.Dtos.Goal;
 using GoalApi.Services;
+using GoalApi.Enums;
 
 namespace GoalApi.Tests.Services;
 
@@ -16,8 +17,8 @@ public class GoalServiceTests
         await db.SaveChangesAsync();
 
         db.Goals.AddRange(
-            new Goal { Title = "Goal 1", IsCompleted = false, UserId = user.Id },
-            new Goal { Title = "Goal 2", IsCompleted = true, UserId = user.Id }
+            new Goal { Title = "Goal 1", IsCompleted = false, UserId = user.Id, Type = GoalType.Process },
+            new Goal { Title = "Goal 2", IsCompleted = true, UserId = user.Id, Type = GoalType.Project }
         );
         await db.SaveChangesAsync();
 
@@ -28,8 +29,8 @@ public class GoalServiceTests
 
         // Assert
         Assert.Equal(2, result.Count);
-        Assert.Contains(result, g => g.Title == "Goal 1" && !g.IsCompleted);
-        Assert.Contains(result, g => g.Title == "Goal 2" && g.IsCompleted);
+        Assert.Contains(result, g => g.Title == "Goal 1" && !g.IsCompleted && g.Type == GoalType.Process);
+        Assert.Contains(result, g => g.Title == "Goal 2" && g.IsCompleted  && g.Type == GoalType.Project);
     }
 
     [Fact]
@@ -41,8 +42,8 @@ public class GoalServiceTests
         db.Users.Add(user);
         await db.SaveChangesAsync();
 
-        var goal = new Goal { Title = "First goal", IsCompleted = false, UserId = user.Id };
-        var goal2 = new Goal { Title = "Second goal", IsCompleted = true, UserId = user.Id };
+        var goal = new Goal { Title = "First goal", IsCompleted = false, UserId = user.Id, Type = GoalType.Process };
+        var goal2 = new Goal { Title = "Second goal", IsCompleted = true, UserId = user.Id, Type = GoalType.Project };
         db.Goals.AddRange(goal, goal2);
         await db.SaveChangesAsync();
 
@@ -54,6 +55,7 @@ public class GoalServiceTests
         // Assert
         Assert.Equal(goal2.Id, result.Id);
         Assert.Equal("Second goal", result.Title);
+        Assert.Equal(GoalType.Project, result.Type);
         Assert.True(result.IsCompleted);
     }
 
@@ -81,7 +83,7 @@ public class GoalServiceTests
         await db.SaveChangesAsync();
     
         var service = new GoalService(db);
-        var dto = new GoalCreateDto { Title = "New goal" };
+        var dto = new GoalCreateDto { Title = "New goal", Type = GoalType.Process };
 
         // Act
         var result = await service.CreateGoalAsync(user.Id, dto);
@@ -89,12 +91,14 @@ public class GoalServiceTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal("New goal", result.Title);
+        Assert.Equal(GoalType.Process, result.Type);
         Assert.False(result.IsCompleted);
 
         var goalInDb = await db.Goals.FirstOrDefaultAsync(g => g.Id == result.Id);
         Assert.NotNull(goalInDb);
         Assert.Equal("New goal", goalInDb!.Title);
         Assert.Equal(user.Id, goalInDb.UserId);
+        Assert.Equal(GoalType.Process, goalInDb.Type);
         Assert.False(goalInDb.IsCompleted);
     }
 
@@ -108,7 +112,7 @@ public class GoalServiceTests
         await db.SaveChangesAsync();
 
         var service = new GoalService(db);
-        var dto = new GoalCreateDto { Title = "Goal" };
+        var dto = new GoalCreateDto { Title = "Goal", Type = GoalType.Process };
 
         // Act
         await service.CreateGoalAsync(user.Id, dto);
@@ -130,7 +134,7 @@ public class GoalServiceTests
         await db.SaveChangesAsync();
 
         var service = new GoalService(db);
-        var dto = new GoalCreateDto { Title = "Goal for user1" };
+        var dto = new GoalCreateDto { Title = "Goal for user1", Type = GoalType.Process };
 
         // Act
         var result = await service.CreateGoalAsync(user1.Id, dto);
@@ -150,7 +154,7 @@ public class GoalServiceTests
         db.Users.Add(user);
         await db.SaveChangesAsync();
 
-        var goal = new Goal { Title = "Original Title", IsCompleted = false, UserId = user.Id };
+        var goal = new Goal { Title = "Original Title", IsCompleted = false, UserId = user.Id, Type = GoalType.Process };
         db.Goals.Add(goal);
         await db.SaveChangesAsync();
 
@@ -177,7 +181,7 @@ public class GoalServiceTests
         db.Users.Add(user);
         await db.SaveChangesAsync();
 
-        var goal = new Goal { Title = "Original Title", IsCompleted = false, UserId = user.Id };
+        var goal = new Goal { Title = "Original Title", IsCompleted = false, UserId = user.Id, Type = GoalType.Process };
         db.Goals.Add(goal);
         await db.SaveChangesAsync();
 
@@ -220,7 +224,7 @@ public class GoalServiceTests
         db.Users.Add(user);
         await db.SaveChangesAsync();
 
-        var goal = new Goal { Title = "Goal to delete", IsCompleted = false, UserId = user.Id };
+        var goal = new Goal { Title = "Goal to delete", IsCompleted = false, UserId = user.Id, Type = GoalType.Process };
         db.Goals.Add(goal);
         await db.SaveChangesAsync();
 
