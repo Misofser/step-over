@@ -14,8 +14,7 @@ public class HabitService(AppDbContext db) : IHabitService
 
     public async Task<List<HabitReadDto>> GetHabitsByGoalAsync(int goalId)
     {
-        var goal = await _db.Goals.FindAsync(goalId);
-        if (goal == null) throw new NotFoundException("Goal");
+        await EnsureGoalExistsAsync(goalId);
 
         var today = DateTime.UtcNow.Date;
 
@@ -49,8 +48,7 @@ public class HabitService(AppDbContext db) : IHabitService
 
     public async Task<HabitReadDto> AddHabitAsync(int goalId, HabitCreateDto dto)
     {
-        var goal = await _db.Goals.FindAsync(goalId);
-        if (goal == null) throw new NotFoundException("Goal");
+        await EnsureGoalExistsAsync(goalId);
 
         var today = DateTime.UtcNow.Date;
 
@@ -100,5 +98,10 @@ public class HabitService(AppDbContext db) : IHabitService
         }
 
         await _db.SaveChangesAsync();
+    }
+
+    private async Task EnsureGoalExistsAsync(int goalId)
+    {
+        if (!await _db.Goals.AnyAsync(g => g.Id == goalId)) throw new NotFoundException("Goal");
     }
 }

@@ -14,9 +14,7 @@ public class GoalTaskService(AppDbContext db) : IGoalTaskService
 
     public async Task<List<GoalTaskReadDto>> GetTasksByGoalAsync(int goalId)
     {
-        var goal = await _db.Goals.FindAsync(goalId);
-
-        if (goal == null) throw new NotFoundException("Goal");
+        await EnsureGoalExistsAsync(goalId);
 
         return await _db.GoalTasks
             .Where(t => t.GoalId == goalId)
@@ -44,9 +42,7 @@ public class GoalTaskService(AppDbContext db) : IGoalTaskService
 
     public async Task<GoalTaskReadDto> AddTaskAsync(int goalId, GoalTaskCreateDto dto)
     {
-        var goal = await _db.Goals.FindAsync(goalId);
-
-        if (goal == null) throw new NotFoundException("Goal");
+        await EnsureGoalExistsAsync(goalId);
 
         var task = new GoalTask { GoalId = goalId, Title = dto.Title.Trim() };
 
@@ -88,5 +84,10 @@ public class GoalTaskService(AppDbContext db) : IGoalTaskService
 
         _db.GoalTasks.Remove(task);
         await _db.SaveChangesAsync();
+    }
+
+    private async Task EnsureGoalExistsAsync(int goalId)
+    {
+        if (!await _db.Goals.AnyAsync(g => g.Id == goalId)) throw new NotFoundException("Goal");
     }
 }
