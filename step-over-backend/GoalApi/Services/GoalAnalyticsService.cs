@@ -12,41 +12,16 @@ public class GoalAnalyticsService(AppDbContext db) : IGoalAnalyticsService
 
     public async Task<List<GoalHeatmapDto>> GetGoalHeatmapAsync(int goalId, int days = 30)
     {
-        var goal = await _db.Goals.FindAsync(goalId);
-        if (goal == null) throw new NotFoundException("Goal");
+        await EnsureGoalExistsAsync(goalId);
 
         var today = DateTime.UtcNow.Date;
         var fromDate = today.AddDays(-(days - 1));
 
-        var habitIds = await _db.Habits
-            .Where(h => h.GoalId == goalId)
-            .Select(h => h.Id)
-            .ToListAsync();
+        var habitIds = await GetHabitIdsAsync(goalId);
 
-        if (!habitIds.Any())
-        {
-            return Enumerable.Range(0, days)
-                .Select(dayIndex => new GoalHeatmapDto
-                {
-                    Date = fromDate.AddDays(dayIndex),
-                    CompletedHabits = 0,
-                    TotalHabits = 0
-                })
-                .ToList();
-        }
+        if (!habitIds.Any()) return CreateEmptyHeatmap(fromDate, days);
 
-        var grouped = await _db.HabitCompletions
-            .Where(c =>
-                habitIds.Contains(c.HabitId) &&
-                c.Date >= fromDate &&
-                c.Date <= today)
-            .GroupBy(c => c.Date)
-            .Select(g => new
-            {
-                Date = g.Key,
-                Count = g.Count()
-            })
-            .ToDictionaryAsync(x => x.Date, x => x.Count);
+        var grouped = await GetCompletionCountsAsync(habitIds, fromDate, today);
 
         var result = Enumerable.Range(0, days)
             .Select(dayIndex =>
@@ -64,5 +39,49 @@ public class GoalAnalyticsService(AppDbContext db) : IGoalAnalyticsService
             .ToList();
 
         return result;
+    }
+
+    private async Task EnsureGoalExistsAsync(int goalId)
+    {
+        if (!await _db.Goals.AnyAsync(g => g.Id == goalId)) throw new NotFoundException("Goal");
+    }
+
+    private Task<List<int>> GetHabitIdsAsync(int goalId)
+    {
+        return _db.Habits
+            .Where(h => h.GoalId == goalId)
+            .Select(h => h.Id)
+            .ToListAsync();
+    }
+
+    private List<GoalHeatmapDto> CreateEmptyHeatmap(DateTime fromDate, int days)
+    {
+        return Enumerable.Range(0, days)
+            .Select(dayIndex => new GoalHeatmapDto
+            {
+                Date = fromDate.AddDays(dayIndex),
+                CompletedHabits = 0,
+                TotalHabits = 0
+            })
+            .ToList();
+    }
+
+    private async Task<Dictionary<DateTime, int>> GetCompletionCountsAsync(
+        List<int> habitIds,
+        DateTime fromDate,
+        DateTime toDate)
+    {
+        return await _db.HabitCompletions
+            .Where(c =>
+                habitIds.Contains(c.HabitId) &&
+                c.Date >= fromDate &&
+                c.Date <= toDate)
+            .GroupBy(c => c.Date)
+            .Select(g => new
+            {
+                Date = g.Key,
+                Count = g.Count()
+            })
+            .ToDictionaryAsync(x => x.Date, x => x.Count);
     }
 }
