@@ -1,12 +1,19 @@
+import { useContext } from "react";
+
 import type { Habit } from "../../api/habits.types";
+import { Button } from "../Button/Button";
+import { AuthContext } from "../../auth/AuthContext";
 import "./HabitItem.css";
 
 type HabitItemProps = {
   habit: Habit;
-  onToggle: (habitId: number) => void;
+  onToggle: (id: number) => void;
+  onDelete: (id: number) => void;
 };
 
-export function HabitItem({ habit, onToggle }: HabitItemProps) {
+export function HabitItem({ habit, onToggle, onDelete }: HabitItemProps) {
+  const { user } = useContext(AuthContext);
+
   return (
     <div className="habit">
       <div
@@ -26,6 +33,17 @@ export function HabitItem({ habit, onToggle }: HabitItemProps) {
           <div className="habit-meta">{habit.frequency}</div>
         </div>
       </div>
+
+      <span className="habit-buttons-block">
+        {user?.role === "Admin" && (
+          <Button
+            variant="delete"
+            onClick={() => onDelete?.(habit.id)}
+          >
+            ❌
+          </Button>
+        )}
+      </span>
     </div>
   );
 };

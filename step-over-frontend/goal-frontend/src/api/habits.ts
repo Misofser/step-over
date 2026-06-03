@@ -32,3 +32,14 @@ export async function toggleHabitCompletion(id: number, date: string): Promise<v
 
   if (!res.ok) throw new Error("Failed to toggle habit completion");
 }
+
+export async function deleteHabit(id: number): Promise<void> {
+  const res = await fetch(`${API_URL}/habits/${id}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to delete Habit");
+  }
+}

@@ -263,4 +263,39 @@ public class HabitServiceTests
             () => service.ToggleCompletion(1, DateTime.UtcNow)
         );
     }
+
+    [Fact]
+    public async Task DeleteHabitAsync_ShouldRemoveHabit()
+    {
+        // Arrange
+        var db = TestDbContextFactory.Create();
+        var user = new User { Username = "Test User", PasswordHash = "testhash" };
+        var goal = new Goal { Title = "Goal 1", IsCompleted = false, Type = GoalType.Process, User = user };
+        var habit = new Habit { Title = "Habit", Goal = goal, Frequency = HabitFrequency.Weekly };
+        db.Habits.Add(habit);
+        await db.SaveChangesAsync();
+
+        var service = new HabitService(db);
+
+        // Act
+        await service.DeleteHabitAsync(habit.Id);
+
+        // Assert
+        var deletedHabit = await db.Habits.FindAsync(habit.Id);
+        Assert.Null(deletedHabit);
+        Assert.Equal(0, await db.Habits.CountAsync());
+    }
+
+    [Fact]
+    public async Task DeleteHabitAsync_ThrowsNotFoundException_WhenHabitNotFound()
+    {
+        // Arrange
+        var db = TestDbContextFactory.Create();
+        var service = new HabitService(db);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NotFoundException>(
+            () => service.DeleteHabitAsync(1)
+        );
+    }
 }

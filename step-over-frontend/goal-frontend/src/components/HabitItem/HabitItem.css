@@ -1,3 +1,8 @@
+.habit {
+  display: flex;
+  justify-content: space-between;
+}
+
 .habit-main {
   display: flex;
   align-items: center;

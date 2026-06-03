@@ -94,4 +94,24 @@ public class HabitsController(IHabitService habitService) : ControllerBase
         await _habitService.ToggleCompletion(habitId, dto.Date);
         return NoContent();
     }
+
+    /// <summary>
+    /// Deletes a habit. Admin role required.
+    /// </summary>
+    /// <param name="habitId">The ID of the habit to delete</param>
+    /// <response code="204">Habit successfully deleted</response>
+    /// <response code="401">User is unauthorized</response>
+    /// <response code="403">User does not have permission</response>
+    /// <response code="404">Habit not found</response>
+    [Authorize(Roles = "Admin")]
+    [HttpDelete("/api/habits/{habitId}")]
+    [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)] 
+    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(int habitId)
+    {
+        await _habitService.DeleteHabitAsync(habitId);
+        return NoContent();
+    }
 }

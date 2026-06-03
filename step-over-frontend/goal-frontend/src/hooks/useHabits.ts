@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchHabits, addHabit as apiAddHabit } from "../api/habits";
+import { fetchHabits, addHabit as apiAddHabit, toggleHabitCompletion, deleteHabit } from "../api/habits";
 
 import type { Habit, HabitToCreate } from "../api/habits.types";
 
@@ -31,6 +31,31 @@ export function useHabits(goalId: number) {
     setHabits(prev => [...prev, newHabit]);
   };
 
-  return { habits, setHabits, addHabit, loading, error };
-}
+  const toggleHabit = async (id: number) => {
+    const today = new Date().toISOString().slice(0, 10);
 
+    try {
+      await toggleHabitCompletion(id, today);
+      setHabits((prev) =>
+        prev.map((h) =>
+          h.id === id
+            ? { ...h, isCompletedToday: !h.isCompletedToday }
+            : h
+        )
+      );
+    } catch {
+      alert("Error toggling habit");
+    }
+  };
+
+  const removeHabit = async (id: number) => {
+    try {
+      await deleteHabit(id);
+      setHabits((prev) => prev.filter((h) => h.id !== id));
+    } catch {
+      alert("Could not delete habit");
+    }
+  };
+
+  return { habits, setHabits, addHabit, toggleHabit, removeHabit, loading, error };
+}

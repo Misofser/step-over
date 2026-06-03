@@ -1,31 +1,17 @@
 import type { Habit, HabitToCreate } from "../../api/habits.types";
 import { HabitItem } from "../HabitItem/HabitItem";
 import NewHabitForm from "../NewHabitForm/NewHabitForm";
-import { toggleHabitCompletion } from "../../api/habits";
+// import { toggleHabitCompletion, deleteHabit } from "../../api/habits";
 import "./HabitList.css";
 
 type HabitListProps = {
   habits: Habit[];
-  setHabits: React.Dispatch<React.SetStateAction<Habit[]>>
   addHabit: (habitToCreate: HabitToCreate) => void;
+  onToggle: (id: number) => void;
+  onDelete: (id: number) => void;
 };
 
-export function HabitList({ habits, setHabits, addHabit }: HabitListProps) {
-  const handleToggle = async (habitId: number) => {
-    const today = new Date().toISOString()
-
-    try {
-     await toggleHabitCompletion(habitId, today);
-     setHabits(prev =>
-        prev.map(h =>
-          h.id === habitId ? { ...h, isCompletedToday: !h.isCompletedToday } : h
-        )
-      );
-    } catch (e) {
-      alert("Error toggling habit");
-    }
-  };
-
+export function HabitList({ habits, onToggle, onDelete, addHabit }: HabitListProps) {
   return (
     <section className="habits-section">
       <h2>Habits</h2>
@@ -38,7 +24,11 @@ export function HabitList({ habits, setHabits, addHabit }: HabitListProps) {
         <ul className="habit-list">
           {habits.map(habit => (
             <li key={habit.id}>
-              <HabitItem habit={habit} onToggle={handleToggle} />
+              <HabitItem
+                habit={habit}
+                onToggle={onToggle}
+                onDelete={onDelete}
+              />
             </li>
           ))}
         </ul>

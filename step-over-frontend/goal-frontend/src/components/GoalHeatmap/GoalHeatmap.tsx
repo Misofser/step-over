@@ -43,7 +43,6 @@ export function GoalHeatmap({ days }: GoalHeatmapProps) {
             ))}
           </div>
 
-          
           <div className="goal-heatmap-wrapper">
             <div className="goal-heatmap">
               {days.map(day => {

@@ -24,7 +24,7 @@ export function GoalPage() {
 
   const { goal, setGoal, loading: goalLoading, error: goalError } = useGoal(id);
   const { tasks, setTasks, addTask, loading: tasksLoading, error: tasksError } = useTasks(id);
-  const { habits, setHabits, addHabit, loading: habitsLoading, error: habitsError } = useHabits(id);
+  const { habits, addHabit, toggleHabit, removeHabit, loading: habitsLoading, error: habitsError } = useHabits(id);
   const { data: heatmap, loading: heatmapLoading, error: heatmapError } = useGoalHeatmap(id, 90);
 
   const loading = goalLoading || tasksLoading || habitsLoading || heatmapLoading;
@@ -94,8 +94,9 @@ export function GoalPage() {
       />
       <HabitList
         habits={habits}
-        setHabits={setHabits}
         addHabit={addHabit}
+        onToggle={toggleHabit}
+        onDelete={removeHabit}
       />
       {editingGoalId && (
         <Modal title="Edit Goal">

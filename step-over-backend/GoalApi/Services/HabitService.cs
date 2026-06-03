@@ -100,6 +100,15 @@ public class HabitService(AppDbContext db) : IHabitService
         await _db.SaveChangesAsync();
     }
 
+    public async Task DeleteHabitAsync(int habitId)
+    {
+        var habit = await _db.Habits.FindAsync(habitId);
+        if (habit == null) throw new NotFoundException("Habit");
+
+        _db.Habits.Remove(habit);
+        await _db.SaveChangesAsync();
+    }
+
     private async Task EnsureGoalExistsAsync(int goalId)
     {
         if (!await _db.Goals.AnyAsync(g => g.Id == goalId)) throw new NotFoundException("Goal");
