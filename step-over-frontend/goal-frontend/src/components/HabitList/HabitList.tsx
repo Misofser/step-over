@@ -1,7 +1,6 @@
 import type { Habit, HabitToCreate } from "../../api/habits.types";
 import { HabitItem } from "../HabitItem/HabitItem";
 import NewHabitForm from "../NewHabitForm/NewHabitForm";
-// import { toggleHabitCompletion, deleteHabit } from "../../api/habits";
 import "./HabitList.css";
 
 type HabitListProps = {
