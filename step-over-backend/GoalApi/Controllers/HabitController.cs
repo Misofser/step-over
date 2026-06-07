@@ -54,6 +54,21 @@ public class HabitsController(IHabitService habitService) : ControllerBase
         return Ok(habit);
     }
 
+    /// <summary>Returns completion status of a specific habit for a given date</summary>
+    /// <param name="habitId">The ID of the habit</param>
+    /// <param name="date">Date to check completion status for</param>
+    /// <returns>Completion status for the specified habit and date</returns>
+    /// <response code="200">Returns the сompletion status for the specified habit and date</response>
+    /// <response code="401">User is unauthorized</response>
+    /// <response code="404">Habit not found</response>
+    [HttpGet("/api/habits/{habitId}/completion")]
+    public async Task<ActionResult<HabitCompletionStatusDto>> GetCompletionStatus(int habitId, [FromQuery] DateTime date)
+    {
+        var result = await _habitService.GetCompletionStatusAsync(habitId, date);
+
+        return Ok(result);
+    }
+
     /// <summary>Creates a new habit for a specific goal. Admin role required</summary>
     /// <param name="goalId">The identifier of the goal to which the habit will be added</param>
     /// <param name="dto">Habit data required to create a new habit</param>
