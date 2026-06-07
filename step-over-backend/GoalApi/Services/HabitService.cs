@@ -100,6 +100,19 @@ public class HabitService(AppDbContext db) : IHabitService
         await _db.SaveChangesAsync();
     }
 
+    public async Task<HabitCompletionStatusDto> GetCompletionStatusAsync(int habitId, DateTime date)
+    {
+        date = date.Date;
+
+        var habitExists = await _db.Habits.AnyAsync(h => h.Id == habitId);
+        if (!habitExists) throw new NotFoundException("Habit");
+
+        var isCompleted = await _db.HabitCompletions
+            .AnyAsync(c => c.HabitId == habitId && c.Date == date);
+
+        return new HabitCompletionStatusDto { Date = date, IsCompleted = isCompleted };
+    }
+
     public async Task DeleteHabitAsync(int habitId)
     {
         var habit = await _db.Habits.FindAsync(habitId);

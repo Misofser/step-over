@@ -256,9 +256,11 @@ public class HabitServiceTests
     [Fact]
     public async Task ToggleCompletion_ThrowsNotFoundException_WhenHabitNotFound()
     {
+        // Arrange
         var db = TestDbContextFactory.Create();
         var service = new HabitService(db);
 
+        // Act & Assert
         await Assert.ThrowsAsync<NotFoundException>(
             () => service.ToggleCompletion(1, DateTime.UtcNow)
         );
@@ -296,6 +298,73 @@ public class HabitServiceTests
         // Act & Assert
         await Assert.ThrowsAsync<NotFoundException>(
             () => service.DeleteHabitAsync(1)
+        );
+    }
+
+    [Fact]
+    public async Task GetCompletionStatusAsync_ReturnsTrue_WhenCompletionExists()
+    {
+        // Arrange
+        var db = TestDbContextFactory.Create();
+        var user = new User { Username = "Test User", PasswordHash = "testhash" };
+        var goal = new Goal { Title = "Goal", IsCompleted = false, Type = GoalType.Process, User = user };
+        var date = DateTime.UtcNow.Date.AddDays(-2);
+        var habit = new Habit
+        {
+            Goal = goal,
+            Title = "Habit",
+            Frequency = HabitFrequency.Daily,
+            Completions = [ new HabitCompletion { Date = date } ],
+        };
+        db.Habits.Add(habit);
+        await db.SaveChangesAsync();
+        var service = new HabitService(db);
+
+        // Act
+        var result = await service.GetCompletionStatusAsync(habit.Id, date);
+
+        // Assert
+        Assert.True(result.IsCompleted);
+        Assert.Equal(date, result.Date);
+    }
+
+    [Fact]
+    public async Task GetCompletionStatusAsync_ReturnsFalse_WhenCompletionDoesNotExist()
+    {
+        // Arrange
+        var db = TestDbContextFactory.Create();
+        var user = new User { Username = "Test User", PasswordHash = "testhash" };
+        var goal = new Goal { Title = "Goal", IsCompleted = false, Type = GoalType.Process, User = user };
+        var date = DateTime.UtcNow.Date.AddDays(-2);
+        var habit = new Habit
+        {
+            Goal = goal,
+            Title = "Habit",
+            Frequency = HabitFrequency.Daily,
+        };
+        db.Habits.Add(habit);
+        await db.SaveChangesAsync();
+        var service = new HabitService(db);
+
+        // Act
+        var result = await service.GetCompletionStatusAsync(habit.Id, date);
+
+        // Assert
+        Assert.False(result.IsCompleted);
+        Assert.Equal(date, result.Date);
+    }
+
+    [Fact]
+    public async Task GetCompletionStatusAsync_ThrowsNotFoundException_WhenHabitDoesNotExist()
+    {
+        // Arrange
+        var db = TestDbContextFactory.Create();
+        var date = DateTime.UtcNow.Date;
+        var service = new HabitService(db);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NotFoundException>(
+            () => service.GetCompletionStatusAsync(1, date)
         );
     }
 }

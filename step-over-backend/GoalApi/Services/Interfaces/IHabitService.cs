@@ -9,4 +9,5 @@ public interface IHabitService
     Task<HabitReadDto> AddHabitAsync(int goalId, HabitCreateDto dto);
     Task ToggleCompletion(int habitId, DateTime date);
     Task DeleteHabitAsync(int habitId);
+    Task<HabitCompletionStatusDto> GetCompletionStatusAsync(int habitId, DateTime date);
 }
