@@ -11,3 +11,8 @@ export type HabitToCreate = {
 };
 
 export type HabitFrequency = "Daily" | "Weekly" | "Monthly";
+
+export type HabitCompletionStatus = {
+  date: string;
+  isCompleted: boolean;
+};

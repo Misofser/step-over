@@ -1,5 +1,5 @@
-import { API_URL } from '../config'
-import type { Habit, HabitToCreate } from './habits.types'
+import { API_URL } from "../../../config";
+import type { Habit, HabitToCreate, HabitCompletionStatus } from "../types/habits.types";
 
 export async function fetchHabits(goalId: number): Promise<Habit[]> {
   const res = await fetch(`${API_URL}/goals/${goalId}/habits`, {
@@ -42,4 +42,14 @@ export async function deleteHabit(id: number): Promise<void> {
   if (!res.ok) {
     throw new Error("Failed to delete Habit");
   }
+}
+
+export async function getHabitCompletionStatus(habitId: number, date: string): Promise<HabitCompletionStatus> {
+  const res = await fetch(`${API_URL}/habits/${habitId}/completion?date=${date}`,{
+      credentials: "include",
+    });
+
+  if (!res.ok) throw new Error("Failed to get completion status");
+
+  return res.json();
 }
