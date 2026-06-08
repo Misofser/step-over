@@ -69,7 +69,10 @@ export function TaskList({ tasks, setTasks, addTask }: TaskListProps) {
         )}
       </section>
       {editingTaskId && (
-        <Modal title="Edit Task">
+        <Modal
+          title="Edit Task"
+          onClose={() => setEditingTaskId(null)}
+        >
           <EditTaskForm
             taskId={editingTaskId}
             onClose={() => setEditingTaskId(null)}
