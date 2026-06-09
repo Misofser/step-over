@@ -1,7 +1,7 @@
 import { useState } from "react"
-import { Button } from "../Button/Button"
+import { Button } from "../../../../components/Button/Button"
 import "./NewHabitForm.css"
-import type { HabitToCreate, HabitFrequency } from "../../api/habits.types";
+import type { HabitToCreate, HabitFrequency } from "../../types/habits.types";
 
 type NewHabitFormProps = {
   onAddHabit: (habitToCreate: HabitToCreate) => void;
