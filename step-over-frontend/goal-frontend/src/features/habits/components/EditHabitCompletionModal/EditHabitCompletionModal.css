@@ -1,0 +1,16 @@
+.modal-context {
+  display: flex;
+  gap: 6px;
+  font-size: 14px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.modal-context .label {
+  color: #888;
+}
+
+.modal-context .value {
+  font-weight: 500;
+  color: #222;
+}
