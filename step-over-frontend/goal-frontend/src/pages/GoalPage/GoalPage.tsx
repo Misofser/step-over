@@ -3,13 +3,12 @@ import { useParams, useNavigate } from "react-router";
 
 import { useGoal } from "../../hooks/useGoal";
 import { useTasks } from "../../hooks/useTasks";
-import { useHabits } from "../../hooks/useHabits";
 import { useGoalHeatmap } from "../../hooks/useGoalHeatmap";
 import { deleteGoal, updateGoal } from "../../api/goals";
 import { GoalHeader } from "../../components/GoalHeader/GoalHeader";
 import { GoalHeatmap } from "../../components/GoalHeatmap/GoalHeatmap";
 import { TaskList } from "../../components/TaskList/TaskList";
-import { HabitList } from "../../components/HabitList/HabitList";
+import { HabitList, useHabits } from "../../features/habits";
 import { Modal } from "../../components/Modal/Modal";
 import { EditGoalForm } from "../../components/EditGoalForm/EditGoalForm";
 import { GoalProgress } from "../../components/GoalProgress/GoalProgress";
