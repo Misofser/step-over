@@ -19,6 +19,8 @@ public class GoalTaskConfiguration : IEntityTypeConfiguration<GoalTask>
             .IsRequired()
             .HasDefaultValue(false);
 
+        builder.Property(g => g.CompletedAt);
+
         builder.Property(g => g.CreatedAt)
             .IsRequired();
         builder.Property(g => g.UpdatedAt)
