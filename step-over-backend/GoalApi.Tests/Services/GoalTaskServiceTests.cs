@@ -191,6 +191,12 @@ public class GoalTaskServiceTests
 
         Assert.NotNull(updatedTask);
         Assert.True(updatedTask!.IsCompleted);
+        Assert.NotNull(updatedTask.CompletedAt);
+
+        Assert.True(
+            updatedTask.CompletedAt <= DateTime.UtcNow &&
+            updatedTask.CompletedAt > DateTime.UtcNow.AddMinutes(-1)
+        );
     }
 
     [Fact]
