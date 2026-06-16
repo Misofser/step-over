@@ -29,8 +29,7 @@ public class GoalTaskService(AppDbContext db) : IGoalTaskService
 
     public async Task<GoalTaskReadDto> GetTaskByIdAsync(int taskId)
     {
-        var task = await _db.GoalTasks.FindAsync(taskId);
-        if (task == null) throw new NotFoundException("GoalTask");
+        var task = await GetTaskOrThrowAsync(taskId);
 
         return new GoalTaskReadDto
         {
@@ -59,17 +58,19 @@ public class GoalTaskService(AppDbContext db) : IGoalTaskService
 
     public async Task UpdateCompletionAsync(int taskId, GoalTaskUpdateCompletionDto dto)
     {
-        var task = await _db.GoalTasks.FindAsync(taskId);
-        if (task == null) throw new NotFoundException("GoalTask");
+        var task = await GetTaskOrThrowAsync(taskId);
+        var isCompleted = dto.IsCompleted!.Value;
 
-        task.IsCompleted = dto.IsCompleted!.Value;
+        task.IsCompleted = isCompleted;
+
+        task.CompletedAt = isCompleted ? DateTime.UtcNow : null;
+
         await _db.SaveChangesAsync();
     }
 
     public async Task UpdateTaskAsync(int taskId, GoalTaskUpdateDto dto)
     {
-        var task = await _db.GoalTasks.FindAsync(taskId);
-        if (task == null) throw new NotFoundException("GoalTask");
+        var task = await GetTaskOrThrowAsync(taskId);
 
         if (!string.IsNullOrWhiteSpace(dto.Title))
             task.Title = dto.Title.Trim();
@@ -79,8 +80,7 @@ public class GoalTaskService(AppDbContext db) : IGoalTaskService
 
     public async Task DeleteTaskAsync(int taskId)
     {
-        var task = await _db.GoalTasks.FindAsync(taskId);
-        if (task == null) throw new NotFoundException("GoalTask");
+        var task = await GetTaskOrThrowAsync(taskId);
 
         _db.GoalTasks.Remove(task);
         await _db.SaveChangesAsync();
@@ -89,5 +89,12 @@ public class GoalTaskService(AppDbContext db) : IGoalTaskService
     private async Task EnsureGoalExistsAsync(int goalId)
     {
         if (!await _db.Goals.AnyAsync(g => g.Id == goalId)) throw new NotFoundException("Goal");
+    }
+
+    private async Task<GoalTask> GetTaskOrThrowAsync(int taskId)
+    {
+        var task = await _db.GoalTasks.FindAsync(taskId);
+        if (task == null) throw new NotFoundException("GoalTask");
+        return task;
     }
 }
