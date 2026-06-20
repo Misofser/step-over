@@ -37,6 +37,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IGoalTaskService, GoalTaskService>();
 builder.Services.AddScoped<IGoalAnalyticsService, GoalAnalyticsService>();
 builder.Services.AddScoped<IHabitService, HabitService>();
+builder.Services.AddScoped<ITodayService, TodayService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddSingleton<IJwtService, JwtService>();
