@@ -1,0 +1,63 @@
+.today-item {
+  text-align: left;
+}
+
+.today-item-main {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.today-item-meta {
+  display: flex;
+  gap: 4px;
+  margin-top: 2px;
+
+  font-size: 12px;
+  color: #999;
+}
+
+.today-item-goal {
+  color: #999;
+  text-decoration: none;
+}
+
+.today-item-goal:hover {
+  text-decoration: underline;
+  color: #777;
+}
+
+.today-item-indicator {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.today-item-indicator.task {
+  border: 1px solid #666;
+  border-radius: 4px;
+}
+
+.today-item-indicator.task.done {
+  border-color: #386d66;
+  color: #386d66;
+  font-size: 14px;
+}
+
+.today-item-indicator.habit {
+  border: 1px solid #666;
+  border-radius: 50%;
+}
+
+.today-item-indicator.habit.done {
+  background: #386d66;
+  border-color: #386d66;
+  color: white;
+  font-size: 12px;
+}
