@@ -59,7 +59,7 @@
 @media (max-width: 768px) {
   .users-table {
     display: block;
-    padding: 0 1rem;
+    padding: 0 0rem;
     table-layout: auto;
   }
 
@@ -100,7 +100,10 @@
   }
 
   .users-btn-block {
-    margin: 0 1rem 1rem;
-    justify-content: center;
+    margin: 1.2rem 0rem 1rem 0rem;
+  }
+
+  .users-btn-block .btn-primary {
+    width: 100%
   }
 }
