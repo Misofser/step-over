@@ -16,7 +16,7 @@ export function LoginPage() {
   }
 
   if (isAuthenticated) {
-    return <Navigate to="/goals" replace />;
+    return <Navigate to="/today" replace />;
   }
 
   async function handleLogin(e: React.FormEvent) {

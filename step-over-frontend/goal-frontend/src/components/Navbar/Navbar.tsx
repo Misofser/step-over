@@ -4,6 +4,9 @@ import { Link, NavLink } from "react-router";
 import { AuthContext } from "../../auth/AuthContext";
 import "./Navbar.css";
 
+const getNavLinkClass = ({ isActive }: { isActive: boolean }) =>
+  isActive ? "nav-link active" : "nav-link";
+
 export const Navbar = () => {
   const { user, isAuthenticated, logout } = useContext(AuthContext);
 
@@ -12,20 +15,19 @@ export const Navbar = () => {
       <div className="navbar-left">
         <Link to="/" className="navbar-logo">StepOver</Link>
       </div>
-      {isAuthenticated && user?.role === "Admin" && (
+      {isAuthenticated && user && (
         <div className="links">
-          <NavLink
-            to="/goals"
-            className={({ isActive }) =>
-              isActive ? "nav-link active" : "nav-link"
-            }
-          >Goals</NavLink>
-          <NavLink
-            to="/admin/users"
-            className={({ isActive }) =>
-              isActive ? "nav-link active" : "nav-link"
-            }
-          >Users</NavLink>
+          <NavLink to="/today" className={getNavLinkClass}>
+            Today
+          </NavLink>
+          <NavLink to="/goals" className={getNavLinkClass}>
+            Goals
+          </NavLink>
+          {user.role === "Admin" && (
+            <NavLink to="/admin/users" className={getNavLinkClass}>
+              Users
+            </NavLink>
+          )}
         </div>
       )}
       <div className="navbar-right">
