@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router"
 import { LoginPage } from './pages/LoginPage/LoginPage'
 import { GoalsPage } from "./pages/GoalsPage"
 import { GoalPage } from './pages/GoalPage/GoalPage'
+import { TodayPage } from './pages/TodayPage/TodayPage'
 import { AdminUsersPage } from './pages/AdminUsersPage/AdminUsersPage'
 import { ProtectedRoute } from "./auth/ProtectedRoute"
 import { Navbar } from './components/Navbar/Navbar'
@@ -29,6 +30,15 @@ function App() {
             <ProtectedRoute>
               <GoalsPage />
             </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/today"
+          element={
+            <ProtectedRoute>
+              <TodayPage />
+            </ProtectedRoute>
+            
           }
         />
         <Route
