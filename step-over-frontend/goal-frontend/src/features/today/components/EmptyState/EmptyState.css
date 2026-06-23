@@ -1,0 +1,19 @@
+.empty-state {
+  padding: 20px;
+  text-align: center;
+  border: 1px dashed #ddd;
+  border-radius: 10px;
+  color: #666;
+  margin-top: 10px;
+}
+
+.empty-state h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.empty-state p {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: #888;
+}
