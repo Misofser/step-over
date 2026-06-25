@@ -9,7 +9,7 @@ public class HabitConfiguration : IEntityTypeConfiguration<Habit>
 {
     public void Configure(EntityTypeBuilder<Habit> builder)
     {
-        builder.ToTable("Habit");
+        builder.ToTable("Habits");
 
         builder.HasKey(h => h.Id);
 
