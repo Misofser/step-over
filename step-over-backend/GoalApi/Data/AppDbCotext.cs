@@ -13,6 +13,7 @@ public class AppDbContext : DbContext
     public DbSet<GoalTask> GoalTasks { get; set; } = null!;
     public DbSet<Habit> Habits { get; set; } = null!;
     public DbSet<HabitCompletion> HabitCompletions { get; set; } = null!;
+    public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
 
     public override int SaveChanges()
     {
