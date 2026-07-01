@@ -1,4 +1,5 @@
 using GoalApi.Dtos.User;
+using GoalApi.Dtos.Auth;
 using GoalApi.Data;
 using GoalApi.Models;
 using GoalApi.Exceptions;

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using GoalApi.Dtos.User;
+using GoalApi.Dtos.Auth;
 using GoalApi.Services.Interfaces;
 using GoalApi.Services.Infrastructure.Interfaces;
 

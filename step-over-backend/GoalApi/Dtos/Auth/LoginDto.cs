@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace GoalApi.Dtos.User;
+namespace GoalApi.Dtos.Auth;
 
 /// <summary>
 /// Data required for user login.
