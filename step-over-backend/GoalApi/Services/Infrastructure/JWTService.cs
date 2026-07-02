@@ -11,7 +11,7 @@ public class JwtService(IConfiguration configuration) : IJwtService
 {
     private readonly IConfiguration _configuration = configuration;
 
-    public string GenerateToken(int userId, string username, string role)
+    public string GenerateAccessToken(int userId, string username, string role)
     {
         var claims = new[]
         {

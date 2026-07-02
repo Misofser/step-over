@@ -39,14 +39,14 @@ public class AuthController(IAuthService authService, IJwtService jwt, ICurrentU
     public async Task<IActionResult> Login(LoginDto dto)
     {
         var readDto = await _authService.LoginAsync(dto);
-        var token = _jwt.GenerateToken(userId: readDto.Id, username: readDto.Username, role: readDto.Role);
+        var token = _jwt.GenerateAccessToken(userId: readDto.Id, username: readDto.Username, role: readDto.Role);
 
         Response.Cookies.Append("jwt", token, new CookieOptions
         {
             HttpOnly = true,
             Secure = true,
             SameSite = SameSiteMode.Strict,
-            MaxAge = TimeSpan.FromHours(1)
+            MaxAge = TimeSpan.FromMinutes(15)
         });
 
         return Ok(readDto);
