@@ -5,5 +5,7 @@ namespace GoalApi.Services.Interfaces;
 
 public interface IAuthService
 {
-    Task<UserReadDto> LoginAsync(LoginDto dto);
+    Task<LoginResponseDto> LoginAsync(LoginDto dto);
+    Task<RefreshResponseDto> RefreshAsync(string refreshToken);
+    Task LogoutAsync(string? refreshToken);
 }
