@@ -10,18 +10,17 @@ namespace GoalApi.Controllers;
 
 /// <summary>
 /// Handles user authentication and session management.
-/// The login endpoint is publicly accessible.
+/// The login and logout endpoints are publicly accessible.
 /// All other endpoints require <b>authentication</b>.
 /// </summary>
 [ApiController]
 [Route("api/auth")]
 [Authorize]
 [Produces("application/json")]
-public class AuthController(IAuthService authService, IJwtService jwt, ICurrentUserService currentUser) : ControllerBase
+public class AuthController(IAuthService authService, ICurrentUserService currentUser) : ControllerBase
 {
     private readonly IAuthService _authService = authService;
     private readonly ICurrentUserService _currentUser = currentUser;
-    private readonly IJwtService _jwt = jwt;
 
     /// <summary>
     /// Logs in a user and returns user info.
@@ -38,10 +37,9 @@ public class AuthController(IAuthService authService, IJwtService jwt, ICurrentU
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Login(LoginDto dto)
     {
-        var readDto = await _authService.LoginAsync(dto);
-        var token = _jwt.GenerateAccessToken(userId: readDto.Id, username: readDto.Username, role: readDto.Role);
+        var result = await _authService.LoginAsync(dto);
 
-        Response.Cookies.Append("jwt", token, new CookieOptions
+        Response.Cookies.Append("access_token", result.AccessToken, new CookieOptions
         {
             HttpOnly = true,
             Secure = true,
@@ -49,7 +47,15 @@ public class AuthController(IAuthService authService, IJwtService jwt, ICurrentU
             MaxAge = TimeSpan.FromMinutes(15)
         });
 
-        return Ok(readDto);
+        Response.Cookies.Append("refresh_token", result.RefreshToken, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            MaxAge = TimeSpan.FromDays(7)
+        });
+
+        return Ok(result.User);
     }
 
     /// <summary>
@@ -74,16 +80,52 @@ public class AuthController(IAuthService authService, IJwtService jwt, ICurrentU
     }
 
     /// <summary>
+    /// Refreshes JWT access token using HttpOnly refresh token cookie.
+    /// </summary>
+    /// <returns>New access token is set in HttpOnly cookie</returns>
+    /// <response code="200">Access and refresh tokens were rotated successfully</response>
+    /// <response code="401">Refresh token is missing or invalid</response>
+    [AllowAnonymous]
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh()
+    {
+        var refreshToken = Request.Cookies["refresh_token"];
+
+        if (refreshToken == null) return Unauthorized();
+        var result = await _authService.RefreshAsync(refreshToken);
+
+        Response.Cookies.Append("access_token", result.AccessToken, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            MaxAge = TimeSpan.FromMinutes(15)
+        });
+
+        Response.Cookies.Append("refresh_token", result.RefreshToken, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            MaxAge = TimeSpan.FromDays(7)
+        });
+
+        return Ok();
+    }
+
+    /// <summary>
     /// Logs out the current user.
     /// </summary>
-    /// <response code="200">Logout successful</response>
-    /// <response code="401">User is unauthorized</response>
+    /// <response code="204">Logout successful</response>
+    [AllowAnonymous]
     [HttpPost("logout")]
-    [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
-    public IActionResult Logout()
+    [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> Logout()
     {
-        Response.Cookies.Delete("jwt");
-        return Ok();
+        await _authService.LogoutAsync(Request.Cookies["refresh_token"]);
+        Response.Cookies.Delete("access_token");
+        Response.Cookies.Delete("refresh_token");
+
+        return NoContent();
     }
 }
