@@ -22,27 +22,27 @@ public class JwtServiceTests
     }
 
     [Fact]
-    public void GenerateToken_ReturnsNonEmptyToken()
+    public void GenerateAccessToken_ReturnsNonEmptyToken()
     {
         // Arrange
         var service = CreateService();
 
         // Act
-        var token = service.GenerateToken(1, "Test User", "Admin");
+        var token = service.GenerateAccessToken(1, "Test User", "Admin");
 
         // Assert
         Assert.False(string.IsNullOrWhiteSpace(token));
     }
 
     [Fact]
-    public void GenerateToken_ContainsCorrectClaims()
+    public void GenerateAccessToken_ContainsCorrectClaims()
     {
         // Arrange
         var service = CreateService();
         var handler = new JwtSecurityTokenHandler();
 
         // Act
-        var tokenString = service.GenerateToken(1, "Test User", "User");
+        var tokenString = service.GenerateAccessToken(1, "Test User", "User");
         var token = handler.ReadJwtToken(tokenString);
 
         // Assert
@@ -52,13 +52,13 @@ public class JwtServiceTests
     }
 
     [Fact]
-    public void GenerateToken_CanBeValidatedWithSameSecret()
+    public void GenerateAccessToken_CanBeValidatedWithSameSecret()
     {
         // Arrange
         var service = CreateService();
         var secret = "super-secret-test-key-123456789-123456789"; // same test secret
 
-        var token = service.GenerateToken(1, "Test User", "Admin");
+        var token = service.GenerateAccessToken(1, "Test User", "Admin");
 
         var validationParameters = new TokenValidationParameters
         {
