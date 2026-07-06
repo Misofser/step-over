@@ -10,12 +10,11 @@ namespace GoalApi.Controllers;
 
 /// <summary>
 /// Handles user authentication and session management.
-/// The login and logout endpoints are publicly accessible.
-/// All other endpoints require <b>authentication</b>.
+/// The me endpoint requires <b>authentication</b>.
+/// All other endpoints are publicly accessible.
 /// </summary>
 [ApiController]
 [Route("api/auth")]
-[Authorize]
 [Produces("application/json")]
 public class AuthController(IAuthService authService, ICurrentUserService currentUser) : ControllerBase
 {
@@ -30,7 +29,6 @@ public class AuthController(IAuthService authService, ICurrentUserService curren
     /// <response code="200">Login successful, returns user info</response>
     /// <response code="401">Invalid username or password</response>
     /// <response code="400">Invalid request data</response>
-    [AllowAnonymous]
     [HttpPost("login")]
     [ProducesResponseType(typeof(UserReadDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
@@ -64,6 +62,7 @@ public class AuthController(IAuthService authService, ICurrentUserService curren
     /// <returns>Current user information</returns>
     /// <response code="200">Returns the current user's info</response>
     /// <response code="401">User is unauthorized</response>
+    [Authorize]
     [HttpGet("me")]
     [ProducesResponseType(typeof(UserReadDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
@@ -85,7 +84,6 @@ public class AuthController(IAuthService authService, ICurrentUserService curren
     /// <returns>New access token is set in HttpOnly cookie</returns>
     /// <response code="200">Access and refresh tokens were rotated successfully</response>
     /// <response code="401">Refresh token is missing or invalid</response>
-    [AllowAnonymous]
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh()
     {
@@ -117,7 +115,6 @@ public class AuthController(IAuthService authService, ICurrentUserService curren
     /// Logs out the current user.
     /// </summary>
     /// <response code="204">Logout successful</response>
-    [AllowAnonymous]
     [HttpPost("logout")]
     [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Logout()
