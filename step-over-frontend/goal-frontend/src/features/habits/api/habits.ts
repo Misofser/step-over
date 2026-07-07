@@ -1,20 +1,17 @@
-import { API_URL } from "../../../config";
+import { authenticatedFetch } from "../../../lib/api-client";
 import type { Habit, HabitToCreate, HabitCompletionStatus } from "../types/habits.types";
 
 export async function fetchHabits(goalId: number): Promise<Habit[]> {
-  const res = await fetch(`${API_URL}/goals/${goalId}/habits`, {
-    credentials: "include",
-  });
+  const res = await authenticatedFetch(`/goals/${goalId}/habits`);
   if (!res.ok) throw new Error("Failed to load habits");
   return res.json();
 }
 
 export async function addHabit(goalId: number, habitToCreate: HabitToCreate): Promise<Habit> {
-  const res = await fetch(`${API_URL}/goals/${goalId}/habits`, {
+  const res = await authenticatedFetch(`/goals/${goalId}/habits`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(habitToCreate),
-    credentials: "include",
   });
 
   if (!res.ok) throw new Error("Failed to add habit");
@@ -23,32 +20,25 @@ export async function addHabit(goalId: number, habitToCreate: HabitToCreate): Pr
 }
 
 export async function toggleHabitCompletion(id: number, date: string): Promise<void> {
-  const res = await fetch(`${API_URL}/habits/${id}/toggle`, {
+  const res = await authenticatedFetch(`/habits/${id}/toggle`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ date: date }),
-    credentials: "include",
   });
 
   if (!res.ok) throw new Error("Failed to toggle habit completion");
 }
 
 export async function deleteHabit(id: number): Promise<void> {
-  const res = await fetch(`${API_URL}/habits/${id}`, {
+  const res = await authenticatedFetch(`/habits/${id}`, {
     method: "DELETE",
-    credentials: "include",
   });
 
-  if (!res.ok) {
-    throw new Error("Failed to delete Habit");
-  }
+  if (!res.ok) throw new Error("Failed to delete Habit");
 }
 
 export async function getHabitCompletionStatus(habitId: number, date: string): Promise<HabitCompletionStatus> {
-  const res = await fetch(`${API_URL}/habits/${habitId}/completion?date=${date}`,{
-      credentials: "include",
-    });
-
+  const res = await authenticatedFetch(`/habits/${habitId}/completion?date=${date}`);
   if (!res.ok) throw new Error("Failed to get completion status");
 
   return res.json();

@@ -1,54 +1,43 @@
-import { API_URL } from '../config'
+import { authenticatedFetch } from '../lib/api-client';
 import type { Goal, DataToUpdate, GoalToCreate } from './goals.types'
 
 export async function fetchGoals(): Promise<Goal[]> {
-  const res = await fetch(`${API_URL}/goals`, {
-    credentials: "include",
-  });
+  const res = await authenticatedFetch(`/goals`);
   if (!res.ok) throw new Error("Failed to fetch goals");
   return res.json();
 }
 
 export async function fetchGoal(id: number): Promise<Goal> {
-  const res = await fetch(`${API_URL}/goals/${id}`, {
-    credentials: "include"
-  });
+  const res = await authenticatedFetch(`/goals/${id}`);
   if (!res.ok) throw new Error("Failed to fetch goal");
   return res.json();
 }
 
 export async function addGoal(goalToCreate: GoalToCreate): Promise<Goal> {
-  const res = await fetch(`${API_URL}/goals`, {
+  const res = await authenticatedFetch(`/goals`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(goalToCreate),
-    credentials: "include",
   });
 
-  if (!res.ok) {
-    throw new Error("Failed to add goal");
-  }
+  if (!res.ok) throw new Error("Failed to add goal");
 
   return res.json();
 }
 
 export async function deleteGoal(id: number): Promise<void> {
-  const res = await fetch(`${API_URL}/goals/${id}`, {
+  const res = await authenticatedFetch(`/goals/${id}`, {
     method: "DELETE",
-    credentials: "include",
   });
 
-  if (!res.ok) {
-    throw new Error("Failed to delete goal");
-  }
+  if (!res.ok) throw new Error("Failed to delete goal");
 }
 
 export async function updateGoal(id: number, dataToUpdate: DataToUpdate): Promise<void> {
-  const res = await fetch(`${API_URL}/goals/${id}`, {
+  const res = await authenticatedFetch(`/goals/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(dataToUpdate),
-    credentials: "include",
   });
 
   if (!res.ok) throw new Error("Failed to update goal");
