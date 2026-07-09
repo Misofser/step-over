@@ -12,4 +12,5 @@ public class User : IHasTimestamps
 
     public List<Goal> Goals { get; set; } = new();
     public List<RefreshToken> RefreshTokens { get; set; } = new();
+    public List<WorkspaceMember> WorkspaceMembers { get; set; } = new();
 }

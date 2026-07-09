@@ -14,6 +14,8 @@ public class AppDbContext : DbContext
     public DbSet<Habit> Habits { get; set; } = null!;
     public DbSet<HabitCompletion> HabitCompletions { get; set; } = null!;
     public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
+    public DbSet<Workspace> Workspaces { get; set; } = null!;
+    public DbSet<WorkspaceMember> WorkspaceMembers { get; set; } = null!;
 
     public override int SaveChanges()
     {
