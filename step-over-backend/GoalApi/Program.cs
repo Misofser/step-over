@@ -35,6 +35,7 @@ builder.Services.AddScoped<IGoalService, GoalService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IGoalTaskService, GoalTaskService>();
+builder.Services.AddScoped<IWorkspaceService, WorkspaceService>();
 builder.Services.AddScoped<IGoalAnalyticsService, GoalAnalyticsService>();
 builder.Services.AddScoped<IHabitService, HabitService>();
 builder.Services.AddScoped<ITodayService, TodayService>();

@@ -9,10 +9,11 @@ using Microsoft.AspNetCore.Identity;
 
 namespace GoalApi.Services;
 
-public class UserService(AppDbContext db, IPasswordHasher<User> passwordHasher) : IUserService
+public class UserService(AppDbContext db, IPasswordHasher<User> passwordHasher, IWorkspaceService workspaceService) : IUserService
 {
     private readonly AppDbContext _db = db;
     private readonly IPasswordHasher<User> _passwordHasher = passwordHasher;
+    private readonly IWorkspaceService _workspaceService = workspaceService;
 
     public async Task<List<UserReadDto>> GetAllUsersAsync()
     {
@@ -54,6 +55,7 @@ public class UserService(AppDbContext db, IPasswordHasher<User> passwordHasher) 
         user.PasswordHash = _passwordHasher.HashPassword(user, dto.Password);
 
         _db.Users.Add(user);
+        _workspaceService.InitializePersonalWorkspace(user);
         await _db.SaveChangesAsync();
 
         return new UserReadDto
