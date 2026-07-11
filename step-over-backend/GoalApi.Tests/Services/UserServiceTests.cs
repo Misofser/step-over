@@ -1,4 +1,5 @@
 using GoalApi.Dtos.User;
+using GoalApi.Enums;
 using GoalApi.Services;
 
 namespace GoalApi.Tests.Services;
@@ -9,8 +10,8 @@ public class UserServiceTests
     public async Task GetAllUsersAsync_ReturnsAllUsers()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
-        var service = new UserService(db, new FakePasswordHasher());
+        using var db = TestDbContextFactory.Create();
+        var service = new UserService(db, new FakePasswordHasher(), new WorkspaceService(db));
 
         var user1 = new User { Username = "User 1", PasswordHash = "testhash", Role = "User" };
         var user2 = new User { Username = "User 2", PasswordHash = "testhash", Role = "Admin" };
@@ -31,8 +32,8 @@ public class UserServiceTests
     public async Task GetAllUsersAsync_DoesNotExposePassword()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
-        var service = new UserService(db, new FakePasswordHasher());
+        using var db = TestDbContextFactory.Create();
+        var service = new UserService(db, new FakePasswordHasher(), new WorkspaceService(db));
 
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         db.Users.Add(user);
@@ -57,8 +58,8 @@ public class UserServiceTests
     public async Task GetUserByIdAsync_ReturnsUser_WhenUserExists()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
-        var service = new UserService(db, new FakePasswordHasher());
+        using var db = TestDbContextFactory.Create();
+        var service = new UserService(db, new FakePasswordHasher(), new WorkspaceService(db));
 
         var user1 = new User { Username = "User 1", PasswordHash = "testhash", Role = "User" };
         var user2 = new User { Username = "User 2", PasswordHash = "testhash", Role = "Admin" };
@@ -78,8 +79,8 @@ public class UserServiceTests
     public async Task GetUserByIdAsync_ThrowsNotFoundException_WhenUserDoesNotExist()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
-        var service = new UserService(db, new FakePasswordHasher());
+        using var db = TestDbContextFactory.Create();
+        var service = new UserService(db, new FakePasswordHasher(), new WorkspaceService(db));
 
         // Act & Assert
         await Assert.ThrowsAsync<NotFoundException>(
@@ -87,11 +88,11 @@ public class UserServiceTests
     }
 
     [Fact]
-    public async Task CreateUserAsync_CreatesNewUser_WhenUsernameIsUnique()
+    public async Task CreateUserAsync_CreatesNewUserWithPersonalWorkspace_WhenUsernameIsUnique()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
-        var service = new UserService(db, new FakePasswordHasher());
+        using var db = TestDbContextFactory.Create();
+        var service = new UserService(db, new FakePasswordHasher(), new WorkspaceService(db));
 
         var dto = new UserCreateDto { Username = "Test User", Password = "Password123" };
 
@@ -102,14 +103,22 @@ public class UserServiceTests
         Assert.NotEqual(0, result.Id);
         Assert.Equal("Test User", result.Username);
         Assert.Equal("User", result.Role);
+
+        var workspace = await db.Workspaces.Include(w => w.Members).SingleAsync();
+        Assert.Equal("Test User's Workspace", workspace.Name);
+        Assert.Equal(WorkspaceType.Personal, workspace.Type);
+
+        var member = Assert.Single(workspace.Members);
+        Assert.Equal(result.Id, member.UserId);
+        Assert.Equal(WorkspaceRole.Owner, member.Role);
     }
 
     [Fact]
     public async Task CreateUserAsync_ThrowsConflictException_WhenUsernameAlreadyExists()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
-        var service = new UserService(db, new FakePasswordHasher());
+        using var db = TestDbContextFactory.Create();
+        var service = new UserService(db, new FakePasswordHasher(), new WorkspaceService(db));
 
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         db.Users.Add(user);
@@ -128,8 +137,8 @@ public class UserServiceTests
     public async Task CreateUserAsync_HashesPasswordUsingPasswordHasher()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
-        var service = new UserService(db, new FakePasswordHasher());
+        using var db = TestDbContextFactory.Create();
+        var service = new UserService(db, new FakePasswordHasher(), new WorkspaceService(db));
 
         var dto = new UserCreateDto { Username = "Test User", Password = "Password123" };
 
@@ -147,7 +156,7 @@ public class UserServiceTests
     {
         // Arrange
         using var db = TestDbContextFactory.Create();
-        var service = new UserService(db, new FakePasswordHasher());
+        var service = new UserService(db, new FakePasswordHasher(), new WorkspaceService(db));
 
         var dto = new UserUpdateDto { Username = "newname" };
 
@@ -166,7 +175,7 @@ public class UserServiceTests
         db.Users.Add(user);
         await db.SaveChangesAsync();
 
-        var service = new UserService(db, new FakePasswordHasher());
+        var service = new UserService(db, new FakePasswordHasher(), new WorkspaceService(db));
         var dto = new UserUpdateDto { Username = " newname " };
 
         // Act
@@ -190,7 +199,7 @@ public class UserServiceTests
         db.Users.AddRange(user1, user2);
         await db.SaveChangesAsync();
 
-        var service = new UserService(db, new FakePasswordHasher());
+        var service = new UserService(db, new FakePasswordHasher(), new WorkspaceService(db));
         var dto = new UserUpdateDto { Username = "User 2" };
 
         // Act & Assert
@@ -208,7 +217,7 @@ public class UserServiceTests
         db.Users.Add(user);
         await db.SaveChangesAsync();
 
-        var service = new UserService(db, new FakePasswordHasher());
+        var service = new UserService(db, new FakePasswordHasher(), new WorkspaceService(db));
         var dto = new UserUpdateDto { Username = "   " };
 
         // Act
@@ -232,7 +241,7 @@ public class UserServiceTests
         db.Users.AddRange(currentUser, userToDelete);
         await db.SaveChangesAsync();
 
-        var service = new UserService(db, new FakePasswordHasher());
+        var service = new UserService(db, new FakePasswordHasher(), new WorkspaceService(db));
 
         // Act
         await service.DeleteUserAsync(currentUser.Id, userToDelete.Id);
@@ -255,7 +264,7 @@ public class UserServiceTests
         db.Users.Add(user);
         await db.SaveChangesAsync();
 
-        var service = new UserService(db, new FakePasswordHasher());
+        var service = new UserService(db, new FakePasswordHasher(), new WorkspaceService(db));
 
         // Act & Assert
         await Assert.ThrowsAsync<BadRequestException>(
@@ -268,7 +277,7 @@ public class UserServiceTests
         // Arrange
         using var db = TestDbContextFactory.Create();
 
-        var service = new UserService(db, new FakePasswordHasher());
+        var service = new UserService(db, new FakePasswordHasher(), new WorkspaceService(db));
 
         // Act & Assert
         await Assert.ThrowsAsync<NotFoundException>(
