@@ -37,9 +37,19 @@ public class GoalConfiguration : IEntityTypeConfiguration<Goal>
 
         builder.HasIndex(g => g.UserId);
 
+        builder.Property(g => g.WorkspaceId)
+            .IsRequired();
+
+        builder.HasIndex(g => g.WorkspaceId);
+
         builder.HasOne(g => g.User)
            .WithMany(u => u.Goals)
            .HasForeignKey(g => g.UserId)
            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(g => g.Workspace)
+            .WithMany(w => w.Goals)
+            .HasForeignKey(g => g.WorkspaceId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

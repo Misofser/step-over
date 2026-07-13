@@ -33,5 +33,10 @@ public class WorkspaceConfiguration : IEntityTypeConfiguration<Workspace>
             .WithOne(m => m.Workspace)
             .HasForeignKey(m => m.WorkspaceId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(w => w.Goals)
+            .WithOne(g => g.Workspace)
+            .HasForeignKey(g => g.WorkspaceId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

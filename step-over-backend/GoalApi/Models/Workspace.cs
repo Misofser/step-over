@@ -14,4 +14,5 @@ public class Workspace : IHasTimestamps
     public DateTime UpdatedAt { get; set; }
 
     public List<WorkspaceMember> Members { get; set; } = new();
+    public List<Goal> Goals { get; set; } = new();
 }
