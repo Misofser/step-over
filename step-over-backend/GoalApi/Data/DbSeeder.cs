@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using GoalApi.Models;
 using GoalApi.Data;
+using GoalApi.Services.Interfaces;
 
 namespace GoalApi.Data;
 
@@ -13,6 +14,7 @@ public static class DbSeeder
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
         var env = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
+        var workspaceService = scope.ServiceProvider.GetRequiredService<IWorkspaceService>();
 
         if (!env.IsDevelopment()) return;
 
@@ -36,8 +38,8 @@ public static class DbSeeder
 
         var hasher = new PasswordHasher<User>();
         adminUser.PasswordHash = hasher.HashPassword(adminUser, adminPassword);
-
         db.Users.Add(adminUser);
+        workspaceService.InitializePersonalWorkspace(adminUser);
         await db.SaveChangesAsync();
     }
 }
