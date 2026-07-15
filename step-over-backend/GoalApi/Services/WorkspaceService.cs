@@ -2,6 +2,7 @@ using GoalApi.Data;
 using GoalApi.Models;
 using GoalApi.Enums;
 using GoalApi.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace GoalApi.Services;
 
@@ -26,5 +27,13 @@ public class WorkspaceService(AppDbContext db) : IWorkspaceService
         };
 
         _db.Workspaces.Add(workspace);
+    }
+
+    public Task<int> GetPersonalWorkspaceIdAsync(int userId)
+    {
+        return _db.WorkspaceMembers
+            .Where(wm => wm.UserId == userId && wm.Workspace.Type == WorkspaceType.Personal)
+            .Select(wm => wm.WorkspaceId)
+            .SingleAsync();
     }
 }
