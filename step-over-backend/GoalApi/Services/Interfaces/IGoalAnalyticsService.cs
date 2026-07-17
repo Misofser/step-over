@@ -4,5 +4,5 @@ namespace GoalApi.Services.Interfaces;
 
 public interface IGoalAnalyticsService
 {
-    Task<List<GoalHeatmapDto>> GetGoalHeatmapAsync(int goalId, int days);
+    Task<List<GoalHeatmapDto>> GetGoalHeatmapAsync(int userId, int goalId, int days);
 }

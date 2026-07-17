@@ -6,13 +6,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GoalApi.Services;
 
-public class GoalAnalyticsService(AppDbContext db) : IGoalAnalyticsService
+public class GoalAnalyticsService(AppDbContext db, IWorkspaceService workspaceService) : IGoalAnalyticsService
 {
     private readonly AppDbContext _db = db;
+    private readonly IWorkspaceService _workspaceService = workspaceService;
 
-    public async Task<List<GoalHeatmapDto>> GetGoalHeatmapAsync(int goalId, int days = 30)
+    public async Task<List<GoalHeatmapDto>> GetGoalHeatmapAsync(int userId, int goalId, int days = 30)
     {
-        await EnsureGoalExistsAsync(goalId);
+        var workspaceId = await _workspaceService.GetPersonalWorkspaceIdAsync(userId);
+
+        await EnsureGoalExistsAsync(goalId, workspaceId);
 
         var today = DateTime.UtcNow.Date;
         var fromDate = today.AddDays(-(days - 1));
@@ -23,7 +26,7 @@ public class GoalAnalyticsService(AppDbContext db) : IGoalAnalyticsService
 
         var grouped = await GetCompletionCountsAsync(habitIds, fromDate, today);
 
-        var result = Enumerable.Range(0, days)
+        return Enumerable.Range(0, days)
             .Select(dayIndex =>
             {
                 var date = fromDate.AddDays(dayIndex);
@@ -33,17 +36,20 @@ public class GoalAnalyticsService(AppDbContext db) : IGoalAnalyticsService
                 {
                     Date = date,
                     CompletedHabits = completedCount,
-                    TotalHabits = habitIds.Count()
+                    TotalHabits = habitIds.Count
                 };
             })
             .ToList();
-
-        return result;
     }
 
-    private async Task EnsureGoalExistsAsync(int goalId)
+    private async Task EnsureGoalExistsAsync(int goalId, int workspaceId)
     {
-        if (!await _db.Goals.AnyAsync(g => g.Id == goalId)) throw new NotFoundException("Goal");
+        if (!await _db.Goals.AnyAsync(g =>
+                g.Id == goalId &&
+                g.WorkspaceId == workspaceId))
+        {
+            throw new NotFoundException("Goal");
+        }
     }
 
     private Task<List<int>> GetHabitIdsAsync(int goalId)

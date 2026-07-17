@@ -4,9 +4,9 @@ namespace GoalApi.Services.Interfaces;
 
 public interface IGoalService
 {
-    Task<List<GoalReadDto>> GetAllGoalsAsync();
-    Task<GoalReadDto> GetGoalByIdAsync(int id);
+    Task<List<GoalReadDto>> GetAllGoalsAsync(int userId);
+    Task<GoalReadDto> GetGoalByIdAsync(int userId, int id);
     Task<GoalReadDto> CreateGoalAsync(int userId, GoalCreateDto dto);
-    Task UpdateGoalAsync(int goalId, GoalUpdateDto dto);
-    Task DeleteGoalAsync(int id);
+    Task UpdateGoalAsync(int userId, int goalId, GoalUpdateDto dto);
+    Task DeleteGoalAsync(int userId, int goalId);
 }
