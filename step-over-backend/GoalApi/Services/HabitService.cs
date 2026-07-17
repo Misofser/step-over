@@ -8,13 +8,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GoalApi.Services;
 
-public class HabitService(AppDbContext db) : IHabitService
+public class HabitService(AppDbContext db, IWorkspaceService workspaceService) : IHabitService
 {
     private readonly AppDbContext _db = db;
+    private readonly IWorkspaceService _workspaceService = workspaceService;
 
-    public async Task<List<HabitReadDto>> GetHabitsByGoalAsync(int goalId)
+    public async Task<List<HabitReadDto>> GetHabitsByGoalAsync(int userId, int goalId)
     {
-        await EnsureGoalExistsAsync(goalId);
+        var workspaceId = await _workspaceService.GetPersonalWorkspaceIdAsync(userId);
+        await EnsureGoalExistsAsync(goalId, workspaceId);
 
         var today = DateTime.UtcNow.Date;
 
@@ -30,35 +32,32 @@ public class HabitService(AppDbContext db) : IHabitService
             .ToListAsync();
     }
 
-    public async Task<HabitReadDto> GetHabitByIdAsync(int habitId)
+    public async Task<HabitReadDto> GetHabitByIdAsync(int userId, int habitId)
     {
-        var habit = await _db.Habits.FindAsync(habitId);
+        var workspaceId = await _workspaceService.GetPersonalWorkspaceIdAsync(userId);
+        var today = DateTime.UtcNow.Date;
+        var habit = await _db.Habits
+            .Where(h => h.Id == habitId && h.Goal.WorkspaceId == workspaceId)
+            .Select(h => new HabitReadDto
+            {
+                Id = h.Id,
+                Title = h.Title,
+                Frequency = h.Frequency,
+                IsCompletedToday = h.Completions.Any(c => c.Date == today)
+            })
+            .SingleOrDefaultAsync();
+
         if (habit == null) throw new NotFoundException("Habit");
 
-        var today = DateTime.UtcNow.Date;
-
-        return new HabitReadDto
-        {
-            Id = habit.Id,
-            Title = habit.Title,
-            Frequency = habit.Frequency,
-            IsCompletedToday = habit.Completions.Any(c => c.Date == today)
-        };
+        return habit;
     }
 
-    public async Task<HabitReadDto> AddHabitAsync(int goalId, HabitCreateDto dto)
+    public async Task<HabitReadDto> AddHabitAsync(int userId, int goalId, HabitCreateDto dto)
     {
-        await EnsureGoalExistsAsync(goalId);
+        var workspaceId = await _workspaceService.GetPersonalWorkspaceIdAsync(userId);
+        await EnsureGoalExistsAsync(goalId, workspaceId);
 
-        var today = DateTime.UtcNow.Date;
-
-        var habit = new Habit
-        {
-            GoalId = goalId,
-            Title = dto.Title,
-            Frequency = dto.Frequency
-        };
-
+        var habit = new Habit { GoalId = goalId, Title = dto.Title.Trim(), Frequency = dto.Frequency };
         _db.Habits.Add(habit);
         await _db.SaveChangesAsync();
 
@@ -67,14 +66,16 @@ public class HabitService(AppDbContext db) : IHabitService
             Id = habit.Id,
             Title = habit.Title,
             Frequency = habit.Frequency,
-            IsCompletedToday = habit.Completions.Any(c => c.Date == today)
+            IsCompletedToday = false
         };
     }
 
-    public async Task ToggleCompletion(int habitId, DateTime date)
+    public async Task ToggleCompletion(int userId, int habitId, DateTime date)
     {
-        var habit = await _db.Habits.FindAsync(habitId);
-        if (habit == null) throw new NotFoundException("Habit");
+        var workspaceId = await _workspaceService.GetPersonalWorkspaceIdAsync(userId);
+
+        var habitExists = await _db.Habits.AnyAsync(h => h.Id == habitId && h.Goal.WorkspaceId == workspaceId);
+        if (!habitExists) throw new NotFoundException("Habit");
 
         date = date.Date;
 
@@ -83,47 +84,55 @@ public class HabitService(AppDbContext db) : IHabitService
         var existing = await _db.HabitCompletions
             .FirstOrDefaultAsync(c => c.HabitId == habitId && c.Date == date);
 
-        if (existing != null) {
+        if (existing != null)
+        {
             _db.HabitCompletions.Remove(existing);
         }
         else
         {
-            var completion = new HabitCompletion
+            _db.HabitCompletions.Add(new HabitCompletion
             {
                 HabitId = habitId,
-                Date = date,
-            };
-
-            _db.HabitCompletions.Add(completion);
+                Date = date
+            });
         }
 
         await _db.SaveChangesAsync();
     }
 
-    public async Task<HabitCompletionStatusDto> GetCompletionStatusAsync(int habitId, DateTime date)
+    public async Task<HabitCompletionStatusDto> GetCompletionStatusAsync(int userId, int habitId, DateTime date)
     {
+        var workspaceId = await _workspaceService.GetPersonalWorkspaceIdAsync(userId);
+
         date = date.Date;
 
-        var habitExists = await _db.Habits.AnyAsync(h => h.Id == habitId);
-        if (!habitExists) throw new NotFoundException("Habit");
+        var result = await _db.Habits
+            .Where(h => h.Id == habitId && h.Goal.WorkspaceId == workspaceId)
+            .Select(h => new HabitCompletionStatusDto
+            {
+                Date = date,
+                IsCompleted = h.Completions.Any(c => c.Date == date)
+            })
+            .SingleOrDefaultAsync();
 
-        var isCompleted = await _db.HabitCompletions
-            .AnyAsync(c => c.HabitId == habitId && c.Date == date);
+        if (result == null) throw new NotFoundException("Habit");
 
-        return new HabitCompletionStatusDto { Date = date, IsCompleted = isCompleted };
+        return result;
     }
 
-    public async Task DeleteHabitAsync(int habitId)
+    public async Task DeleteHabitAsync(int userId, int habitId)
     {
-        var habit = await _db.Habits.FindAsync(habitId);
+        var workspaceId = await _workspaceService.GetPersonalWorkspaceIdAsync(userId);
+        var habit = await _db.Habits.SingleOrDefaultAsync(h => h.Id == habitId && h.Goal.WorkspaceId == workspaceId);
         if (habit == null) throw new NotFoundException("Habit");
 
         _db.Habits.Remove(habit);
         await _db.SaveChangesAsync();
     }
 
-    private async Task EnsureGoalExistsAsync(int goalId)
+    private async Task EnsureGoalExistsAsync(int goalId, int workspaceId)
     {
-        if (!await _db.Goals.AnyAsync(g => g.Id == goalId)) throw new NotFoundException("Goal");
+        var exists = await _db.Goals.AnyAsync(g => g.Id == goalId && g.WorkspaceId == workspaceId);
+        if (!exists) throw new NotFoundException("Goal");
     }
 }
