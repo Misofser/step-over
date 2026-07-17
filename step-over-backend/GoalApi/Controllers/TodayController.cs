@@ -1,5 +1,6 @@
 using GoalApi.Dtos.Today;
 using GoalApi.Services.Interfaces;
+using GoalApi.Services.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 
@@ -12,11 +13,12 @@ namespace GoalApi.Controllers;
 [Route("api/today")]
 [Authorize]
 [Produces("application/json")]
-public class TodayController(ITodayService todayService) : ControllerBase
+public class TodayController(ITodayService todayService, ICurrentUserService currentUser) : ControllerBase
 {
     private readonly ITodayService _todayService = todayService;
+    private readonly ICurrentUserService _currentUser = currentUser;
 
-    /// <summary>Gets today's tasks and habits grouped into pending and completed lists.</summary>
+    /// <summary>Gets today's tasks and habits grouped into pending and completed lists</summary>
     /// <returns>The today dashboard grouped result</returns>
     /// <response code="200">Returns the today dashboard data</response>
     /// <response code="401">User is unauthorized</response>
@@ -25,7 +27,8 @@ public class TodayController(ITodayService todayService) : ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<TodayDashboardDto>> GetToday()
     {
-        var result = await _todayService.GetTodayItemsAsync();
+        var userId = _currentUser.GetUserId();
+        var result = await _todayService.GetTodayItemsAsync(userId);
         return Ok(result);
     }
 }

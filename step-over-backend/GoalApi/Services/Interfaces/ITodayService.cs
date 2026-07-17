@@ -4,5 +4,5 @@ namespace GoalApi.Services.Interfaces;
 
 public interface ITodayService
 {
-    Task<TodayDashboardDto> GetTodayItemsAsync();
+    Task<TodayDashboardDto> GetTodayItemsAsync(int userId);
 }
