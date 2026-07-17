@@ -26,6 +26,9 @@ export function useToday() {
     load();
   }, []);
 
+  const isSameItem = (a: TodayItem, b: TodayItem) =>
+    a.entityId === b.entityId && a.type === b.type;
+
   const toggleItem = async (item: TodayItem) => {
     const originalData = data;
 
@@ -38,7 +41,7 @@ export function useToday() {
       };
 
       const removeFromLists = (list: TodayItem[]) =>
-        list.filter(i => i.entityId !== item.entityId);
+        list.filter(i => !isSameItem(i, item));
 
       const pending = removeFromLists(prev.pending);
       const completed = removeFromLists(prev.completed);
