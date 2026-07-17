@@ -4,10 +4,10 @@ namespace GoalApi.Services.Interfaces;
 
 public interface IGoalTaskService
 {
-    Task<List<GoalTaskReadDto>> GetTasksByGoalAsync(int goalId);
-    Task<GoalTaskReadDto> GetTaskByIdAsync(int taskId);
-    Task<GoalTaskReadDto> AddTaskAsync(int goalId, GoalTaskCreateDto dto);
-    Task UpdateCompletionAsync(int taskId, GoalTaskUpdateCompletionDto dto);
-    Task UpdateTaskAsync(int taskId, GoalTaskUpdateDto dto);
-    Task DeleteTaskAsync(int taskId);
+    Task<List<GoalTaskReadDto>> GetTasksByGoalAsync(int userId, int goalId);
+    Task<GoalTaskReadDto> GetTaskByIdAsync(int userId, int taskId);
+    Task<GoalTaskReadDto> AddTaskAsync(int userId, int goalId, GoalTaskCreateDto dto);
+    Task UpdateCompletionAsync(int userId, int taskId, GoalTaskUpdateCompletionDto dto);
+    Task UpdateTaskAsync(int userId, int taskId, GoalTaskUpdateDto dto);
+    Task DeleteTaskAsync(int userId, int taskId);
 }
