@@ -12,9 +12,30 @@ public class HabitServiceTests
         // Arrange
         var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
-        var goal1 = new Goal { Title = "Goal 1", IsCompleted = false, Type = GoalType.Process, User = user };
-        var goal2 = new Goal { Title = "Goal 2", IsCompleted = true, Type = GoalType.Project, User = user };
-        var habitA = new Habit {
+        var workspace = new Workspace
+        {
+            Name = "Test Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var goal1 = new Goal
+        {
+            Title = "Goal 1",
+            IsCompleted = false,
+            Type = GoalType.Process,
+            User = user,
+            Workspace = workspace,
+        };
+        var goal2 = new Goal
+        {
+            Title = "Goal 2",
+            IsCompleted = true,
+            Type = GoalType.Project,
+            User = user,
+            Workspace = workspace,
+        };
+        var habitA = new Habit
+        {
             Title = "Habit A",
             Goal = goal1,
             Frequency = HabitFrequency.Daily,
@@ -26,10 +47,10 @@ public class HabitServiceTests
         db.Habits.AddRange(habitA, habitB, habitC);
         await db.SaveChangesAsync();
 
-        var service = new HabitService(db);
+        var service = new HabitService(db, new FakeWorkspaceService(workspace.Id));
 
         // Act
-        var result = await service.GetHabitsByGoalAsync(goal1.Id);
+        var result = await service.GetHabitsByGoalAsync(user.Id, goal1.Id);
 
         // Assert
         Assert.Equal(2, result.Count);
@@ -51,11 +72,51 @@ public class HabitServiceTests
     {
         // Arrange
         var db = TestDbContextFactory.Create();
-        var service = new HabitService(db);
+        var service = new HabitService(db, new FakeWorkspaceService());
 
         // Act & Assert
         await Assert.ThrowsAsync<NotFoundException>(
-            () => service.GetHabitsByGoalAsync(1)
+            () => service.GetHabitsByGoalAsync(userId: 1, goalId: 1)
+        );
+    }
+
+    [Fact]
+    public async Task GetHabitsByGoalAsync_ThrowsNotFoundException_WhenGoalIsInAnotherWorkspace()
+    {
+        // Arrange
+        var db = TestDbContextFactory.Create();
+        var user = new User { Username = "Test User", PasswordHash = "testhash" };
+        var anotherUser = new User { Username = "Another User", PasswordHash = "anothertesthash" };
+        var userWorkspace = new Workspace
+        {
+            Name = "User Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var anotherWorkspace = new Workspace
+        {
+            Name = "Another Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = anotherUser, Role = WorkspaceRole.Owner } }
+        };
+        var goal = new Goal
+        {
+            Title = "Other workspace goal",
+            IsCompleted = false,
+            Type = GoalType.Process,
+            Workspace = anotherWorkspace,
+            User = anotherUser,
+        };
+        var habit = new Habit { Title = "Habit", Goal = goal, Frequency = HabitFrequency.Daily };
+        db.Workspaces.Add(userWorkspace);
+        db.Habits.Add(habit);
+
+        await db.SaveChangesAsync();
+        var service = new HabitService(db, new FakeWorkspaceService(userWorkspace.Id));
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NotFoundException>(
+            () => service.GetHabitsByGoalAsync(user.Id, goal.Id)
         );
     }
 
@@ -65,7 +126,20 @@ public class HabitServiceTests
         // Arrange
         var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
-        var goal = new Goal { Title = "Goal", IsCompleted = false, Type = GoalType.Process, User = user };
+        var workspace = new Workspace
+        {
+            Name = "Test Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var goal = new Goal
+        {
+            Title = "Goal",
+            IsCompleted = false,
+            Type = GoalType.Process,
+            User = user,
+            Workspace = workspace,
+        };
         var habitA = new Habit
         {
             Goal = goal,
@@ -77,11 +151,10 @@ public class HabitServiceTests
 
         db.Habits.AddRange(habitA, habitB);
         await db.SaveChangesAsync();
-
-        var service = new HabitService(db);
+        var service = new HabitService(db, new FakeWorkspaceService(workspace.Id));
 
         // Act
-        var result = await service.GetHabitByIdAsync(habitA.Id);
+        var result = await service.GetHabitByIdAsync(user.Id, habitA.Id);
 
         // Assert
         Assert.Multiple(() =>
@@ -99,7 +172,20 @@ public class HabitServiceTests
         // Arrange
         var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
-        var goal = new Goal { Title = "Goal", IsCompleted = false, Type = GoalType.Process, User = user };
+        var workspace = new Workspace
+        {
+            Name = "Test Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var goal = new Goal
+        {
+            Title = "Goal",
+            IsCompleted = false,
+            Type = GoalType.Process,
+            User = user,
+            Workspace = workspace,
+        };
         var habitA = new Habit
         {
             Goal = goal,
@@ -112,10 +198,10 @@ public class HabitServiceTests
         db.Habits.AddRange(habitA, habitB);
         await db.SaveChangesAsync();
 
-        var service = new HabitService(db);
+        var service = new HabitService(db, new FakeWorkspaceService(workspace.Id));
 
         // Act
-        var result = await service.GetHabitByIdAsync(habitB.Id);
+        var result = await service.GetHabitByIdAsync(user.Id, habitB.Id);
 
         // Assert
         Assert.Multiple(() =>
@@ -132,11 +218,52 @@ public class HabitServiceTests
     {
         // Arrange
         var db = TestDbContextFactory.Create();
-        var service = new HabitService(db);
+        var service = new HabitService(db, new FakeWorkspaceService());
 
         // Act & Assert
         await Assert.ThrowsAsync<NotFoundException>(
-            () => service.GetHabitByIdAsync(1)
+            () => service.GetHabitByIdAsync(userId: 1, habitId: 1)
+        );
+    }
+
+    [Fact]
+    public async Task GetHabitByIdAsync_ShouldThrowNotFound_WhenHabitIsInAnotherWorkspace()
+    {
+        // Arrange
+        var db = TestDbContextFactory.Create();
+        var user = new User { Username = "Test User", PasswordHash = "testhash" };
+        var anotherUser = new User { Username = "Another User", PasswordHash = "anothertesthash" };
+        var userWorkspace = new Workspace
+        {
+            Name = "User Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var anotherWorkspace = new Workspace
+        {
+            Name = "Another Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = anotherUser, Role = WorkspaceRole.Owner } }
+        };
+        var goal = new Goal
+        {
+            Title = "Other workspace goal",
+            IsCompleted = false,
+            Type = GoalType.Process,
+            Workspace = anotherWorkspace,
+            User = anotherUser,
+        };
+        var habit = new Habit { Title = "Habit", Goal = goal, Frequency = HabitFrequency.Daily };
+        db.Workspaces.Add(userWorkspace);
+        db.Habits.Add(habit);
+
+        await db.SaveChangesAsync();
+
+        var service = new HabitService(db,new FakeWorkspaceService(userWorkspace.Id));
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NotFoundException>(
+            () => service.GetHabitByIdAsync(user.Id, habit.Id)
         );
     }
 
@@ -146,15 +273,28 @@ public class HabitServiceTests
         // Arrange
         var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
-        var goal = new Goal { Title = "Goal", IsCompleted = false, Type = GoalType.Process, User = user };
+        var workspace = new Workspace
+        {
+            Name = "Test Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var goal = new Goal
+        {
+            Title = "Goal",
+            IsCompleted = false,
+            Type = GoalType.Process,
+            User = user,
+            Workspace = workspace,
+        };
         db.Goals.Add(goal);
         await db.SaveChangesAsync();
 
-        var service = new HabitService(db);
+        var service = new HabitService(db, new FakeWorkspaceService(workspace.Id));
         var dto = new HabitCreateDto { Title = "New Habit", Frequency = HabitFrequency.Daily };
 
         // Act
-        var result = await service.AddHabitAsync(goal.Id, dto);
+        var result = await service.AddHabitAsync(user.Id, goal.Id, dto);
 
         // Assert
         Assert.NotNull(result);
@@ -174,13 +314,54 @@ public class HabitServiceTests
     {
         // Arrange
         var db = TestDbContextFactory.Create();
-        var service = new HabitService(db);
+        var service = new HabitService(db, new FakeWorkspaceService());
         var dto = new HabitCreateDto { Title = "New Habit", Frequency = HabitFrequency.Daily };
 
         // Act & Assert
         await Assert.ThrowsAsync<NotFoundException>(
-            () => service.AddHabitAsync(1, dto)
+            () => service.AddHabitAsync(userId: 1, goalId: 1, dto)
         );
+    }
+
+    [Fact]
+    public async Task AddHabitAsync_ThrowsNotFoundException_WhenGoalIsInAnotherWorkspace()
+    {
+        // Arrange
+        var db = TestDbContextFactory.Create();
+        var user = new User { Username = "Test User", PasswordHash = "testhash" };
+        var anotherUser = new User { Username = "Another User", PasswordHash = "anothertesthash" };
+        var userWorkspace = new Workspace
+        {
+            Name = "User Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var anotherWorkspace = new Workspace
+        {
+            Name = "Another Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = anotherUser, Role = WorkspaceRole.Owner } }
+        };
+        var goal = new Goal
+        {
+            Title = "Other workspace goal",
+            IsCompleted = false,
+            Type = GoalType.Process,
+            Workspace = anotherWorkspace,
+            User = anotherUser,
+        };
+        db.Workspaces.Add(userWorkspace);
+        db.Goals.Add(goal);
+        await db.SaveChangesAsync();
+        var service = new HabitService(db, new FakeWorkspaceService(userWorkspace.Id));
+        var dto = new HabitCreateDto { Title = "New Habit", Frequency = HabitFrequency.Daily };
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NotFoundException>(
+            () => service.AddHabitAsync(user.Id, goal.Id, dto)
+        );
+
+        Assert.Empty(db.Habits);
     }
 
     [Fact]
@@ -189,15 +370,28 @@ public class HabitServiceTests
         // Arrange
         var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
-        var goal = new Goal { Title = "Goal", IsCompleted = false, Type = GoalType.Process, User = user };
+        var workspace = new Workspace
+        {
+            Name = "Test Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var goal = new Goal
+        {
+            Title = "Goal",
+            IsCompleted = false,
+            Type = GoalType.Process,
+            User = user,
+            Workspace = workspace,
+        };
         var habit = new Habit { Title = "Habit", Goal = goal, Frequency = HabitFrequency.Weekly };
         db.Habits.Add(habit);
         await db.SaveChangesAsync();
-        var service = new HabitService(db);
+        var service = new HabitService(db, new FakeWorkspaceService(workspace.Id));
         var date = DateTime.UtcNow.Date;
 
         // Act
-        await service.ToggleCompletion(habit.Id, date);
+        await service.ToggleCompletion(user.Id, habit.Id, date);
 
         // Assert
         var exists = await db.HabitCompletions.AnyAsync(c => c.HabitId == habit.Id && c.Date == date);
@@ -211,7 +405,20 @@ public class HabitServiceTests
         // Arrange
         var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
-        var goal = new Goal { Title = "Goal", IsCompleted = false, Type = GoalType.Process, User = user };
+        var workspace = new Workspace
+        {
+            Name = "Test Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var goal = new Goal
+        {
+            Title = "Goal",
+            IsCompleted = false,
+            Type = GoalType.Process,
+            User = user,
+            Workspace = workspace,
+        };
         var date = DateTime.UtcNow.Date;
         var habit = new Habit
         {
@@ -222,10 +429,10 @@ public class HabitServiceTests
         };
         db.Habits.Add(habit);
         await db.SaveChangesAsync();
-        var service = new HabitService(db);
+        var service = new HabitService(db, new FakeWorkspaceService(workspace.Id));
 
         // Act
-        await service.ToggleCompletion(habit.Id, date);
+        await service.ToggleCompletion(user.Id, habit.Id, date);
 
         // Assert
         var exists = await db.HabitCompletions.AnyAsync(c => c.HabitId == habit.Id && c.Date == date);
@@ -239,17 +446,30 @@ public class HabitServiceTests
         // Arrange
         var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
-        var goal = new Goal { Title = "Goal", IsCompleted = false, Type = GoalType.Process, User = user };
+        var workspace = new Workspace
+        {
+            Name = "Test Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var goal = new Goal
+        {
+            Title = "Goal",
+            IsCompleted = false,
+            Type = GoalType.Process,
+            User = user,
+            Workspace = workspace,
+        };
         var habit = new Habit { Title = "Habit", Goal = goal, Frequency = HabitFrequency.Weekly };
         db.Habits.Add(habit);
         await db.SaveChangesAsync();
 
-        var service = new HabitService(db);
+        var service = new HabitService(db, new FakeWorkspaceService(workspace.Id));
         var futureDate = DateTime.UtcNow.Date.AddDays(1);
 
         // Act & Assert
         await Assert.ThrowsAsync<BadRequestException>(
-            () => service.ToggleCompletion(habit.Id, futureDate)
+            () => service.ToggleCompletion(user.Id, habit.Id, futureDate)
         );
     }
 
@@ -258,12 +478,55 @@ public class HabitServiceTests
     {
         // Arrange
         var db = TestDbContextFactory.Create();
-        var service = new HabitService(db);
+        var service = new HabitService(db, new FakeWorkspaceService());
 
         // Act & Assert
         await Assert.ThrowsAsync<NotFoundException>(
-            () => service.ToggleCompletion(1, DateTime.UtcNow)
+            () => service.ToggleCompletion(userId: 1, habitId: 1, DateTime.UtcNow)
         );
+    }
+
+    [Fact]
+    public async Task ToggleCompletion_ThrowsNotFoundException_WhenHabitIsInAnotherWorkspace()
+    {
+        // Arrange
+        var db = TestDbContextFactory.Create();
+        var user = new User { Username = "Test User", PasswordHash = "testhash" };
+        var anotherUser = new User { Username = "Another User", PasswordHash = "anothertesthash" };
+        var userWorkspace = new Workspace
+        {
+            Name = "User Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var anotherWorkspace = new Workspace
+        {
+            Name = "Another Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = anotherUser, Role = WorkspaceRole.Owner } }
+        };
+        var goal = new Goal
+        {
+            Title = "Other workspace goal",
+            IsCompleted = false,
+            Type = GoalType.Process,
+            Workspace = anotherWorkspace,
+            User = anotherUser,
+        };
+        var habit = new Habit { Title = "Habit", Goal = goal, Frequency = HabitFrequency.Daily };
+        db.Workspaces.Add(userWorkspace);
+        db.Habits.Add(habit);
+        await db.SaveChangesAsync();
+
+        var service = new HabitService(db, new FakeWorkspaceService(userWorkspace.Id));
+        var date = DateTime.UtcNow.Date;
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NotFoundException>(
+            () => service.ToggleCompletion(user.Id, habit.Id, date)
+        );
+
+        Assert.Empty(db.HabitCompletions);
     }
 
     [Fact]
@@ -272,15 +535,28 @@ public class HabitServiceTests
         // Arrange
         var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
-        var goal = new Goal { Title = "Goal 1", IsCompleted = false, Type = GoalType.Process, User = user };
+        var workspace = new Workspace
+        {
+            Name = "Test Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var goal = new Goal
+        {
+            Title = "Goal 1",
+            IsCompleted = false,
+            Type = GoalType.Process,
+            User = user,
+            Workspace = workspace,
+        };
         var habit = new Habit { Title = "Habit", Goal = goal, Frequency = HabitFrequency.Weekly };
         db.Habits.Add(habit);
         await db.SaveChangesAsync();
 
-        var service = new HabitService(db);
+        var service = new HabitService(db, new FakeWorkspaceService(workspace.Id));
 
         // Act
-        await service.DeleteHabitAsync(habit.Id);
+        await service.DeleteHabitAsync(user.Id, habit.Id);
 
         // Assert
         var deletedHabit = await db.Habits.FindAsync(habit.Id);
@@ -293,12 +569,54 @@ public class HabitServiceTests
     {
         // Arrange
         var db = TestDbContextFactory.Create();
-        var service = new HabitService(db);
+        var service = new HabitService(db, new FakeWorkspaceService());
 
         // Act & Assert
         await Assert.ThrowsAsync<NotFoundException>(
-            () => service.DeleteHabitAsync(1)
+            () => service.DeleteHabitAsync(userId: 1, habitId: 1)
         );
+    }
+
+    [Fact]
+    public async Task DeleteHabitAsync_ThrowsNotFoundException_WhenHabitIsInAnotherWorkspace()
+    {
+        // Arrange
+        var db = TestDbContextFactory.Create();
+        var user = new User { Username = "Test User", PasswordHash = "testhash" };
+        var anotherUser = new User { Username = "Another User", PasswordHash = "anothertesthash" };
+        var userWorkspace = new Workspace
+        {
+            Name = "User Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var anotherWorkspace = new Workspace
+        {
+            Name = "Another Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = anotherUser, Role = WorkspaceRole.Owner } }
+        };
+        var goal = new Goal
+        {
+            Title = "Other workspace goal",
+            IsCompleted = false,
+            Type = GoalType.Process,
+            Workspace = anotherWorkspace,
+            User = anotherUser,
+        };
+        var habit = new Habit { Title = "Habit", Goal = goal, Frequency = HabitFrequency.Daily };
+        db.Workspaces.Add(userWorkspace);
+        db.Habits.Add(habit);
+        await db.SaveChangesAsync();
+        var service = new HabitService(db, new FakeWorkspaceService(userWorkspace.Id));
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NotFoundException>(
+            () => service.DeleteHabitAsync(user.Id, habit.Id)
+        );
+
+        var habitInDb = await db.Habits.FindAsync(habit.Id);
+        Assert.NotNull(habitInDb);
     }
 
     [Fact]
@@ -307,7 +625,20 @@ public class HabitServiceTests
         // Arrange
         var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
-        var goal = new Goal { Title = "Goal", IsCompleted = false, Type = GoalType.Process, User = user };
+        var workspace = new Workspace
+        {
+            Name = "Test Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var goal = new Goal
+        {
+            Title = "Goal 1",
+            IsCompleted = false,
+            Type = GoalType.Process,
+            User = user,
+            Workspace = workspace,
+        };
         var date = DateTime.UtcNow.Date.AddDays(-2);
         var habit = new Habit
         {
@@ -318,10 +649,10 @@ public class HabitServiceTests
         };
         db.Habits.Add(habit);
         await db.SaveChangesAsync();
-        var service = new HabitService(db);
+        var service = new HabitService(db, new FakeWorkspaceService(workspace.Id));
 
         // Act
-        var result = await service.GetCompletionStatusAsync(habit.Id, date);
+        var result = await service.GetCompletionStatusAsync(user.Id, habit.Id, date);
 
         // Assert
         Assert.True(result.IsCompleted);
@@ -334,7 +665,20 @@ public class HabitServiceTests
         // Arrange
         var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
-        var goal = new Goal { Title = "Goal", IsCompleted = false, Type = GoalType.Process, User = user };
+        var workspace = new Workspace
+        {
+            Name = "Test Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var goal = new Goal
+        {
+            Title = "Goal 1",
+            IsCompleted = false,
+            Type = GoalType.Process,
+            User = user,
+            Workspace = workspace,
+        };
         var date = DateTime.UtcNow.Date.AddDays(-2);
         var habit = new Habit
         {
@@ -344,10 +688,10 @@ public class HabitServiceTests
         };
         db.Habits.Add(habit);
         await db.SaveChangesAsync();
-        var service = new HabitService(db);
+        var service = new HabitService(db, new FakeWorkspaceService(workspace.Id));
 
         // Act
-        var result = await service.GetCompletionStatusAsync(habit.Id, date);
+        var result = await service.GetCompletionStatusAsync(user.Id, habit.Id, date);
 
         // Assert
         Assert.False(result.IsCompleted);
@@ -360,11 +704,58 @@ public class HabitServiceTests
         // Arrange
         var db = TestDbContextFactory.Create();
         var date = DateTime.UtcNow.Date;
-        var service = new HabitService(db);
+        var service = new HabitService(db, new FakeWorkspaceService());
 
         // Act & Assert
         await Assert.ThrowsAsync<NotFoundException>(
-            () => service.GetCompletionStatusAsync(1, date)
+            () => service.GetCompletionStatusAsync(userId: 1, habitId: 1, date)
+        );
+    }
+
+    [Fact]
+    public async Task GetCompletionStatusAsync_ShouldThrowNotFound_WhenHabitIsInAnotherWorkspace()
+    {
+        // Arrange
+        var db = TestDbContextFactory.Create();
+        var user = new User { Username = "Test User", PasswordHash = "testhash" };
+        var anotherUser = new User { Username = "Another User", PasswordHash = "anothertesthash" };
+        var userWorkspace = new Workspace
+        {
+            Name = "User Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var anotherWorkspace = new Workspace
+        {
+            Name = "Another Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = anotherUser, Role = WorkspaceRole.Owner } }
+        };
+        var goal = new Goal
+        {
+            Title = "Other workspace goal",
+            IsCompleted = false,
+            Type = GoalType.Process,
+            Workspace = anotherWorkspace,
+            User = anotherUser,
+        };
+        var date = DateTime.UtcNow.Date.AddDays(-1);
+        var habit = new Habit
+        {
+            Goal = goal,
+            Title = "Habit",
+            Frequency = HabitFrequency.Daily,
+            Completions = [ new HabitCompletion { Date = date } ],
+        };
+        db.Workspaces.Add(userWorkspace);
+        db.Habits.Add(habit);
+        await db.SaveChangesAsync();
+
+        var service = new HabitService(db, new FakeWorkspaceService(userWorkspace.Id));
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NotFoundException>(
+            () => service.GetCompletionStatusAsync(user.Id, habit.Id, date)
         );
     }
 }
