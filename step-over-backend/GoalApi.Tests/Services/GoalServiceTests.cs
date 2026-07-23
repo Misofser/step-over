@@ -13,19 +13,36 @@ public class GoalServiceTests
         var db = TestDbContextFactory.Create();
 
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
-        db.Users.Add(user);
-        await db.SaveChangesAsync();
-
+        var workspace = new Workspace
+        {
+            Name = "Test Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
         db.Goals.AddRange(
-            new Goal { Title = "Goal 1", IsCompleted = false, UserId = user.Id, Type = GoalType.Process },
-            new Goal { Title = "Goal 2", IsCompleted = true, UserId = user.Id, Type = GoalType.Project }
+            new Goal
+            {
+                Title = "Goal 1",
+                IsCompleted = false,
+                User = user,
+                Type = GoalType.Process,
+                Workspace = workspace
+            },
+            new Goal
+            {
+                Title = "Goal 2",
+                IsCompleted = true,
+                User = user,
+                Type = GoalType.Project,
+                Workspace = workspace
+            }
         );
         await db.SaveChangesAsync();
 
-        var service = new GoalService(db);
+        var service = new GoalService(db, new FakeWorkspaceService(workspace.Id));
 
         // Act
-        var result = await service.GetAllGoalsAsync();
+        var result = await service.GetAllGoalsAsync(user.Id);
 
         // Assert
         Assert.Equal(2, result.Count);
@@ -34,23 +51,88 @@ public class GoalServiceTests
     }
 
     [Fact]
+    public async Task GetAllGoalsAsync_ShouldReturnOnlyGoalsFromUserWorkspace()
+    {
+        // Arrange
+        var db = TestDbContextFactory.Create();
+        var user = new User { Username = "Test User", PasswordHash = "testhash" };
+        var anotherUser = new User { Username = "Another User", PasswordHash = "anothertesthash" };
+        var userWorkspace = new Workspace
+        {
+            Name = "User Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var anotherWorkspace = new Workspace
+        {
+            Name = "Another Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = anotherUser, Role = WorkspaceRole.Owner } }
+        };
+        db.Goals.AddRange(
+            new Goal
+            {
+                Title = "User Goal",
+                IsCompleted = false,
+                User = user,
+                Type = GoalType.Process,
+                Workspace = userWorkspace
+            },
+            new Goal
+            {
+                Title = "Another Goal",
+                User = anotherUser,
+                IsCompleted = false,
+                Type = GoalType.Process,
+                Workspace = anotherWorkspace
+            });
+        await db.SaveChangesAsync();
+        var service = new GoalService(db, new FakeWorkspaceService(userWorkspace.Id));
+
+        // Act
+        var result = await service.GetAllGoalsAsync(user.Id);
+
+        // Assert
+        var titles = result.Select(g => g.Title).ToList();
+        Assert.Contains("User Goal", titles);
+        Assert.DoesNotContain("Another Goal", titles);
+    }
+
+    [Fact]
     public async Task GetGoalByIdAsync_ReturnsGoal_WhenExists()
     {
         // Arrange
         var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
-        db.Users.Add(user);
-        await db.SaveChangesAsync();
-
-        var goal = new Goal { Title = "First goal", IsCompleted = false, UserId = user.Id, Type = GoalType.Process };
-        var goal2 = new Goal { Title = "Second goal", IsCompleted = true, UserId = user.Id, Type = GoalType.Project };
+        var workspace = new Workspace
+        {
+            Name = "Test Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var goal = new Goal
+        {
+            Title = "First goal",
+            IsCompleted = false,
+            User = user,
+            Type = GoalType.Process,
+            Workspace = workspace
+        };
+        var goal2 = new Goal
+        {
+            Title = "Second goal",
+            IsCompleted = true,
+            User = user,
+            Type = GoalType.Project,
+            Workspace = workspace
+        };
         db.Goals.AddRange(goal, goal2);
         await db.SaveChangesAsync();
 
-        var service = new GoalService(db);
+        var service = new GoalService(db, new FakeWorkspaceService(workspace.Id));
 
         // Act
-        var result = await service.GetGoalByIdAsync(goal2.Id);
+        var result = await service.GetGoalByIdAsync(user.Id, goal2.Id);
 
         // Assert
         Assert.Equal(goal2.Id, result.Id);
@@ -64,11 +146,49 @@ public class GoalServiceTests
     {
         // Arrange
         var db = TestDbContextFactory.Create();
-        var service = new GoalService(db);
+        var service = new GoalService(db, new FakeWorkspaceService());
 
         // Act & Assert
         await Assert.ThrowsAsync<NotFoundException>(
-            () => service.GetGoalByIdAsync(100)
+            () => service.GetGoalByIdAsync(userId: 1, goalId: 1)
+        );
+    }
+
+    [Fact]
+    public async Task GetGoalByIdAsync_ThrowsNotFoundException_WhenGoalIsInAnotherWorkspace()
+    {
+        // Arrange
+        var db = TestDbContextFactory.Create();
+        var user = new User { Username = "Test User", PasswordHash = "testhash" };
+        var anotherUser = new User { Username = "Another User", PasswordHash = "anothertesthash" };
+        var userWorkspace = new Workspace
+        {
+            Name = "User Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var anotherWorkspace = new Workspace
+        {
+            Name = "Another Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = anotherUser, Role = WorkspaceRole.Owner } }
+        };
+        var goal = new Goal
+        {
+            Title = "Another Goal",
+            IsCompleted = false,
+            Type = GoalType.Process,
+            User = anotherUser,
+            Workspace = anotherWorkspace
+        };
+        db.Workspaces.Add(userWorkspace);
+        db.Goals.Add(goal);
+        await db.SaveChangesAsync();
+        var service = new GoalService(db, new FakeWorkspaceService(userWorkspace.Id));
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NotFoundException>(
+            () => service.GetGoalByIdAsync(user.Id, goal.Id)
         );
     }
 
@@ -79,10 +199,16 @@ public class GoalServiceTests
         var db = TestDbContextFactory.Create();
 
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
-        db.Users.Add(user);
+        var workspace = new Workspace
+        {
+            Name = "Test Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        db.Workspaces.Add(workspace);
         await db.SaveChangesAsync();
     
-        var service = new GoalService(db);
+        var service = new GoalService(db, new FakeWorkspaceService(workspace.Id));
         var dto = new GoalCreateDto { Title = "New goal", Type = GoalType.Process };
 
         // Act
@@ -108,10 +234,16 @@ public class GoalServiceTests
         // Arrange
         var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
-        db.Users.Add(user);
+        var workspace = new Workspace
+        {
+            Name = "Test Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        db.Workspaces.Add(workspace);
         await db.SaveChangesAsync();
 
-        var service = new GoalService(db);
+        var service = new GoalService(db, new FakeWorkspaceService(workspace.Id));
         var dto = new GoalCreateDto { Title = "Goal", Type = GoalType.Process };
 
         // Act
@@ -123,17 +255,28 @@ public class GoalServiceTests
     }
 
     [Fact]
-    public async Task CreateGoalAsync_AssignsGoalToCorrectUser()
+    public async Task CreateGoalAsync_AssignsGoalToCorrectUserAndCorrectWorkspace()
     {
         // Arrange
         var db = TestDbContextFactory.Create();
-
         var user1 = new User { Username = "User 1", PasswordHash = "testhash" };
         var user2 = new User { Username = "User 2", PasswordHash = "testhash" };
-        db.Users.AddRange(user1, user2);
+        var userWorkspace = new Workspace
+        {
+            Name = "User Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user1, Role = WorkspaceRole.Owner } }
+        };
+        var anotherWorkspace = new Workspace
+        {
+            Name = "Another Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user2, Role = WorkspaceRole.Owner } }
+        };
+        db.Workspaces.AddRange(userWorkspace, anotherWorkspace);
         await db.SaveChangesAsync();
 
-        var service = new GoalService(db);
+        var service = new GoalService(db, new FakeWorkspaceService(userWorkspace.Id));
         var dto = new GoalCreateDto { Title = "Goal for user1", Type = GoalType.Process };
 
         // Act
@@ -142,7 +285,9 @@ public class GoalServiceTests
         // Assert
         var goal = await db.Goals.SingleAsync();
         Assert.Equal(user1.Id, goal.UserId);
+        Assert.Equal(userWorkspace.Id, goal.WorkspaceId);
         Assert.NotEqual(user2.Id, goal.UserId);
+        Assert.NotEqual(anotherWorkspace.Id, goal.WorkspaceId);
     }
 
     [Fact]
@@ -151,19 +296,29 @@ public class GoalServiceTests
         // Arrange
         var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
-        db.Users.Add(user);
-        await db.SaveChangesAsync();
-
-        var goal = new Goal { Title = "Original Title", IsCompleted = false, UserId = user.Id, Type = GoalType.Process };
+        var workspace = new Workspace
+        {
+            Name = "Test Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var goal = new Goal
+        {
+            Title = "Original Title",
+            IsCompleted = false,
+            User = user,
+            Type = GoalType.Process,
+            Workspace = workspace
+        };
         db.Goals.Add(goal);
         await db.SaveChangesAsync();
 
-        var service = new GoalService(db);
+        var service = new GoalService(db, new FakeWorkspaceService(workspace.Id));
 
         var dto = new GoalUpdateDto { Title = "  New Title  ", IsCompleted = true };
 
         // Act
-        await service.UpdateGoalAsync(goal.Id, dto);
+        await service.UpdateGoalAsync(user.Id, goal.Id, dto);
 
         // Assert
         var updatedGoal = await db.Goals.FindAsync(goal.Id);
@@ -178,19 +333,29 @@ public class GoalServiceTests
         // Arrange
         var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
-        db.Users.Add(user);
-        await db.SaveChangesAsync();
-
-        var goal = new Goal { Title = "Original Title", IsCompleted = false, UserId = user.Id, Type = GoalType.Process };
+        var workspace = new Workspace
+        {
+            Name = "Test Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var goal = new Goal
+        {
+            Title = "Original Title",
+            IsCompleted = false,
+            User = user,
+            Type = GoalType.Process,
+            Workspace = workspace
+        };
         db.Goals.Add(goal);
         await db.SaveChangesAsync();
 
-        var service = new GoalService(db);
+        var service = new GoalService(db, new FakeWorkspaceService(workspace.Id));
 
         var dto = new GoalUpdateDto { Title = "Updated Title", IsCompleted = null };
 
         // Act
-        await service.UpdateGoalAsync(goal.Id, dto);
+        await service.UpdateGoalAsync(user.Id, goal.Id, dto);
 
         // Assert
         var updatedGoal = await db.Goals.FindAsync(goal.Id);
@@ -203,14 +368,59 @@ public class GoalServiceTests
     {
         // Arrange
         var db = TestDbContextFactory.Create();
-        var service = new GoalService(db);
+        var service = new GoalService(db, new FakeWorkspaceService());
 
         var dto = new GoalUpdateDto { Title = "New Title", IsCompleted = true };
 
         // Act & Assert
         await Assert.ThrowsAsync<NotFoundException>(
-            () => service.UpdateGoalAsync(100, dto)
+            () => service.UpdateGoalAsync(userId: 1, goalId: 1, dto)
         );
+    }
+
+    [Fact]
+    public async Task UpdateGoalAsync_ThrowsNotFoundException_WhenGoalIsInAnotherWorkspace()
+    {
+        // Arrange
+        var db = TestDbContextFactory.Create();
+        var user = new User { Username = "Test User", PasswordHash = "testhash" };
+        var anotherUser = new User { Username = "Another User", PasswordHash = "anothertesthash" };
+        var userWorkspace = new Workspace
+        {
+            Name = "User Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var anotherWorkspace = new Workspace
+        {
+            Name = "Another Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = anotherUser, Role = WorkspaceRole.Owner } }
+        };
+        var goal = new Goal
+        {
+            Title = "Another Goal",
+            IsCompleted = false,
+            User = anotherUser,
+            Type = GoalType.Process,
+            Workspace = anotherWorkspace
+        };
+        db.Workspaces.Add(userWorkspace);
+        db.Goals.Add(goal);
+        await db.SaveChangesAsync();
+        var service = new GoalService(db, new FakeWorkspaceService(userWorkspace.Id));
+        var dto = new GoalUpdateDto { Title = "New Title", IsCompleted = true };
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NotFoundException>(
+            () => service.UpdateGoalAsync(user.Id, goal.Id, dto)
+        );
+
+        var goalInDb = await db.Goals.FindAsync(goal.Id);
+
+        Assert.NotNull(goalInDb);
+        Assert.Equal("Another Goal", goalInDb!.Title);
+        Assert.False(goalInDb.IsCompleted);
     }
 
     [Fact]
@@ -218,18 +428,27 @@ public class GoalServiceTests
     {
         // Arrange
         var db = TestDbContextFactory.Create();
-        var service = new GoalService(db);
-
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
-        db.Users.Add(user);
-        await db.SaveChangesAsync();
-
-        var goal = new Goal { Title = "Goal to delete", IsCompleted = false, UserId = user.Id, Type = GoalType.Process };
+        var workspace = new Workspace
+        {
+            Name = "Test Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var goal = new Goal
+        {
+            Title = "Goal to delete",
+            IsCompleted = false,
+            User = user,
+            Type = GoalType.Process,
+            Workspace = workspace
+        };
         db.Goals.Add(goal);
         await db.SaveChangesAsync();
+        var service = new GoalService(db, new FakeWorkspaceService(workspace.Id));
 
         // Act
-        await service.DeleteGoalAsync(goal.Id);
+        await service.DeleteGoalAsync(user.Id, goal.Id);
 
         // Assert
         var deletedGoal = await db.Goals.FindAsync(goal.Id);
@@ -242,12 +461,53 @@ public class GoalServiceTests
     {
         // Arrange
         var db = TestDbContextFactory.Create();
-        var service = new GoalService(db);
+        var service = new GoalService(db, new FakeWorkspaceService());
 
         // Act
-        var act = async () => await service.DeleteGoalAsync(999);
+        var act = async () => await service.DeleteGoalAsync(userId: 1, goalId: 1);
 
         // Assert
         await Assert.ThrowsAsync<NotFoundException>(act);
+    }
+
+    [Fact]
+    public async Task DeleteGoalAsync_ThrowsNotFoundException_WhenGoalIsInAnotherWorkspace()
+    {
+        // Arrange
+        var db = TestDbContextFactory.Create();
+        var user = new User { Username = "Test User", PasswordHash = "testhash" };
+        var anotherUser = new User { Username = "Another User", PasswordHash = "anothertesthash" };
+        var userWorkspace = new Workspace
+        {
+            Name = "User Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var anotherWorkspace = new Workspace
+        {
+            Name = "Another Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = anotherUser, Role = WorkspaceRole.Owner } }
+        };
+        var goal = new Goal
+        {
+            Title = "Another Goal",
+            IsCompleted = false,
+            Type = GoalType.Process,
+            User = anotherUser,
+            Workspace = anotherWorkspace
+        };
+        db.Workspaces.Add(userWorkspace);
+        db.Goals.Add(goal);
+        await db.SaveChangesAsync();
+        var service = new GoalService(db, new FakeWorkspaceService(userWorkspace.Id));
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NotFoundException>(
+            () => service.DeleteGoalAsync(user.Id, goal.Id)
+        );
+
+        var goalInDb = await db.Goals.FindAsync(goal.Id);
+        Assert.NotNull(goalInDb);
     }
 }
