@@ -1,8 +1,7 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Goal } from "../../api/goals.types";
 import { GoalTypeBadge } from "../GoalTypeBadge/GoalTypeBadge";
 import { Button } from "../Button/Button";
-import { AuthContext } from "../../auth/AuthContext";
 import "./GoalHeader.css"
 
 export function GoalHeader({
@@ -14,8 +13,6 @@ export function GoalHeader({
   onRename: (goal: Goal) => void;
   onDelete: () => void; 
 }) {
-  const { user } = useContext(AuthContext);
-
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -51,14 +48,12 @@ export function GoalHeader({
             >
               ✏️ Rename goal
             </Button>
-            {user?.role === "Admin" && (
             <Button
               variant="delete"
               onClick={() => onDelete()}
             >
               ❌ Delete goal
             </Button>
-        )}
           </div>
         )}
       </div>

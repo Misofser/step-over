@@ -7,7 +7,6 @@ type Props = {
   onClose: () => void;
   onEditCompletion: () => void;
   onDelete?: () => void;
-  isAdmin?: boolean;
 };
 
 export function HabitMenu({
@@ -15,7 +14,6 @@ export function HabitMenu({
   onClose,
   onEditCompletion,
   onDelete,
-  isAdmin,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -40,14 +38,12 @@ export function HabitMenu({
         📅 Manage completions
       </Button>
 
-      {isAdmin && (
-        <Button
-					variant="delete"
-					onClick={onDelete}
-				>
-          ❌ Delete habit
-        </Button>
-      )}
+      <Button
+				variant="delete"
+				onClick={onDelete}
+			>
+        ❌ Delete habit
+      </Button>
     </div>
   );
 }

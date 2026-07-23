@@ -1,10 +1,9 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import type { Habit, HabitToCreate } from "../../types/habits.types";
 import { HabitItem } from "../HabitItem/HabitItem";
 import { HabitMenu } from "../HabitMenu/HabitMenu";
 import { EditHabitCompletionModal } from "../EditHabitCompletionModal/EditHabitCompletionModal";
 import NewHabitForm from "../NewHabitForm/NewHabitForm";
-import { AuthContext } from "../../../../auth/AuthContext";
 
 import "./HabitList.css";
 
@@ -18,7 +17,6 @@ type HabitListProps = {
 export function HabitList({  habits, onToggle, onDelete, addHabit }: HabitListProps) {
   const [menuHabitId, setMenuHabitId] = useState<number | null>(null);
   const [editHabit, setEditHabit] = useState<Habit | null>(null);
-  const { user } = useContext(AuthContext);
 
   return (
     <section className="habits-section">
@@ -48,7 +46,6 @@ export function HabitList({  habits, onToggle, onDelete, addHabit }: HabitListPr
                   onDelete?.(habit.id);
                   setMenuHabitId(null);
                 }}
-                isAdmin={user?.role === "Admin"}
               />
             </li>
           ))}

@@ -1,8 +1,5 @@
-import { useContext } from "react";
-
 import type { Task } from "../../api/goal-tasks.types";
 import { Button } from "../Button/Button";
-import { AuthContext } from "../../auth/AuthContext";
 import "./TaskItem.css";
 
 type TaskItemProps = {
@@ -13,8 +10,6 @@ type TaskItemProps = {
 };
 
 export function TaskItem({ task, onToggle, onDelete, onEdit }: TaskItemProps) {
-  const { user } = useContext(AuthContext);
-
   return (
     <li key={task.id} className="task">
       <span className="task-checkbox">
@@ -35,14 +30,12 @@ export function TaskItem({ task, onToggle, onDelete, onEdit }: TaskItemProps) {
         >
           ✏️
         </Button>
-        {user?.role === "Admin" && (
-          <Button
-            variant="delete"
-            onClick={() => onDelete?.(task.id)}
-          >
-            ❌
-          </Button>
-        )}
+        <Button
+          variant="delete"
+          onClick={() => onDelete?.(task.id)}
+        >
+          ❌
+        </Button>
       </span>
     </li>
   );
