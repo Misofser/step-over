@@ -1,13 +1,13 @@
 import { useState } from "react"
-import { Button } from "../Button/Button"
+import { Button } from "../../../../components/Button/Button"
 import "./NewGoalForm.css"
-import type { GoalToCreate } from "../../api/goals.types";
+import type { GoalToCreate } from "../../types/goals.types";
 
 type NewGoalFormProps = {
   onAddGoal: (goalToCreate: GoalToCreate) => void;
 };
 
-export default function NewGoalForm({ onAddGoal }: NewGoalFormProps) {
+export function NewGoalForm({ onAddGoal }: NewGoalFormProps) {
   const [title, setTitle] = useState("");
   const [error, setError] = useState("");
   const [type, setType] = useState<GoalToCreate["type"] | "">("");

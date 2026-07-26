@@ -1,12 +1,12 @@
 import { Link } from "react-router";
-import type { Goal } from "../../api/goals.types";
+import type { Goal } from "../../types/goals.types";
 import './GoalList.css';
 
 type Props = {
   goals: Goal[];
 };
 
-export default function GoalList({ goals }: Props) {
+export function GoalList({ goals }: Props) {
 
   return (
     <div className="goal-list">

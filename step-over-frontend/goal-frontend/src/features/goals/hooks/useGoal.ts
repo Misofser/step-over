@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchGoal } from "../api/goals";
 
-import type { Goal } from "../api/goals.types";
+import type { Goal } from "../types/goals.types";
 
 export function useGoal(goalId: number) {
   const [goal, setGoal] = useState<Goal | null>(null);

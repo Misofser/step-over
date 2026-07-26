@@ -1,18 +1,14 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router";
 
-import { useGoal } from "../../hooks/useGoal";
 import { useTasks } from "../../hooks/useTasks";
 import { useGoalHeatmap } from "../../hooks/useGoalHeatmap";
-import { deleteGoal, updateGoal } from "../../api/goals";
-import { GoalHeader } from "../../components/GoalHeader/GoalHeader";
+import { GoalHeader, EditGoalForm, GoalStatus, useGoal, deleteGoal, updateGoal } from "../../features/goals";
 import { GoalHeatmap } from "../../components/GoalHeatmap/GoalHeatmap";
 import { TaskList } from "../../components/TaskList/TaskList";
 import { HabitList, useHabits } from "../../features/habits";
 import { Modal } from "../../components/Modal/Modal";
-import { EditGoalForm } from "../../components/EditGoalForm/EditGoalForm";
 import { GoalProgress } from "../../components/GoalProgress/GoalProgress";
-import { GoalStatus } from "../../components/GoalStatus/GoalStatus";
 import "./GoalPage.css";
 
 export function GoalPage() {

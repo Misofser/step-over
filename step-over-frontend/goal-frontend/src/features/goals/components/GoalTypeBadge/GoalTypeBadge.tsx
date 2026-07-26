@@ -1,4 +1,4 @@
-import type { GoalType } from "../../api/goals.types";
+import type { GoalType } from "../../types/goals.types";
 import "./GoalTypeBadge.css";
 
 export function GoalTypeBadge({ type }: { type: GoalType }) {

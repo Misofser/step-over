@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
-import type { Goal } from "../../api/goals.types"
-import { fetchGoal, updateGoal } from "../../api/goals"
+import type { Goal } from "../../types/goals.types"
+import { fetchGoal, updateGoal } from "../../api/goals";
 import "./EditGoalForm.css"
 
 interface EditGoalFormProps {
