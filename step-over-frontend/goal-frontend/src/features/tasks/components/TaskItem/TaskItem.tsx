@@ -1,5 +1,5 @@
-import type { Task } from "../../api/goal-tasks.types";
-import { Button } from "../Button/Button";
+import type { Task } from "../../types/tasks.types";
+import { Button } from "../../../../components/Button/Button";
 import "./TaskItem.css";
 
 type TaskItemProps = {

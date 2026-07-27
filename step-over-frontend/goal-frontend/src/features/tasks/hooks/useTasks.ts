@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { fetchTasks, addTask as apiAddTask } from "../api/goal-tasks";
+import { fetchTasks, addTask as apiAddTask } from "../api/tasks";
 
-import type { Task, TaskToCreate } from "../api/goal-tasks.types";
+import type { Task, TaskToCreate } from "../types/tasks.types";
 
 export function useTasks(goalId: number) {
   const [tasks, setTasks] = useState<Task[]>([]);

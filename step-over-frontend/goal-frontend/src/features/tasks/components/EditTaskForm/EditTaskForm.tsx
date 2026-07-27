@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
-import type { Task } from "../../api/goal-tasks.types"
-import { fetchTask, updateTask } from "../../api/goal-tasks"
+import type { Task } from "../../types/tasks.types"
+import { fetchTask, updateTask } from "../../api/tasks";
 import "./EditTaskForm.css"
 
 interface EditTaskFormProps {

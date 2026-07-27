@@ -1,11 +1,11 @@
-.goal-tasks-section {
+.tasks-section {
   margin-top: 2rem;
   padding-top: 1rem;
   border-top: 1px solid #eee;
   text-align: left;
 }
 
-.goal-tasks-section h2 {
+.tasks-section h2 {
   font-size: 1.2rem;
   font-weight: 600;
   margin: 0;

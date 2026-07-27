@@ -1,7 +1,7 @@
 import { useState } from "react"
-import { Button } from "../Button/Button"
+import { Button } from "../../../../components/Button/Button";
 import "./NewTaskForm.css"
-import type { TaskToCreate } from "../../api/goal-tasks.types";
+import type { TaskToCreate } from "../../types/tasks.types";
 
 type NewTaskFormProps = {
   onAddTask: (taskToCreate: TaskToCreate) => void;

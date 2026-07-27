@@ -1,9 +1,9 @@
 import { useState } from "react";
-import type { Task, TaskToCreate } from "../../api/goal-tasks.types";
-import { Modal } from "../Modal/Modal";
+import type { Task, TaskToCreate } from "../../types/tasks.types";
+import { Modal } from "../../../../components/Modal/Modal";
 import { EditTaskForm } from "../EditTaskForm/EditTaskForm";
 import { TaskItem } from "../TaskItem/TaskItem";
-import { updateTaskCompletion, deleteTask } from "../../api/goal-tasks";
+import { updateTaskCompletion, deleteTask } from "../../api/tasks";
 import NewTaskForm from "../NewTaskForm/NewTaskForm";
 import "./TaskList.css";
 
@@ -48,7 +48,7 @@ export function TaskList({ tasks, setTasks, addTask }: TaskListProps) {
 
   return (
     <div>
-      <section className="goal-tasks-section">
+      <section className="tasks-section">
         <h2>Tasks</h2>
         <p className="section-subtitle">Focus and finish</p>
         <NewTaskForm onAddTask={addTask} />

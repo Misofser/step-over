@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getToday } from "../api/today";
 import type { TodayDashboard, TodayItem } from "../types/today.types";
-import { updateTaskCompletion } from "../../../api/goal-tasks";
+import { updateTaskCompletion } from "../../tasks";
 import { toggleHabitCompletion } from "../../habits";
 
 export function useToday() {
