@@ -29,9 +29,7 @@ public class UserService(AppDbContext db, IPasswordHasher<User> passwordHasher, 
 
     public async Task<UserReadDto> GetUserByIdAsync(int id)
     {
-        var user = await _db.Users.FindAsync(id);
-        if (user == null) throw new NotFoundException("User");
-
+        var user = await GetUserAsync(id);
         return new UserReadDto
         {
             Id = user.Id,
@@ -68,9 +66,7 @@ public class UserService(AppDbContext db, IPasswordHasher<User> passwordHasher, 
 
     public async Task UpdateUserAsync(int id, UserUpdateDto updatedUser)
     {
-        var user = await _db.Users.FindAsync(id);
-        if (user == null) throw new NotFoundException("User");
-
+        var user = await GetUserAsync(id);
         if (!string.IsNullOrWhiteSpace(updatedUser.Username))
         {
             bool usernameExists = await _db.Users.AnyAsync(u => u.Username == updatedUser.Username && u.Id != id);
@@ -85,11 +81,16 @@ public class UserService(AppDbContext db, IPasswordHasher<User> passwordHasher, 
     public async Task DeleteUserAsync(int currentUserId, int id)
     {
         if (id == currentUserId) throw new BadRequestException("You cannot delete your own account.");
-
-        var user = await _db.Users.FindAsync(id);
-        if (user == null) throw new NotFoundException("User");
-
+        var user = await GetUserAsync(id);
         _db.Users.Remove(user);
         await _db.SaveChangesAsync();
+    }
+
+    private async Task<User> GetUserAsync(int userId)
+    {
+        var user = await _db.Users.FindAsync(userId);
+        if (user == null) throw new NotFoundException("User");
+
+        return user;
     }
 }
