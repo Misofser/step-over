@@ -8,7 +8,7 @@ export function TodayPage() {
 
   return (
     <div className="app-container">
-      <h1>Today's Agenda</h1>
+      <h1>Focus</h1>
       <TodaySection
         title="Still avoiding"
         items={data.pending}
