@@ -21,13 +21,7 @@ public class AuthService(AppDbContext db, IJwtService jwt, IPasswordHasher<User>
         var user = await _db.Users.FirstOrDefaultAsync(u => u.Username == dto.Username);
         if (user == null) throw new AuthenticationException();
 
-        var result = _passwordHasher.VerifyHashedPassword(
-            user,
-            user.PasswordHash,
-            dto.Password
-        );
-
-        if (result == PasswordVerificationResult.Failed) throw new AuthenticationException();
+        if (!IsPasswordValid(user, dto.Password)) throw new AuthenticationException();
 
         var accessToken = _jwt.GenerateAccessToken(user.Id, user.Username, user.Role);
         var refreshToken = _jwt.GenerateRefreshToken();
@@ -83,6 +77,20 @@ public class AuthService(AppDbContext db, IJwtService jwt, IPasswordHasher<User>
         await _db.SaveChangesAsync();
     }
 
+    public async Task ChangePasswordAsync(int userId, ChangePasswordDto dto)
+    {
+        var user = await _db.Users.FindAsync(userId);
+        if (user == null) throw new NotFoundException("User");
+
+        if (!IsPasswordValid(user, dto.CurrentPassword))
+            throw new BadRequestException("Current password is incorrect");
+        if (dto.CurrentPassword == dto.NewPassword)
+            throw new BadRequestException("New password must be different from the current password");
+
+        user.PasswordHash = _passwordHasher.HashPassword(user, dto.NewPassword);
+        await _db.SaveChangesAsync();
+    }
+
     private RefreshToken BuildRefreshToken(User user, string refreshToken)
     {
         return new RefreshToken
@@ -97,5 +105,13 @@ public class AuthService(AppDbContext db, IJwtService jwt, IPasswordHasher<User>
     {
         if (token.ExpiresAt < DateTime.UtcNow) throw new AuthenticationException();
         if (token.RevokedAt != null) throw new AuthenticationException();
+    }
+
+    private bool IsPasswordValid(User user, string password)
+    {
+        return _passwordHasher.VerifyHashedPassword(
+            user,
+            user.PasswordHash,
+            password) == PasswordVerificationResult.Success;
     }
 }

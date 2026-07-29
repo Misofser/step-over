@@ -11,11 +11,11 @@ public class AuthServiceTests
         // Arrange
         var db = TestDbContextFactory.Create();
 
-        var user = new User { Username = "Test User", PasswordHash = "testhash" };
+        var user = new User { Username = "Test User", PasswordHash = "hash:Password123" };
         db.Users.Add(user);
         await db.SaveChangesAsync();
 
-        var service = new AuthService(db, new FakeJwtService(), new FakePasswordHasher(true));
+        var service = new AuthService(db, new FakeJwtService(), new FakePasswordHasher());
         var dto = new LoginDto { Username = "Test User", Password = "Password123" };
 
         // Act
@@ -46,7 +46,7 @@ public class AuthServiceTests
     {
         // Arrange
         var db = TestDbContextFactory.Create();
-        var service = new AuthService(db, new FakeJwtService(), new FakePasswordHasher(true));
+        var service = new AuthService(db, new FakeJwtService(), new FakePasswordHasher());
 
         var dto = new LoginDto { Username = "Test User", Password = "Password123" };
 
@@ -66,7 +66,7 @@ public class AuthServiceTests
         db.Users.Add(user);
         await db.SaveChangesAsync();
 
-        var service = new AuthService(db, new FakeJwtService(), new FakePasswordHasher(false));
+        var service = new AuthService(db, new FakeJwtService(), new FakePasswordHasher());
 
         var dto = new LoginDto{ Username = "Test User", Password = "WrongPassword" };
 
@@ -92,7 +92,7 @@ public class AuthServiceTests
         };
         db.RefreshTokens.Add(oldToken);
         await db.SaveChangesAsync();
-        var service = new AuthService(db, new FakeJwtService(), new FakePasswordHasher(false));
+        var service = new AuthService(db, new FakeJwtService(), new FakePasswordHasher());
 
         // Act
         var result = await service.RefreshAsync(oldRefreshToken);
@@ -122,7 +122,7 @@ public class AuthServiceTests
     {
         // Arrange
         var db = TestDbContextFactory.Create();
-        var service = new AuthService(db, new FakeJwtService(), new FakePasswordHasher(true));
+        var service = new AuthService(db, new FakeJwtService(), new FakePasswordHasher());
 
         // Act & Assert
         await Assert.ThrowsAsync<AuthenticationException>(() =>
@@ -144,7 +144,7 @@ public class AuthServiceTests
             ExpiresAt = DateTime.UtcNow.AddDays(-1)
         });
         await db.SaveChangesAsync();
-        var service = new AuthService(db, jwt, new FakePasswordHasher(true));
+        var service = new AuthService(db, jwt, new FakePasswordHasher());
 
         // Act & Assert
         await Assert.ThrowsAsync<AuthenticationException>(() =>
@@ -167,7 +167,7 @@ public class AuthServiceTests
             RevokedAt = DateTime.UtcNow
         });
         await db.SaveChangesAsync();
-        var service = new AuthService(db, jwt, new FakePasswordHasher(true));
+        var service = new AuthService(db, jwt, new FakePasswordHasher());
 
         // Act & Assert
         await Assert.ThrowsAsync<AuthenticationException>(() =>
@@ -186,7 +186,7 @@ public class AuthServiceTests
         var stored = new RefreshToken { TokenHash = hash, User = user, ExpiresAt = DateTime.UtcNow.AddDays(1) };
         db.RefreshTokens.Add(stored);
         await db.SaveChangesAsync();
-        var service = new AuthService(db, new FakeJwtService(), new FakePasswordHasher(true));
+        var service = new AuthService(db, new FakeJwtService(), new FakePasswordHasher());
 
         // Act
         await service.LogoutAsync(token);
@@ -203,7 +203,7 @@ public class AuthServiceTests
     {
         // Arrange
         var db = TestDbContextFactory.Create();
-        var service = new AuthService(db, new FakeJwtService(), new FakePasswordHasher(true));
+        var service = new AuthService(db, new FakeJwtService(), new FakePasswordHasher());
 
         // Act
         await service.LogoutAsync(null);
@@ -220,7 +220,7 @@ public class AuthServiceTests
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         db.RefreshTokens.Add(new RefreshToken { TokenHash = "other-hash", User = user, ExpiresAt = DateTime.UtcNow.AddDays(1) });
         await db.SaveChangesAsync();
-        var service = new AuthService(db, new FakeJwtService(), new FakePasswordHasher(true));
+        var service = new AuthService(db, new FakeJwtService(), new FakePasswordHasher());
 
         var token = "real-refresh-token";
 
@@ -230,5 +230,78 @@ public class AuthServiceTests
         // Assert
         var stored = db.RefreshTokens.Single();
         Assert.Null(stored.RevokedAt);
+    }
+
+    [Fact]
+    public async Task ChangePasswordAsync_ValidPasswords_ChangesPasswordHash()
+    {
+        // Arrange
+        using var db = TestDbContextFactory.Create();
+        var passwordHasher = new FakePasswordHasher();
+        var user = new User { Username = "Test User", PasswordHash = "hash:OldPassword123" };
+        db.Users.Add(user);
+        await db.SaveChangesAsync();
+
+        var service = new AuthService(db, new FakeJwtService(), new FakePasswordHasher());
+        var dto = new ChangePasswordDto { CurrentPassword = "OldPassword123", NewPassword = "NewPassword123" };
+
+        // Act
+        await service.ChangePasswordAsync(user.Id, dto);
+
+        // Assert
+        var userInDb = await db.Users.FindAsync(user.Id);
+        Assert.NotNull(userInDb);
+        Assert.Equal("hash:NewPassword123", userInDb.PasswordHash);
+    }
+
+    [Fact]
+    public async Task ChangePasswordAsync_UserNotFound_ThrowsNotFoundException()
+    {
+        // Arrange
+        using var db = TestDbContextFactory.Create();
+        var service = new AuthService(db, new FakeJwtService(), new FakePasswordHasher());
+        var dto = new ChangePasswordDto { CurrentPassword = "OldPassword123", NewPassword = "NewPassword123" };
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NotFoundException>(
+            () => service.ChangePasswordAsync(1, dto));
+    }
+
+    [Fact]
+    public async Task ChangePasswordAsync_IncorrectCurrentPassword_ThrowsBadRequestException()
+    {
+        // Arrange
+        using var db = TestDbContextFactory.Create();
+        var user = new User { Username = "Test User", PasswordHash = "hash:OldPassword123" };
+        db.Users.Add(user);
+        await db.SaveChangesAsync();
+
+        var service = new AuthService(db, new FakeJwtService(), new FakePasswordHasher());
+        var dto = new ChangePasswordDto { CurrentPassword = "IncorrectPassword", NewPassword = "NewPassword123" };
+
+        // Act & Assert
+        var ex = await Assert.ThrowsAsync<BadRequestException>(
+            () => service.ChangePasswordAsync(user.Id, dto));
+
+        Assert.Equal("Current password is incorrect", ex.Message);
+    }
+
+    [Fact]
+    public async Task ChangePasswordAsync_SamePassword_ThrowsBadRequestException()
+    {
+        // Arrange
+        using var db = TestDbContextFactory.Create();
+        var user = new User { Username = "Test User", PasswordHash = "hash:Password123" };
+        db.Users.Add(user);
+        await db.SaveChangesAsync();
+
+        var service = new AuthService(db, new FakeJwtService(), new FakePasswordHasher());
+        var dto = new ChangePasswordDto { CurrentPassword = "Password123", NewPassword = "Password123" };
+
+        // Act & Assert
+        var ex = await Assert.ThrowsAsync<BadRequestException>(
+            () => service.ChangePasswordAsync(user.Id, dto));
+
+        Assert.Equal("New password must be different from the current password", ex.Message);
     }
 }

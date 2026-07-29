@@ -148,7 +148,7 @@ public class UserServiceTests
         // Assert
         var userInDb = await db.Users.FindAsync(result.Id);
         Assert.NotNull(userInDb);
-        Assert.Equal("fake-hash", userInDb.PasswordHash);
+        Assert.Equal("hash:Password123", userInDb.PasswordHash);
     }
 
     [Fact]

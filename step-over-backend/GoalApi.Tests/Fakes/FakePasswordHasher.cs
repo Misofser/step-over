@@ -2,16 +2,16 @@ using Microsoft.AspNetCore.Identity;
 
 namespace GoalApi.Tests.Fakes;
 
-public sealed class FakePasswordHasher(bool success = true) : IPasswordHasher<User>
+public sealed class FakePasswordHasher : IPasswordHasher<User>
 {
-    private readonly bool _success = success;
-
     public string HashPassword(User user, string password)
-        => "fake-hash";
+        => $"hash:{password}";
 
     public PasswordVerificationResult VerifyHashedPassword(
         User user,
         string hashedPassword,
         string providedPassword)
-        => _success ? PasswordVerificationResult.Success : PasswordVerificationResult.Failed;
+        => hashedPassword == $"hash:{providedPassword}"
+            ? PasswordVerificationResult.Success
+            : PasswordVerificationResult.Failed;
 }
