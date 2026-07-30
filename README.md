@@ -1,8 +1,6 @@
 # StepOver App
 
-A full-stack collaborative goal planner with role-based access.
-The application allows multiple users to create, manage, and track shared goals, with permissions and responsibilities defined by user roles.
-It helps the group stay aligned, visualize progress, and work toward common objectives.
+A full-stack goal planning application focused on personal productivity, designed with future support for collaborative workspaces. Users can organize goals, habits, and tasks, and track their progress through analytics and structured planning.
 
 Built with **ASP.NET Core** on the backend and **React + TypeScript** on the frontend.
 
@@ -10,7 +8,17 @@ Built with **ASP.NET Core** on the backend and **React + TypeScript** on the fro
 
 ## Preview
 
-![StepOver App screenshot](./screenshots/app.png)
+### Today Dashboard
+Track today's habits and tasks.
+![Today Dashboard](./screenshots/app_1.png)
+
+### Goals
+Manage personal goals.
+![Goals](./screenshots/app_2.png)
+
+### Goal Details
+View habits, tasks, and progress for a goal.
+![Goal Details](./screenshots/app_3.png)
 
 ## Tech Stack
 
