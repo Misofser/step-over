@@ -9,8 +9,8 @@ using GoalApi.Services.Infrastructure.Interfaces;
 namespace GoalApi.Controllers;
 
 /// <summary>
-/// Handles user authentication and session management.
-/// The me endpoint requires <b>authentication</b>.
+/// Handles user authentication, password management, and session management.
+/// The me and change-password endpoints require <b>authentication</b>.
 /// All other endpoints are publicly accessible.
 /// </summary>
 [ApiController]
@@ -76,6 +76,27 @@ public class AuthController(IAuthService authService, ICurrentUserService curren
         };
 
         return Ok(dto);
+    }
+
+    /// <summary>
+    /// Changes the password of the currently authenticated user.
+    /// </summary>
+    /// <param name="dto">Current and new password</param>
+    /// <response code="204">Password changed successfully</response>
+    /// <response code="400">The request contains invalid data</response>ы
+    /// <response code="401">User is unauthorized</response>
+    /// <response code="404">User was not found</response>
+    [Authorize]
+    [HttpPost("change-password")]
+    [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ChangePassword(ChangePasswordDto dto)
+    {
+        var userId = _currentUser.GetUserId();
+        await _authService.ChangePasswordAsync(userId, dto);
+        return NoContent();
     }
 
     /// <summary>
