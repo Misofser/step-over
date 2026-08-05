@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { Link, NavLink } from "react-router";
 
-import { AuthContext } from "../../auth/AuthContext";
+import { AuthContext } from "../../features/auth";
 import "./Navbar.css";
 
 const getNavLinkClass = ({ isActive }: { isActive: boolean }) =>

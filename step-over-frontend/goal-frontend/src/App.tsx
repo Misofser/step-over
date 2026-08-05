@@ -5,7 +5,7 @@ import { GoalsPage } from "./pages/GoalsPage"
 import { GoalPage } from './pages/GoalPage/GoalPage'
 import { TodayPage } from './pages/TodayPage/TodayPage'
 import { AdminUsersPage } from './pages/AdminUsersPage/AdminUsersPage'
-import { ProtectedRoute } from "./auth/ProtectedRoute"
+import { ProtectedRoute } from './features/auth'
 import { Navbar } from './components/Navbar/Navbar'
 import { NotFoundPage } from './pages/NotFoundPage/NotFoundPage'
 

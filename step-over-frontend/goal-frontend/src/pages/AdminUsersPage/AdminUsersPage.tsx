@@ -4,7 +4,7 @@ import { fetchUsers, addUser, deleteUser } from "../../api/users"
 import { Modal } from "../../components/Modal/Modal"
 import { Button } from "../../components/Button/Button"
 import { UserForm } from "../../components/UserForm/UserForm"
-import { AuthContext } from "../../auth/AuthContext"
+import { AuthContext } from "../../features/auth"
 import type { User } from "../../api/users.types"
 import { EditUserForm } from "../../components/EditUserForm/EditUserForm"
 

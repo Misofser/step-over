@@ -1,7 +1,6 @@
 import { useState, useContext } from "react"
 import { Navigate, useNavigate } from "react-router"
-import { AuthContext } from "../../auth/AuthContext";
-import { login as loginApi } from "../../api/auth";
+import { AuthContext, login as loginApi } from "../../features/auth";
 import "./LoginPage.css";
 
 export function LoginPage() {

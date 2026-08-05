@@ -1,7 +1,7 @@
 import { Navigate } from "react-router"
 import { useContext } from "react"
 import type { ReactNode } from "react"
-import { AuthContext } from "./AuthContext"
+import { AuthContext } from "../context/AuthContext";
 
 
 interface ProtectedRouteProps {
