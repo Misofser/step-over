@@ -1,4 +1,5 @@
 import { authenticatedFetch, baseFetch } from '../../../lib/api-client';
+import type { ChangePasswordRequest } from '../types/auth.types';
 import type { User } from '../../../api/users.types'
 
 export async function login(username: string, password: string): Promise<User> {
@@ -21,4 +22,14 @@ export function logout() {
   return baseFetch("/auth/logout", {
     method: "POST",
   });
+}
+
+export async function changePassword(data: ChangePasswordRequest): Promise<void> {
+  const res = await authenticatedFetch("/auth/change-password", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) throw new Error("Failed to change password.");
 }
