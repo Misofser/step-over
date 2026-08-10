@@ -60,7 +60,7 @@ dotnet run
 Run frontend
 
 ```bash
-cd step-over-frontend/goal-frontend
+cd step-over-frontend
 npm install
 npm run dev
 ```
