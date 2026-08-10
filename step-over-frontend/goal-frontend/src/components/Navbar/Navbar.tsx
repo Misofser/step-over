@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { Link, NavLink } from "react-router";
 
 import { AuthContext } from "../../features/auth";
+import { UserDropdown } from "../UserDropdown/UserDropdown";
 import "./Navbar.css";
 
 const getNavLinkClass = ({ isActive }: { isActive: boolean }) =>
@@ -32,10 +33,10 @@ export const Navbar = () => {
       )}
       <div className="navbar-right">
         {isAuthenticated && user ? (
-          <>
-            <span className="navbar-user">Hi, {user.username}!</span>
-            <button onClick={logout} className="navbar-button">Logout</button>
-          </>
+          <UserDropdown
+            username={user.username}
+            logout={logout}
+          />
         ) : (
           <Link to="/login" className="navbar-button">Login</Link>
         )}
