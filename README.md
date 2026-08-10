@@ -9,15 +9,12 @@ Built with **ASP.NET Core** on the backend and **React + TypeScript** on the fro
 ## Preview
 
 ### Today Dashboard
-Track today's habits and tasks.
 ![Today Dashboard](./screenshots/app_1.png)
 
 ### Goals
-Manage personal goals.
 ![Goals](./screenshots/app_2.png)
 
 ### Goal Details
-View habits, tasks, and progress for a goal.
 ![Goal Details](./screenshots/app_3.png)
 
 ## Tech Stack
