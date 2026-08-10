@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { Modal } from "../Modal/Modal";
-import { Button } from "../Button/Button";
-import { ChangePasswordForm } from "../../features/auth";
+import { Modal } from "../../../../components/Modal/Modal";
+import { Button } from "../../../../components/Button/Button";
+import { ChangePasswordForm } from "../../../auth";
 import "./UserDropdown.css";
 
 type UserDropdownProps = {

@@ -1,6 +1,6 @@
 import { authenticatedFetch, baseFetch } from '../../../lib/api-client';
 import type { ChangePasswordRequest } from '../types/auth.types';
-import type { User } from '../../../api/users.types'
+import type { User } from '../../users';
 
 export async function login(username: string, password: string): Promise<User> {
   const response = await baseFetch("/auth/login", {

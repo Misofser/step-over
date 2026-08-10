@@ -1,5 +1,5 @@
-import { authenticatedFetch } from '../lib/api-client';
-import type { User, UserToUpdate } from './users.types'
+import { authenticatedFetch } from '../../../lib/api-client';
+import type { User, UserToUpdate } from '../types/users.types'
 
 export async function fetchUsers(): Promise<User[]> {
   const res = await authenticatedFetch(`/users`);

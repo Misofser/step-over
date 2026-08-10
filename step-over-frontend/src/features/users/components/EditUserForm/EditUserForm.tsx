@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
-import type { User } from "../../api/users.types"
-import { fetchUser, updateUser } from "../../api/users"
+import type { User } from "../../types/users.types"
+import { fetchUser, updateUser } from "../../api/users";
 import "./EditUserForm.css"
 
 interface EditUserFormProps {

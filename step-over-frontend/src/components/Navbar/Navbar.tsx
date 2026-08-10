@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { Link, NavLink } from "react-router";
 
 import { AuthContext } from "../../features/auth";
-import { UserDropdown } from "../UserDropdown/UserDropdown";
+import { UserDropdown } from "../../features/users";
 import "./Navbar.css";
 
 const getNavLinkClass = ({ isActive }: { isActive: boolean }) =>
