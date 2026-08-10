@@ -83,7 +83,7 @@ public class AuthController(IAuthService authService, ICurrentUserService curren
     /// </summary>
     /// <param name="dto">Current and new password</param>
     /// <response code="204">Password changed successfully</response>
-    /// <response code="400">The request contains invalid data</response>ы
+    /// <response code="400">The request contains invalid data</response>
     /// <response code="401">User is unauthorized</response>
     /// <response code="404">User was not found</response>
     [Authorize]
