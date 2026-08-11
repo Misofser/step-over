@@ -1,4 +1,4 @@
-import type { GoalHeatmapDay } from "../api/goal-analytics/goal-heatmap.types";
+import type { GoalHeatmapDay } from "../types/goal-heatmap.types";
 
 export function getHeatmapIntensity(
   completed: number,

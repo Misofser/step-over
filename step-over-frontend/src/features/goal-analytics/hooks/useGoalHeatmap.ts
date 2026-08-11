@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { fetchGoalHeatmap } from "../api/goal-analytics/goal-heatmap";
-import type { HeatmapCell } from "../api/goal-analytics/goal-heatmap.types";
+import { fetchGoalHeatmap } from "../api/goal-heatmap";
+import type { HeatmapCell } from "../types/goal-heatmap.types";
 import { transformHeatmap } from "../utils/heatmap";
 
 export function useGoalHeatmap(goalId: number, days: number = 30) {

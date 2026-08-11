@@ -1,4 +1,4 @@
-import { formatHeatmapDate, formatHeatmapProgress } from "../../../utils/heatmap.tooltip";
+import { formatHeatmapDate, formatHeatmapProgress } from "../../utils/heatmap.tooltip";
 import './GoalHeatmapTooltip.css';
 
 type Props = {

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import type { HeatmapCell } from "../../api/goal-analytics/goal-heatmap.types";
-import { GoalHeatmapTooltip } from "./GoalHeatmapTooltip/GoalHeatmapTooltip";
+import type { HeatmapCell } from "../../types/goal-heatmap.types";
+import { GoalHeatmapTooltip } from "../GoalHeatmapTooltip/GoalHeatmapTooltip";
 import { getHeatmapIntensity } from "../../utils/heatmap";
 import { getLegendLabel } from "../../utils/heatmap.legend";
 
