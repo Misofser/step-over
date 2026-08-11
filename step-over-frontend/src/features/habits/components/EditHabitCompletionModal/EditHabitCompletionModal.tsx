@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Modal } from "../../../../components/Modal/Modal";
+import { Modal } from "@/components/Modal/Modal";
 import "./EditHabitCompletionModal.css";
 import { useHabitCompletionStatus } from "../../hooks/useHabitCompletionStatus";
 import type { Habit } from "../../types/habits.types";

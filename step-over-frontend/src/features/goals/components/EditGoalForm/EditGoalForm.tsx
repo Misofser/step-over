@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import type { Goal } from "../../types/goals.types"
+import type { Goal } from "../../types/goals.types";
 import { fetchGoal, updateGoal } from "../../api/goals";
 import "./EditGoalForm.css"
 

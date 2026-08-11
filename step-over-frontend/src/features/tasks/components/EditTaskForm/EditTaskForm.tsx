@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import type { Task } from "../../types/tasks.types"
+import type { Task } from "../../types/tasks.types";
 import { fetchTask, updateTask } from "../../api/tasks";
 import "./EditTaskForm.css"
 

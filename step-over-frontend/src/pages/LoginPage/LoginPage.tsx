@@ -1,6 +1,6 @@
 import { useState, useContext } from "react"
 import { Navigate, useNavigate } from "react-router"
-import { AuthContext, login as loginApi } from "../../features/auth";
+import { AuthContext, login as loginApi } from "@/features/auth";
 import "./LoginPage.css";
 
 export function LoginPage() {

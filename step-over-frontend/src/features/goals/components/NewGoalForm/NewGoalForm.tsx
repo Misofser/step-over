@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Button } from "../../../../components/Button/Button"
+import { Button } from "@/components/Button/Button";
 import "./NewGoalForm.css"
 import type { GoalToCreate } from "../../types/goals.types";
 

@@ -1,4 +1,4 @@
-import { API_URL } from "../../../config";
+import { API_URL } from "@/config";
 import type { GoalHeatmapDay } from "../types/goal-heatmap.types";
 
 export async function fetchGoalHeatmap(goalId: number, days: number = 30

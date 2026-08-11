@@ -1,4 +1,4 @@
-import { authenticatedFetch } from '../../../api/api-client';
+import { authenticatedFetch } from "@/api/api-client";
 import type { Task, TaskToUpdate, TaskToCreate } from '../types/tasks.types'
 
 export async function fetchTasks(goalId: number): Promise<Task[]> {

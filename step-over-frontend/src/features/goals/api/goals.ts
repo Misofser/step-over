@@ -1,4 +1,4 @@
-import { authenticatedFetch } from "../../../api/api-client";
+import { authenticatedFetch } from "@/api/api-client";
 import type { Goal, GoalToCreate, DataToUpdate } from "../types/goals.types";
 
 export async function fetchGoals(): Promise<Goal[]> {

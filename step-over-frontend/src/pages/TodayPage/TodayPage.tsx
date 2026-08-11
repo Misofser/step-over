@@ -1,4 +1,4 @@
-import { useToday, TodaySection } from "../../features/today";
+import { useToday, TodaySection } from "@/features/today";
 
 export function TodayPage() {
   const { data, loading, toggleItem } = useToday();

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { getToday } from "../api/today";
 import type { TodayDashboard, TodayItem } from "../types/today.types";
-import { updateTaskCompletion } from "../../tasks";
-import { toggleHabitCompletion } from "../../habits";
+import { updateTaskCompletion } from "@/features/tasks";
+import { toggleHabitCompletion } from "@/features/habits";
 
 export function useToday() {
   const [data, setData] = useState<TodayDashboard | null>(null);

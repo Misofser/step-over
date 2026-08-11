@@ -1,4 +1,4 @@
-import { authenticatedFetch } from "../../../api/api-client";
+import { authenticatedFetch } from "@/api/api-client";
 import type { Habit, HabitToCreate, HabitCompletionStatus } from "../types/habits.types";
 
 export async function fetchHabits(goalId: number): Promise<Habit[]> {

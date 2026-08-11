@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
-import type { Goal, GoalToCreate } from "../features/goals"
-import { GoalList, NewGoalForm, addGoal as apiAddGoal, fetchGoals  } from '../features/goals'
+import type { Goal, GoalToCreate } from "@/features/goals";
+import { GoalList, NewGoalForm, fetchGoals, addGoal as apiAddGoal } from "@/features/goals";
 
 export function GoalsPage() {
   const [goals, setGoals] = useState<Goal[]>([]);

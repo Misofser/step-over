@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import type { User } from "../../types/users.types"
+import type { User } from "../../types/users.types";
 import { fetchUser, updateUser } from "../../api/users";
 import "./EditUserForm.css"
 

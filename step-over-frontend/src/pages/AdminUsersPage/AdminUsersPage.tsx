@@ -1,10 +1,10 @@
 import { useEffect, useState, useContext } from "react"
 import "./AdminUsersPage.css"
-import { UserForm, EditUserForm, fetchUsers, deleteUser, addUser } from "../../features/users"
-import type { User } from "../../features/users"
-import { Modal } from "../../components/Modal/Modal"
-import { Button } from "../../components/Button/Button"
-import { AuthContext } from "../../features/auth"
+import { UserForm, EditUserForm, fetchUsers, addUser, deleteUser } from "@/features/users"
+import type { User } from "@/features/users"
+import { Modal } from "@/components/Modal/Modal"
+import { Button } from "@/components/Button/Button"
+import { AuthContext } from "@/features/auth"
 
 export function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([]);

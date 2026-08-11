@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Task, TaskToCreate } from "../../types/tasks.types";
-import { Modal } from "../../../../components/Modal/Modal";
+import { Modal } from "@/components/Modal/Modal";
 import { EditTaskForm } from "../EditTaskForm/EditTaskForm";
 import { TaskItem } from "../TaskItem/TaskItem";
 import { updateTaskCompletion, deleteTask } from "../../api/tasks";

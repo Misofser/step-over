@@ -1,4 +1,4 @@
-import { authenticatedFetch } from "../../../api/api-client";
+import { authenticatedFetch } from "@/api/api-client";
 import type { TodayDashboard } from "../types/today.types";
 
 export async function getToday(): Promise<TodayDashboard> {

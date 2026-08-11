@@ -1,5 +1,5 @@
 import type { Task } from "../../types/tasks.types";
-import { Button } from "../../../../components/Button/Button";
+import { Button } from "@/components/Button/Button";
 import "./TaskItem.css";
 
 type TaskItemProps = {

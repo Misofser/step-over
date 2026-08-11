@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Button } from "../../../../components/Button/Button";
+import { Button } from "@/components/Button/Button";
 import "./HabitMenu.css";
 
 type Props = {

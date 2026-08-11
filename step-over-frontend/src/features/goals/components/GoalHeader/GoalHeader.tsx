@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { Goal } from "../../types/goals.types";
 import { GoalTypeBadge } from "../GoalTypeBadge/GoalTypeBadge";
-import { Button } from "../../../../components/Button/Button";
+import { Button } from "@/components/Button/Button";
 import "./GoalHeader.css"
 
 export function GoalHeader({
