@@ -1,4 +1,4 @@
-import { authenticatedFetch, baseFetch } from '../../../lib/api-client';
+import { authenticatedFetch, baseFetch } from '../../../api/api-client';
 import type { ChangePasswordRequest } from '../types/auth.types';
 import type { User } from '../../users';
 
