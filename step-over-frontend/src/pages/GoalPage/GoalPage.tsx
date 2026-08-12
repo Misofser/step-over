@@ -33,7 +33,7 @@ export function GoalPage() {
     try {
       await deleteGoal(goal.id);
       navigate("/goals");
-    } catch (e) {
+    } catch {
       alert("Could not delete goal");
     }
   };
@@ -46,7 +46,7 @@ export function GoalPage() {
       await updateGoal(goal.id, { isCompleted: updated.isCompleted });
 
       setGoal(updated);
-    } catch (e) {
+    } catch {
       alert("Could not update goal");
     }
   };

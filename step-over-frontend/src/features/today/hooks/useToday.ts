@@ -63,7 +63,7 @@ export function useToday() {
       if (item.type === "Habit") {
         await toggleHabitCompletion(item.entityId, today);
       }
-    } catch (e) {
+    } catch {
       setData(originalData);
     }
   };

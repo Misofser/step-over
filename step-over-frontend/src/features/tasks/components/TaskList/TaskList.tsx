@@ -24,7 +24,7 @@ export function TaskList({ tasks, setTasks, addTask }: TaskListProps) {
           t.id === task.id ? { ...t, isCompleted: !t.isCompleted } : t
         )
       );
-    } catch (e) {
+    } catch {
       alert("Could not update task completion")
     }
   };
@@ -33,7 +33,7 @@ export function TaskList({ tasks, setTasks, addTask }: TaskListProps) {
     try {
       await deleteTask(id);
       setTasks(prev => prev.filter(task => task.id !== id));
-    } catch (e) {
+    } catch {
       alert("Could not delete task");
     }
   };

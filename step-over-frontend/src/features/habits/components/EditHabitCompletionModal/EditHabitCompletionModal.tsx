@@ -31,7 +31,7 @@ export function EditHabitCompletionModal({
     }
 
     loadStatus(date);
-  }, [date, habit.isCompletedToday, loadStatus]);
+  }, [date, today, habit.isCompletedToday, loadStatus, setIsCompleted]);
 
   const handleSubmit = async () => {
     await onSave(date);

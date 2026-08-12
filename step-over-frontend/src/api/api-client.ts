@@ -8,8 +8,7 @@ export async function baseFetch(input: string, options: RequestInit = {}) {
 }
 
 async function retryRequest(fn: () => Promise<Response>) {
-  let res = await fn();
-
+  const res = await fn();
   if (res.status !== 401) return res;
 
   const refreshRes = await baseFetch("/auth/refresh", {

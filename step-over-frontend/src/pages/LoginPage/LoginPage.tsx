@@ -1,11 +1,10 @@
 import { useState, useContext } from "react"
-import { Navigate, useNavigate } from "react-router"
+import { Navigate } from "react-router"
 import { AuthContext, login as loginApi } from "@/features/auth";
 import "./LoginPage.css";
 
 export function LoginPage() {
   const { isAuthenticated, loading, login } = useContext(AuthContext);
-  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -25,9 +24,8 @@ export function LoginPage() {
     try {
       const data = await loginApi(username, password);
       login(data);
-      navigate("/goals");
-    } catch (err: any) {
-      setError(err.message || "Invalid username or password");
+    } catch {
+      setError("Invalid username or password");
     }
   }
 
