@@ -37,7 +37,7 @@ export function GoalPage() {
       alert("Could not delete goal");
     }
   };
-  
+
   const handleToggleCompletion = async () => {
     if (!goal) return;
 
@@ -50,7 +50,7 @@ export function GoalPage() {
       alert("Could not update goal");
     }
   };
-  
+
   const handleSavedGoal = (id: number, newTitle: string) => {
     if (!goal) return;
 

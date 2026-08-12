@@ -1,19 +1,8 @@
-import { createContext, useState, useEffect } from "react"
-import type { ReactNode } from "react"
-import { getMe, logout as logoutApi } from "../api/auth"
+import { useState, useEffect } from "react";
+import type { ReactNode } from "react";
+import { getMe, logout as logoutApi } from "../api/auth";
 import type { User } from "@/features/users";
-
-interface AuthContextType {
-  isAuthenticated: boolean;
-  user: User | null;
-  login: (user: User) => void;
-  logout: () => void;
-  loading: boolean,
-}
-
-export const AuthContext = createContext<AuthContextType>(
-  {} as AuthContextType
-);
+import { AuthContext } from "../context/AuthContext";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
