@@ -28,3 +28,23 @@ jobs:
       - run: npm ci
 
       - run: npm run lint
+
+  test:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: step-over-backend
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '8.0.x'
+
+      - run: dotnet restore MySolution.sln
+
+      - run: dotnet build MySolution.sln --configuration Release --no-restore
+
+      - run: dotnet test MySolution.sln --configuration Release --no-build
