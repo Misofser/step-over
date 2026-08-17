@@ -10,7 +10,7 @@ public class GoalTaskServiceTests
     public async Task GetTasksByGoalAsync_ShouldReturnTasksForGoal()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var workspace = new Workspace
         {
@@ -56,7 +56,7 @@ public class GoalTaskServiceTests
     public async Task GetTasksByGoalAsync_ShouldReturnEmptyList_WhenNoTasks()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var workspace = new Workspace
         {
@@ -89,7 +89,7 @@ public class GoalTaskServiceTests
     public async Task GetTasksByGoalAsync_ThrowsNotFoundException_WhenGoalNotFound()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var service = new GoalTaskService(db, new FakeWorkspaceService());
 
         // Act & Assert
@@ -102,7 +102,7 @@ public class GoalTaskServiceTests
     public async Task GetTasksByGoalAsync_ThrowsNotFoundException_WhenGoalIsInAnotherWorkspace()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var anotherUser = new User { Username = "Another User", PasswordHash = "anothertesthash" };
         var userWorkspace = new Workspace
@@ -142,7 +142,7 @@ public class GoalTaskServiceTests
     public async Task GetTaskByIdAsync_ReturnsGoalTask_WhenExists()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var workspace = new Workspace
         {
@@ -181,7 +181,7 @@ public class GoalTaskServiceTests
     public async Task GetTaskByIdAsync_ThrowsNotFoundException_WhenTaskDoesNotExist()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var service = new GoalTaskService(db, new FakeWorkspaceService());
 
         // Act & Assert
@@ -194,7 +194,7 @@ public class GoalTaskServiceTests
     public async Task GetTaskByIdAsync_ThrowNotFoundException_WhenTaskIsInAnotherWorkspace()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var anotherUser = new User { Username = "Another User", PasswordHash = "anothertesthash" };
         var userWorkspace = new Workspace
@@ -233,7 +233,7 @@ public class GoalTaskServiceTests
     public async Task AddTaskAsync_ShouldCreateTask()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var workspace = new Workspace
         {
@@ -274,7 +274,7 @@ public class GoalTaskServiceTests
     public async Task AddTaskAsync_ThrowsNotFoundException_WhenGoalDoesNotExist()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var service = new GoalTaskService(db, new FakeWorkspaceService());
 
         var dto = new GoalTaskCreateDto { Title = "New Task" };
@@ -289,7 +289,7 @@ public class GoalTaskServiceTests
     public async Task AddTaskAsync_AddsExactlyOneTask()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var workspace = new Workspace
         {
@@ -323,7 +323,7 @@ public class GoalTaskServiceTests
     public async Task AddTaskAsync_ThrowsNotFoundException_WhenGoalIsInAnotherWorkspace()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var anotherUser = new User { Username = "Another User", PasswordHash = "anothertesthash" };
         var userWorkspace = new Workspace
@@ -363,7 +363,7 @@ public class GoalTaskServiceTests
     public async Task UpdateCompletionAsync_ShouldUpdateIsCompleted()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var workspace = new Workspace
         {
@@ -406,7 +406,7 @@ public class GoalTaskServiceTests
     public async Task UpdateCompletionAsync_ThrowsNotFoundException_WhenTaskNotFound()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var service = new GoalTaskService(db, new FakeWorkspaceService());
 
         var dto = new GoalTaskUpdateCompletionDto { IsCompleted = true };
@@ -421,7 +421,7 @@ public class GoalTaskServiceTests
     public async Task UpdateCompletionAsync_ThrowsNotFoundException_WhenTaskIsInAnotherWorkspace()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var anotherUser = new User { Username = "Another User", PasswordHash = "anothertesthash" };
         var userWorkspace = new Workspace
@@ -467,7 +467,7 @@ public class GoalTaskServiceTests
     public async Task UpdateTaskAsync_ShouldUpdateTitle()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var workspace = new Workspace
         {
@@ -504,7 +504,7 @@ public class GoalTaskServiceTests
     public async Task UpdateTaskAsync_ThrowsNotFoundException_WhenTaskNotFound()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var service = new GoalTaskService(db, new FakeWorkspaceService());
         var dto = new GoalTaskUpdateDto { Title = "New Title" };
 
@@ -518,7 +518,7 @@ public class GoalTaskServiceTests
     public async Task UpdateTaskAsync_ThrowsNotFoundException_WhenTaskIsInAnotherWorkspace()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var anotherUser = new User { Username = "Another User", PasswordHash = "anothertesthash" };
         var userWorkspace = new Workspace
@@ -563,7 +563,7 @@ public class GoalTaskServiceTests
     public async Task DeleteTaskAsync_ShouldRemoveTask()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var workspace = new Workspace
         {
@@ -598,7 +598,7 @@ public class GoalTaskServiceTests
     public async Task DeleteTaskAsync_ThrowsNotFoundException_WhenTaskNotFound()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var service = new GoalTaskService(db, new FakeWorkspaceService());
 
         // Act & Assert
@@ -611,7 +611,7 @@ public class GoalTaskServiceTests
     public async Task DeleteTaskAsync_ThrowsNotFoundException_WhenTaskIsInAnotherWorkspace()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var anotherUser = new User { Username = "Another User", PasswordHash = "anothertesthash" };
         var userWorkspace = new Workspace

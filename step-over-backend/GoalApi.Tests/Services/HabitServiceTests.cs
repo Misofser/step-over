@@ -10,7 +10,7 @@ public class HabitServiceTests
     public async Task GetHabitsByGoalAsync_ShouldReturnHabitsForGoalWithCorrectData()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var workspace = new Workspace
         {
@@ -71,7 +71,7 @@ public class HabitServiceTests
     public async Task GetHabitsByGoalAsync_ThrowsNotFoundException_WhenGoalNotFound()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var service = new HabitService(db, new FakeWorkspaceService());
 
         // Act & Assert
@@ -84,7 +84,7 @@ public class HabitServiceTests
     public async Task GetHabitsByGoalAsync_ThrowsNotFoundException_WhenGoalIsInAnotherWorkspace()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var anotherUser = new User { Username = "Another User", PasswordHash = "anothertesthash" };
         var userWorkspace = new Workspace
@@ -124,7 +124,7 @@ public class HabitServiceTests
     public async Task GetHabitByIdAsync_ReturnsHabit_WhenExistsAndCompletedToday()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var workspace = new Workspace
         {
@@ -170,7 +170,7 @@ public class HabitServiceTests
     public async Task GetHabitByIdAsync_ReturnsHabit_WhenExistsAndNotCompletedToday()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var workspace = new Workspace
         {
@@ -217,7 +217,7 @@ public class HabitServiceTests
     public async Task GetHabitByIdAsync_ThrowsNotFoundException_WhenHabitNotFound()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var service = new HabitService(db, new FakeWorkspaceService());
 
         // Act & Assert
@@ -230,7 +230,7 @@ public class HabitServiceTests
     public async Task GetHabitByIdAsync_ShouldThrowNotFound_WhenHabitIsInAnotherWorkspace()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var anotherUser = new User { Username = "Another User", PasswordHash = "anothertesthash" };
         var userWorkspace = new Workspace
@@ -271,7 +271,7 @@ public class HabitServiceTests
     public async Task AddHabitAsync_ShouldCreateHabit()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var workspace = new Workspace
         {
@@ -313,7 +313,7 @@ public class HabitServiceTests
     public async Task AddHabitAsync_ThrowsNotFoundException_WhenGoalNotFound()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var service = new HabitService(db, new FakeWorkspaceService());
         var dto = new HabitCreateDto { Title = "New Habit", Frequency = HabitFrequency.Daily };
 
@@ -327,7 +327,7 @@ public class HabitServiceTests
     public async Task AddHabitAsync_ThrowsNotFoundException_WhenGoalIsInAnotherWorkspace()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var anotherUser = new User { Username = "Another User", PasswordHash = "anothertesthash" };
         var userWorkspace = new Workspace
@@ -368,7 +368,7 @@ public class HabitServiceTests
     public async Task ToggleCompletion_ShouldAddCompletion_WhenNotExists()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var workspace = new Workspace
         {
@@ -403,7 +403,7 @@ public class HabitServiceTests
     public async Task ToggleCompletion_ShouldRemoveCompletion_WhenExists()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var workspace = new Workspace
         {
@@ -444,7 +444,7 @@ public class HabitServiceTests
     public async Task ToggleCompletion_ThrowsBadRequestException_WhenDateIsInFuture()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var workspace = new Workspace
         {
@@ -477,7 +477,7 @@ public class HabitServiceTests
     public async Task ToggleCompletion_ThrowsNotFoundException_WhenHabitNotFound()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var service = new HabitService(db, new FakeWorkspaceService());
 
         // Act & Assert
@@ -490,7 +490,7 @@ public class HabitServiceTests
     public async Task ToggleCompletion_ThrowsNotFoundException_WhenHabitIsInAnotherWorkspace()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var anotherUser = new User { Username = "Another User", PasswordHash = "anothertesthash" };
         var userWorkspace = new Workspace
@@ -533,7 +533,7 @@ public class HabitServiceTests
     public async Task DeleteHabitAsync_ShouldRemoveHabit()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var workspace = new Workspace
         {
@@ -568,7 +568,7 @@ public class HabitServiceTests
     public async Task DeleteHabitAsync_ThrowsNotFoundException_WhenHabitNotFound()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var service = new HabitService(db, new FakeWorkspaceService());
 
         // Act & Assert
@@ -581,7 +581,7 @@ public class HabitServiceTests
     public async Task DeleteHabitAsync_ThrowsNotFoundException_WhenHabitIsInAnotherWorkspace()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var anotherUser = new User { Username = "Another User", PasswordHash = "anothertesthash" };
         var userWorkspace = new Workspace
@@ -623,7 +623,7 @@ public class HabitServiceTests
     public async Task GetCompletionStatusAsync_ReturnsTrue_WhenCompletionExists()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var workspace = new Workspace
         {
@@ -663,7 +663,7 @@ public class HabitServiceTests
     public async Task GetCompletionStatusAsync_ReturnsFalse_WhenCompletionDoesNotExist()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var workspace = new Workspace
         {
@@ -702,7 +702,7 @@ public class HabitServiceTests
     public async Task GetCompletionStatusAsync_ThrowsNotFoundException_WhenHabitDoesNotExist()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var date = DateTime.UtcNow.Date;
         var service = new HabitService(db, new FakeWorkspaceService());
 
@@ -716,7 +716,7 @@ public class HabitServiceTests
     public async Task GetCompletionStatusAsync_ShouldThrowNotFound_WhenHabitIsInAnotherWorkspace()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var anotherUser = new User { Username = "Another User", PasswordHash = "anothertesthash" };
         var userWorkspace = new Workspace

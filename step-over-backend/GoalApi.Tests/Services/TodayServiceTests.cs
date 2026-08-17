@@ -9,7 +9,7 @@ public class TodayServiceTests
     public async Task GetTodayItemsAsync_ShouldReturnPendingTask()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var workspace = new Workspace
         {
@@ -51,7 +51,7 @@ public class TodayServiceTests
     public async Task GetTodayItemsAsync_ShouldReturnTaskCompletedToday()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var workspace = new Workspace
         {
@@ -92,7 +92,7 @@ public class TodayServiceTests
     public async Task GetTodayItemsAsync_ShouldExcludeTaskCompletedBeforeToday()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var workspace = new Workspace
         {
@@ -131,7 +131,7 @@ public class TodayServiceTests
     public async Task GetTodayItemsAsync_ShouldReturnCompletedHabit()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var workspace = new Workspace
         {
@@ -178,7 +178,7 @@ public class TodayServiceTests
     public async Task GetTodayItemsAsync_ShouldReturnPendingHabit()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var workspace = new Workspace
         {
@@ -219,7 +219,7 @@ public class TodayServiceTests
     public async Task GetTodayItemsAsync_ShouldExcludeItemsFromCompletedGoal()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var workspace = new Workspace
         {
@@ -255,7 +255,7 @@ public class TodayServiceTests
     public async Task GetTodayItemsAsync_ShouldReturnOnlyItemsFromUserWorkspace()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var anotherUser = new User { Username = "Another User", PasswordHash = "anothertesthash" };
         var userWorkspace = new Workspace

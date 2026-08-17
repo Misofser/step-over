@@ -9,7 +9,7 @@ public class WorkspaceServiceTests
     public async Task GetPersonalWorkspaceIdAsync_ReturnsUsersWorkspaceId()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var anotherUser = new User { Username = "Another User", PasswordHash = "anothertesthash" };
         var userWorkspace = new Workspace
@@ -39,7 +39,7 @@ public class WorkspaceServiceTests
     public async Task InitializePersonalWorkspace_CreatesPersonalWorkspaceWithOwner()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "TestUser", PasswordHash = "testhash" };
         var service = new WorkspaceService(db);
 

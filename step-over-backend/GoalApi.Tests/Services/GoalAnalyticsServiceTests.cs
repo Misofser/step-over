@@ -9,7 +9,7 @@ public class GoalAnalyticsServiceTests
     public async Task GetGoalHeatmapAsync_ShouldReturnCorrectData()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var workspace = new Workspace
         {
@@ -71,7 +71,7 @@ public class GoalAnalyticsServiceTests
     public async Task GetGoalHeatmapAsync_ShouldReturnEmptyHeatmap_WhenGoalHasNoHabits()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var workspace = new Workspace
         {
@@ -109,7 +109,7 @@ public class GoalAnalyticsServiceTests
     public async Task GetGoalHeatmapAsync_ThrowsNotFoundException_WhenGoalNotFound()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
 
         var service = new GoalAnalyticsService(db, new FakeWorkspaceService());
 
@@ -123,7 +123,7 @@ public class GoalAnalyticsServiceTests
     public async Task GetGoalHeatmapAsync_ThrowsNotFoundException_WhenGoalBelongsToAnotherWorkspace()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         var anotherUser = new User { Username = "Another User", PasswordHash = "anothertesthash" };
         var userWorkspace = new Workspace

@@ -9,7 +9,7 @@ public class AuthServiceTests
     public async Task LoginAsync_ValidCredentials_ReturnsLoginResponseDto()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
 
         var user = new User { Username = "Test User", PasswordHash = "hash:Password123" };
         db.Users.Add(user);
@@ -45,7 +45,7 @@ public class AuthServiceTests
     public async Task LoginAsync_UserNotFound_ThrowsAuthenticationException()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var service = new AuthService(db, new FakeJwtService(), new FakePasswordHasher());
 
         var dto = new LoginDto { Username = "Test User", Password = "Password123" };
@@ -60,7 +60,7 @@ public class AuthServiceTests
     public async Task LoginAsync_InvalidPassword_ThrowsAuthenticationException()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
 
         var user = new User { Username = "Test User", PasswordHash = "testhash", Role = "User" };
         db.Users.Add(user);
@@ -80,7 +80,7 @@ public class AuthServiceTests
     public async Task RefreshAsync_ValidToken_ReturnsNewTokensAndRotates()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var jwt = new FakeJwtService();
         var user = new User { Username = "Test User", PasswordHash = "testhash", Role = "User" };
         var oldRefreshToken = "old-token";
@@ -121,7 +121,7 @@ public class AuthServiceTests
     public async Task RefreshAsync_InvalidToken_ThrowsAuthenticationException()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var service = new AuthService(db, new FakeJwtService(), new FakePasswordHasher());
 
         // Act & Assert
@@ -133,7 +133,7 @@ public class AuthServiceTests
     public async Task RefreshAsync_ExpiredToken_ThrowsAuthenticationException()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var refreshToken = "old-token";
         var jwt = new FakeJwtService();
 
@@ -155,7 +155,7 @@ public class AuthServiceTests
     public async Task RefreshAsync_RevokedToken_ThrowsAuthenticationException()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var jwt = new FakeJwtService();
         var refreshToken = "old-token";
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
@@ -178,7 +178,7 @@ public class AuthServiceTests
     public async Task LogoutAsync_WhenTokenExists_RevokesToken()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var jwt = new FakeJwtService();
         var token = "refresh-token";
         var hash = jwt.HashRefreshToken(token);
@@ -202,7 +202,7 @@ public class AuthServiceTests
     public async Task LogoutAsync_WhenTokenIsNull_DoesNothing()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var service = new AuthService(db, new FakeJwtService(), new FakePasswordHasher());
 
         // Act
@@ -216,7 +216,7 @@ public class AuthServiceTests
     public async Task LogoutAsync_WhenTokenNotFound_DoesNothing()
     {
         // Arrange
-        var db = TestDbContextFactory.Create();
+        using var db = TestDbContextFactory.Create();
         var user = new User { Username = "Test User", PasswordHash = "testhash" };
         db.RefreshTokens.Add(new RefreshToken { TokenHash = "other-hash", User = user, ExpiresAt = DateTime.UtcNow.AddDays(1) });
         await db.SaveChangesAsync();
