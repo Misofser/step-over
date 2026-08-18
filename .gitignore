@@ -14,3 +14,6 @@ appsettings.Development.json
 # Node/React
 node_modules/
 .env*
+
+# Editor directories and files
+.vscode/*
