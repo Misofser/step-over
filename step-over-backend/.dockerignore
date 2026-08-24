@@ -1,0 +1,11 @@
+**/bin/
+**/obj/
+GoalApi.Tests/
+**/appsettings.Development.json
+**/launchSettings.json
+
+*.db
+*.db-shm
+*.db-wal
+
+*.http
