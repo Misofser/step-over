@@ -6,7 +6,7 @@ import "./EditGoalForm.css"
 interface EditGoalFormProps {
   goalId: number;
   onClose: () => void;
-  onSave: (id: number, newTitle: string) => void;
+  onSave: (newTitle: string) => void;
 }
 
 export function EditGoalForm({ goalId, onClose, onSave }: EditGoalFormProps) {
@@ -29,7 +29,7 @@ export function EditGoalForm({ goalId, onClose, onSave }: EditGoalFormProps) {
       return;
     }
     await updateGoal(goalId, { title: title.trim() });
-    onSave(goalId, title.trim());
+    onSave(title.trim());
     onClose();
   };
 

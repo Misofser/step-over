@@ -51,7 +51,7 @@ export function GoalPage() {
     }
   };
 
-  const handleSavedGoal = (id: number, newTitle: string) => {
+  const handleSavedGoal = (newTitle: string) => {
     if (!goal) return;
 
     setGoal(prev =>
