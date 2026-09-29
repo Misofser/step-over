@@ -28,5 +28,15 @@ public class ThoughtConfiguration : IEntityTypeConfiguration<Thought>
             .IsRequired();
         builder.Property(t => t.UpdatedAt)
             .IsRequired();
+
+        builder.Property(t => t.UserId)
+            .IsRequired();
+
+        builder.HasIndex(t => t.UserId);
+
+        builder.HasOne(t => t.User)
+            .WithMany(u => u.Thoughts)
+            .HasForeignKey(t => t.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

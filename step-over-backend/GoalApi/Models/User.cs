@@ -11,6 +11,7 @@ public class User : IHasTimestamps
     public DateTime UpdatedAt { get; set; }
 
     public List<Goal> Goals { get; set; } = new();
+    public List<Thought> Thoughts { get; set; } = new();
     public List<RefreshToken> RefreshTokens { get; set; } = new();
     public List<WorkspaceMember> WorkspaceMembers { get; set; } = new();
 }

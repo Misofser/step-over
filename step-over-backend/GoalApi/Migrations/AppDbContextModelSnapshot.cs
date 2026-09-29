@@ -206,7 +206,12 @@ namespace GoalApi.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Thoughts", (string)null);
                 });
@@ -368,6 +373,17 @@ namespace GoalApi.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("GoalApi.Models.Thought", b =>
+                {
+                    b.HasOne("GoalApi.Models.User", "User")
+                        .WithMany("Thoughts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("GoalApi.Models.WorkspaceMember", b =>
                 {
                     b.HasOne("GoalApi.Models.User", "User")
@@ -404,6 +420,8 @@ namespace GoalApi.Migrations
                     b.Navigation("Goals");
 
                     b.Navigation("RefreshTokens");
+
+                    b.Navigation("Thoughts");
 
                     b.Navigation("WorkspaceMembers");
                 });
