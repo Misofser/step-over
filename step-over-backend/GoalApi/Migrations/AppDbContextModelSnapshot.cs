@@ -209,9 +209,14 @@ namespace GoalApi.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("WorkspaceId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
+
+                    b.HasIndex("WorkspaceId");
 
                     b.ToTable("Thoughts", (string)null);
                 });
@@ -381,7 +386,15 @@ namespace GoalApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("GoalApi.Models.Workspace", "Workspace")
+                        .WithMany("Thoughts")
+                        .HasForeignKey("WorkspaceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("User");
+
+                    b.Navigation("Workspace");
                 });
 
             modelBuilder.Entity("GoalApi.Models.WorkspaceMember", b =>
@@ -431,6 +444,8 @@ namespace GoalApi.Migrations
                     b.Navigation("Goals");
 
                     b.Navigation("Members");
+
+                    b.Navigation("Thoughts");
                 });
 #pragma warning restore 612, 618
         }

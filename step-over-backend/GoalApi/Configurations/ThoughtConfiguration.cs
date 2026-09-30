@@ -38,5 +38,15 @@ public class ThoughtConfiguration : IEntityTypeConfiguration<Thought>
             .WithMany(u => u.Thoughts)
             .HasForeignKey(t => t.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Property(t => t.WorkspaceId)
+            .IsRequired();
+
+        builder.HasIndex(t => t.WorkspaceId);
+
+        builder.HasOne(t => t.Workspace)
+            .WithMany(w => w.Thoughts)
+            .HasForeignKey(t => t.WorkspaceId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
