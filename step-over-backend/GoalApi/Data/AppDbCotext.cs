@@ -16,6 +16,7 @@ public class AppDbContext : DbContext
     public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
     public DbSet<Workspace> Workspaces { get; set; } = null!;
     public DbSet<WorkspaceMember> WorkspaceMembers { get; set; } = null!;
+    public DbSet<Thought> Thoughts { get; set; } = null!;
 
     public override int SaveChanges()
     {
