@@ -7,6 +7,110 @@ namespace GoalApi.Tests.Services;
 public class ThoughtServiceTests
 {
     [Fact]
+    public async Task GetAllThoughtsAsync_ReturnsAllThoughtsForCurrentUserInPersonalWorkspace()
+    {
+        // Arrange
+        using var db = TestDbContextFactory.Create();
+        var user = new User { Username = "Test User", PasswordHash = "testhash" };
+        var personalWorkspace = new Workspace
+        {
+            Name = "Test Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        db.Thoughts.AddRange(
+            new Thought
+            {
+                Content = "First thought",
+                User = user,
+                Workspace = personalWorkspace
+            },
+            new Thought
+            {
+                Content = "Second thought",
+                User = user,
+                Workspace = personalWorkspace
+            });
+        await db.SaveChangesAsync();
+        var service = new ThoughtService(db, new FakeWorkspaceService(personalWorkspace.Id));
+
+        // Act
+        var result = await service.GetAllThoughtsAsync(user.Id);
+
+        // Assert
+        Assert.Equal(2, result.Count);
+        Assert.Contains(result, thought => thought.Content == "First thought");
+        Assert.Contains(result, thought => thought.Content == "Second thought");
+    }
+
+    [Fact]
+    public async Task GetAllThoughtsAsync_DoesNotReturnThoughtsBelongingToAnotherUser()
+    {
+        // Arrange
+        using var db = TestDbContextFactory.Create();
+        var user = new User { Username = "Test User", PasswordHash = "testhash" };
+        var anotherUser = new User { Username = "Another User", PasswordHash = "anothertesthash" };
+        var personalWorkspace = new Workspace
+        {
+            Name = "Test Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var anotherWorkspace = new Workspace
+        {
+            Name = "Another Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = anotherUser, Role = WorkspaceRole.Owner } }
+        };
+        db.Thoughts.AddRange(
+            new Thought
+            {
+                Content = "Current user thought",
+                User = user,
+                Workspace = personalWorkspace
+            },
+            new Thought
+            {
+                Content = "Another user thought",
+                User = anotherUser,
+                Workspace = anotherWorkspace
+            });
+        await db.SaveChangesAsync();
+        var service = new ThoughtService(db, new FakeWorkspaceService(personalWorkspace.Id));
+
+        // Act
+        var result = await service.GetAllThoughtsAsync(user.Id);
+
+        // Assert
+        var contents = result.Select(thought => thought.Content).ToList();
+        Assert.Contains("Current user thought", contents);
+        Assert.DoesNotContain("Another user thought", contents);
+    }
+
+    [Fact]
+    public async Task GetAllThoughtsAsync_ReturnsEmptyCollection_WhenCurrentUserHasNoThoughts()
+    {
+        // Arrange
+        using var db = TestDbContextFactory.Create();
+        var user = new User { Username = "Test User", PasswordHash = "testhash" };
+        var personalWorkspace = new Workspace
+        {
+            Name = "Test Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        db.Workspaces.Add(personalWorkspace);
+        await db.SaveChangesAsync();
+        var service = new ThoughtService(db, new FakeWorkspaceService(personalWorkspace.Id));
+
+        // Act
+        var result = await service.GetAllThoughtsAsync(user.Id);
+
+        // Assert
+        Assert.Empty(result);
+    }
+
+    [Fact]
     public async Task CreateThoughtAsync_CreatesInboxThoughtForCurrentUserInPersonalWorkspace()
     {
         // Arrange
