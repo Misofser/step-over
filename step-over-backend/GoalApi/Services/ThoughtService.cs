@@ -29,6 +29,24 @@ public class ThoughtService(AppDbContext db, IWorkspaceService workspaceService)
             .ToListAsync();
     }
 
+    public async Task<ThoughtReadDto> GetThoughtByIdAsync(int userId, int thoughtId)
+    {
+        var workspaceId = await _workspaceService.GetPersonalWorkspaceIdAsync(userId);
+
+        var thought = await _db.Thoughts
+            .AsNoTracking()
+            .Where(t => t.Id == thoughtId && t.WorkspaceId == workspaceId)
+            .Select(thought => new ThoughtReadDto
+            {
+                Id = thought.Id,
+                Content = thought.Content,
+                Status = thought.Status
+            })
+            .FirstOrDefaultAsync();
+
+        return thought ?? throw new NotFoundException("Thought");
+    }
+
     public async Task<ThoughtReadDto> CreateThoughtAsync(int userId, ThoughtCreateDto dto)
     {
         var workspaceId = await _workspaceService.GetPersonalWorkspaceIdAsync(userId);

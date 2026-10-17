@@ -111,6 +111,118 @@ public class ThoughtServiceTests
     }
 
     [Fact]
+    public async Task GetThoughtByIdAsync_ReturnsThought()
+    {
+        // Arrange
+        using var db = TestDbContextFactory.Create();
+        var user = new User { Username = "Test User", PasswordHash = "testhash" };
+        var personalWorkspace = new Workspace
+        {
+            Name = "Test Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var thought = new Thought
+        {
+            Content = "A thought to retrieve",
+            User = user,
+            Workspace = personalWorkspace
+        };
+        db.Thoughts.Add(thought);
+        await db.SaveChangesAsync();
+        var service = new ThoughtService(db, new FakeWorkspaceService(personalWorkspace.Id));
+
+        // Act
+        var result = await service.GetThoughtByIdAsync(user.Id, thought.Id);
+
+        // Assert
+        Assert.Equal(thought.Id, result.Id);
+        Assert.Equal("A thought to retrieve", result.Content);
+        Assert.Equal(ThoughtStatus.Inbox, result.Status);
+    }
+
+    [Fact]
+    public async Task GetThoughtByIdAsync_ThrowsNotFoundException_WhenThoughtDoesNotExist()
+    {
+        // Arrange
+        using var db = TestDbContextFactory.Create();
+        var service = new ThoughtService(db, new FakeWorkspaceService());
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NotFoundException>(
+            () => service.GetThoughtByIdAsync(userId: 1, thoughtId: 1)
+        );
+    }
+
+    [Fact]
+    public async Task GetThoughtByIdAsync_ThrowsNotFoundException_WhenThoughtIsInAnotherWorkspace()
+    {
+        // Arrange
+        using var db = TestDbContextFactory.Create();
+        var user = new User { Username = "Test User", PasswordHash = "testhash" };
+        var anotherUser = new User { Username = "Another User", PasswordHash = "anothertesthash" };
+        var personalWorkspace = new Workspace
+        {
+            Name = "Test Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var anotherWorkspace = new Workspace
+        {
+            Name = "Another Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = anotherUser, Role = WorkspaceRole.Owner } }
+        };
+        var thought = new Thought
+        {
+            Content = "Another user's thought",
+            User = anotherUser,
+            Workspace = anotherWorkspace
+        };
+        db.Workspaces.Add(personalWorkspace);
+        db.Thoughts.Add(thought);
+        await db.SaveChangesAsync();
+        var service = new ThoughtService(db, new FakeWorkspaceService(personalWorkspace.Id));
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NotFoundException>(
+            () => service.GetThoughtByIdAsync(user.Id, thought.Id)
+        );
+    }
+
+    [Fact]
+    public async Task GetThoughtByIdAsync_ReturnsArchivedThought()
+    {
+        // Arrange
+        using var db = TestDbContextFactory.Create();
+        var user = new User { Username = "Test User", PasswordHash = "testhash" };
+        var personalWorkspace = new Workspace
+        {
+            Name = "Test Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var thought = new Thought
+        {
+            Content = "Archived thought",
+            Status = ThoughtStatus.Archived,
+            User = user,
+            Workspace = personalWorkspace
+        };
+        db.Thoughts.Add(thought);
+        await db.SaveChangesAsync();
+        var service = new ThoughtService(db, new FakeWorkspaceService(personalWorkspace.Id));
+
+        // Act
+        var result = await service.GetThoughtByIdAsync(user.Id, thought.Id);
+
+        // Assert
+        Assert.Equal(thought.Id, result.Id);
+        Assert.Equal("Archived thought", result.Content);
+        Assert.Equal(ThoughtStatus.Archived, result.Status);
+    }
+
+    [Fact]
     public async Task CreateThoughtAsync_CreatesInboxThoughtForCurrentUserInPersonalWorkspace()
     {
         // Arrange

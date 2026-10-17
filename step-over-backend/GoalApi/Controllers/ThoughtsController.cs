@@ -30,6 +30,23 @@ public class ThoughtsController(IThoughtService thoughtService, ICurrentUserServ
         return Ok(thoughts);
     }
 
+    /// <summary>Retrieves a specific thought by its ID.</summary>
+    /// <param name="id">The ID of the thought to retrieve.</param>
+    /// <returns>The requested thought.</returns>
+    /// <response code="200">Returns the requested thought.</response>
+    /// <response code="401">User is unauthorized.</response>
+    /// <response code="404">Thought not found.</response>
+    [HttpGet("{id}")]
+    [ProducesResponseType(typeof(ThoughtReadDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ThoughtReadDto>> GetThought(int id)
+    {
+        var userId = _currentUser.GetUserId();
+        var thought = await _thoughtService.GetThoughtByIdAsync(userId, id);
+        return Ok(thought);
+    }
+
     /// <summary>Creates a new thought.</summary>
     /// <param name="dto">Data required to create a thought.</param>
     /// <returns>The created thought.</returns>
@@ -44,6 +61,6 @@ public class ThoughtsController(IThoughtService thoughtService, ICurrentUserServ
     {
         var userId = _currentUser.GetUserId();
         var thought = await _thoughtService.CreateThoughtAsync(userId, dto);
-        return Created($"/api/thoughts/{thought.Id}", thought);
+        return CreatedAtAction(nameof(GetThought), new { id = thought.Id }, thought);
     }
 }
