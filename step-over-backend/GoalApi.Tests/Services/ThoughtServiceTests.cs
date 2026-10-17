@@ -261,4 +261,93 @@ public class ThoughtServiceTests
         Assert.NotEqual(anotherUser.Id, thought.UserId);
         Assert.NotEqual(anotherWorkspace.Id, thought.WorkspaceId);
     }
+
+    [Fact]
+    public async Task UpdateThoughtAsync_UpdatesContent()
+    {
+        // Arrange
+        using var db = TestDbContextFactory.Create();
+        var user = new User { Username = "Test User", PasswordHash = "testhash" };
+        var personalWorkspace = new Workspace
+        {
+            Name = "Test Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var thought = new Thought
+        {
+            Content = "Original thought",
+            Status = ThoughtStatus.Archived,
+            User = user,
+            Workspace = personalWorkspace
+        };
+        db.Thoughts.Add(thought);
+        await db.SaveChangesAsync();
+        var service = new ThoughtService(db, new FakeWorkspaceService(personalWorkspace.Id));
+        var dto = new ThoughtUpdateDto { Content = "  Updated thought  " };
+
+        // Act
+        await service.UpdateThoughtAsync(user.Id, thought.Id, dto);
+
+        // Assert
+        var updatedThought = await db.Thoughts.FindAsync(thought.Id);
+        Assert.NotNull(updatedThought);
+        Assert.Equal("Updated thought", updatedThought!.Content);
+        Assert.Equal(ThoughtStatus.Archived, updatedThought.Status);
+    }
+
+    [Fact]
+    public async Task UpdateThoughtAsync_ThrowsNotFoundException_WhenThoughtDoesNotExist()
+    {
+        // Arrange
+        using var db = TestDbContextFactory.Create();
+        var service = new ThoughtService(db, new FakeWorkspaceService());
+        var dto = new ThoughtUpdateDto { Content = "Updated thought" };
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NotFoundException>(
+            () => service.UpdateThoughtAsync(userId: 1, thoughtId: 1, dto)
+        );
+    }
+
+    [Fact]
+    public async Task UpdateThoughtAsync_ThrowsNotFoundException_WhenThoughtIsInAnotherWorkspace()
+    {
+        // Arrange
+        using var db = TestDbContextFactory.Create();
+        var user = new User { Username = "Test User", PasswordHash = "testhash" };
+        var anotherUser = new User { Username = "Another User", PasswordHash = "anothertesthash" };
+        var personalWorkspace = new Workspace
+        {
+            Name = "Test Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var anotherWorkspace = new Workspace
+        {
+            Name = "Another Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = anotherUser, Role = WorkspaceRole.Owner } }
+        };
+        var thought = new Thought
+        {
+            Content = "Another user's thought",
+            User = anotherUser,
+            Workspace = anotherWorkspace
+        };
+        db.Workspaces.Add(personalWorkspace);
+        db.Thoughts.Add(thought);
+        await db.SaveChangesAsync();
+        var service = new ThoughtService(db, new FakeWorkspaceService(personalWorkspace.Id));
+        var dto = new ThoughtUpdateDto { Content = "Updated thought" };
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NotFoundException>(
+            () => service.UpdateThoughtAsync(user.Id, thought.Id, dto)
+        );
+
+        var thoughtInDb = await db.Thoughts.FindAsync(thought.Id);
+        Assert.NotNull(thoughtInDb);
+        Assert.Equal("Another user's thought", thoughtInDb!.Content);
+    }
 }

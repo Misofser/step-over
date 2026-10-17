@@ -68,4 +68,20 @@ public class ThoughtService(AppDbContext db, IWorkspaceService workspaceService)
             Status = thought.Status
         };
     }
+
+    public async Task UpdateThoughtAsync(int userId, int thoughtId, ThoughtUpdateDto dto)
+    {
+        var workspaceId = await _workspaceService.GetPersonalWorkspaceIdAsync(userId);
+        var thought = await _db.Thoughts
+            .Where(t => t.Id == thoughtId && t.WorkspaceId == workspaceId)
+            .FirstOrDefaultAsync();
+
+        if (thought is null)
+        {
+            throw new NotFoundException("Thought");
+        }
+
+        thought.Content = dto.Content.Trim();
+        await _db.SaveChangesAsync();
+    }
 }

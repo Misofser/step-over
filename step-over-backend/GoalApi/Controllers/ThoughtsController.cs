@@ -63,4 +63,23 @@ public class ThoughtsController(IThoughtService thoughtService, ICurrentUserServ
         var thought = await _thoughtService.CreateThoughtAsync(userId, dto);
         return CreatedAtAction(nameof(GetThought), new { id = thought.Id }, thought);
     }
+
+    /// <summary>Updates an existing thought.</summary>
+    /// <param name="id">The ID of the thought to update.</param>
+    /// <param name="dto">Data for updating the thought.</param>
+    /// <response code="204">Thought successfully updated.</response>
+    /// <response code="400">Invalid request data.</response>
+    /// <response code="401">User is unauthorized.</response>
+    /// <response code="404">Thought not found.</response>
+    [HttpPatch("{id}")]
+    [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Update(int id, ThoughtUpdateDto dto)
+    {
+        var userId = _currentUser.GetUserId();
+        await _thoughtService.UpdateThoughtAsync(userId, id, dto);
+        return NoContent();
+    }
 }
