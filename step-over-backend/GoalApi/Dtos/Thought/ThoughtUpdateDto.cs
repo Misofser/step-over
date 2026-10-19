@@ -1,11 +1,16 @@
 using System.ComponentModel.DataAnnotations;
+using GoalApi.Enums;
 
 namespace GoalApi.Dtos.Thought;
 
-/// <summary>Data required to update an existing thought.</summary>
+/// <summary>Data used to partially update an existing thought.</summary>
 public class ThoughtUpdateDto
 {
     /// <summary>The updated content of the thought.</summary>
-    [Required(ErrorMessage = "Content is required")]
-    public string Content { get; set; } = null!;
+    [MinLength(1, ErrorMessage = "Content cannot be empty")]
+    public string? Content { get; set; }
+
+    /// <summary>The updated status of the thought.</summary>
+    [EnumDataType(typeof(ThoughtStatus), ErrorMessage = "Status is invalid")]
+    public ThoughtStatus? Status { get; set; }
 }
