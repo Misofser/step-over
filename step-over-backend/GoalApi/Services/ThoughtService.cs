@@ -81,7 +81,16 @@ public class ThoughtService(AppDbContext db, IWorkspaceService workspaceService)
             throw new NotFoundException("Thought");
         }
 
-        thought.Content = dto.Content.Trim();
+        if (!string.IsNullOrWhiteSpace(dto.Content))
+        {
+            thought.Content = dto.Content.Trim();
+        }
+
+        if (dto.Status.HasValue)
+        {
+            thought.Status = dto.Status.Value;
+        }
+
         await _db.SaveChangesAsync();
     }
 }

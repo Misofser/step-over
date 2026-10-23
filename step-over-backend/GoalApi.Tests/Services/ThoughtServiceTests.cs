@@ -263,7 +263,7 @@ public class ThoughtServiceTests
     }
 
     [Fact]
-    public async Task UpdateThoughtAsync_UpdatesContent()
+    public async Task UpdateThoughtAsync_UpdatesOnlyContent_WhenStatusIsOmitted()
     {
         // Arrange
         using var db = TestDbContextFactory.Create();
@@ -294,6 +294,149 @@ public class ThoughtServiceTests
         Assert.NotNull(updatedThought);
         Assert.Equal("Updated thought", updatedThought!.Content);
         Assert.Equal(ThoughtStatus.Archived, updatedThought.Status);
+    }
+
+    [Fact]
+    public async Task UpdateThoughtAsync_UpdatesOnlyStatus_WhenContentIsOmitted()
+    {
+        // Arrange
+        using var db = TestDbContextFactory.Create();
+        var user = new User { Username = "Test User", PasswordHash = "testhash" };
+        var personalWorkspace = new Workspace
+        {
+            Name = "Test Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var thought = new Thought
+        {
+            Content = "Original thought",
+            Status = ThoughtStatus.Inbox,
+            User = user,
+            Workspace = personalWorkspace
+        };
+        db.Thoughts.Add(thought);
+        await db.SaveChangesAsync();
+        var service = new ThoughtService(db, new FakeWorkspaceService(personalWorkspace.Id));
+        var dto = new ThoughtUpdateDto { Status = ThoughtStatus.Archived };
+
+        // Act
+        await service.UpdateThoughtAsync(user.Id, thought.Id, dto);
+
+        // Assert
+        var updatedThought = await db.Thoughts.FindAsync(thought.Id);
+        Assert.NotNull(updatedThought);
+        Assert.Equal("Original thought", updatedThought!.Content);
+        Assert.Equal(ThoughtStatus.Archived, updatedThought.Status);
+    }
+
+    [Fact]
+    public async Task UpdateThoughtAsync_UpdatesContentAndStatus()
+    {
+        // Arrange
+        using var db = TestDbContextFactory.Create();
+        var user = new User { Username = "Test User", PasswordHash = "testhash" };
+        var personalWorkspace = new Workspace
+        {
+            Name = "Test Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var thought = new Thought
+        {
+            Content = "Original thought",
+            Status = ThoughtStatus.Inbox,
+            User = user,
+            Workspace = personalWorkspace
+        };
+        db.Thoughts.Add(thought);
+        await db.SaveChangesAsync();
+        var originalUserId = thought.UserId;
+        var originalWorkspaceId = thought.WorkspaceId;
+        var service = new ThoughtService(db, new FakeWorkspaceService(personalWorkspace.Id));
+        var dto = new ThoughtUpdateDto
+        {
+            Content = "  Updated thought  ",
+            Status = ThoughtStatus.Archived
+        };
+
+        // Act
+        await service.UpdateThoughtAsync(user.Id, thought.Id, dto);
+
+        // Assert
+        var updatedThought = await db.Thoughts.FindAsync(thought.Id);
+        Assert.NotNull(updatedThought);
+        Assert.Equal("Updated thought", updatedThought!.Content);
+        Assert.Equal(ThoughtStatus.Archived, updatedThought.Status);
+        Assert.Equal(originalUserId, updatedThought.UserId);
+        Assert.Equal(originalWorkspaceId, updatedThought.WorkspaceId);
+    }
+
+    [Fact]
+    public async Task UpdateThoughtAsync_DoesNotUpdateFields_WhenNoUpdatableFieldsAreProvided()
+    {
+        // Arrange
+        using var db = TestDbContextFactory.Create();
+        var user = new User { Username = "Test User", PasswordHash = "testhash" };
+        var personalWorkspace = new Workspace
+        {
+            Name = "Test Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var thought = new Thought
+        {
+            Content = "Original thought",
+            User = user,
+            Workspace = personalWorkspace
+        };
+        db.Thoughts.Add(thought);
+        await db.SaveChangesAsync();
+        var service = new ThoughtService(db, new FakeWorkspaceService(personalWorkspace.Id));
+        var dto = new ThoughtUpdateDto();
+
+        // Act
+        await service.UpdateThoughtAsync(user.Id, thought.Id, dto);
+
+        // Assert
+        var thoughtInDb = await db.Thoughts.FindAsync(thought.Id);
+        Assert.NotNull(thoughtInDb);
+        Assert.Equal("Original thought", thoughtInDb!.Content);
+        Assert.Equal(ThoughtStatus.Inbox, thoughtInDb.Status);
+    }
+
+    [Fact]
+    public async Task UpdateThoughtAsync_DoesNotUpdateFields_WhenNullValuesAreProvided()
+    {
+        // Arrange
+        using var db = TestDbContextFactory.Create();
+        var user = new User { Username = "Test User", PasswordHash = "testhash" };
+        var personalWorkspace = new Workspace
+        {
+            Name = "Test Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var thought = new Thought
+        {
+            Content = "Original thought",
+            Status = ThoughtStatus.Inbox,
+            User = user,
+            Workspace = personalWorkspace
+        };
+        db.Thoughts.Add(thought);
+        await db.SaveChangesAsync();
+        var service = new ThoughtService(db, new FakeWorkspaceService(personalWorkspace.Id));
+        var dto = new ThoughtUpdateDto { Content = null, Status = null };
+
+        // Act
+        await service.UpdateThoughtAsync(user.Id, thought.Id, dto);
+
+        // Assert
+        var thoughtInDb = await db.Thoughts.FindAsync(thought.Id);
+        Assert.NotNull(thoughtInDb);
+        Assert.Equal("Original thought", thoughtInDb!.Content);
+        Assert.Equal(ThoughtStatus.Inbox, thoughtInDb.Status);
     }
 
     [Fact]
