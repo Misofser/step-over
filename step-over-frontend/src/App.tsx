@@ -4,6 +4,7 @@ import { LoginPage } from './pages/LoginPage/LoginPage'
 import { GoalsPage } from "./pages/GoalsPage"
 import { GoalPage } from './pages/GoalPage/GoalPage'
 import { TodayPage } from './pages/TodayPage/TodayPage'
+import { ThoughtsPage } from './pages/ThoughtsPage/ThoughtsPage'
 import { AdminUsersPage } from './pages/AdminUsersPage/AdminUsersPage'
 import { ProtectedRoute } from './features/auth'
 import { Navbar } from './components/Navbar/Navbar'
@@ -39,6 +40,14 @@ function App() {
               <TodayPage />
             </ProtectedRoute>
             
+          }
+        />
+        <Route
+          path="/thoughts"
+          element={
+            <ProtectedRoute>
+              <ThoughtsPage />
+            </ProtectedRoute>
           }
         />
         <Route

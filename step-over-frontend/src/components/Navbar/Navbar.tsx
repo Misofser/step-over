@@ -24,6 +24,9 @@ export const Navbar = () => {
           <NavLink to="/goals" className={getNavLinkClass}>
             Goals
           </NavLink>
+          <NavLink to="/thoughts" className={getNavLinkClass}>
+            Thoughts
+          </NavLink>
           {user.role === "Admin" && (
             <NavLink to="/admin/users" className={getNavLinkClass}>
               Users
