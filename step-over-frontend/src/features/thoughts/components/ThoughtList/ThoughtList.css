@@ -1,0 +1,37 @@
+.thought-list {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.thought-card {
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: #e0f7fa;
+  color: #00796b;
+}
+
+.thought-card p {
+  margin: 0;
+  text-align: start;
+  white-space: pre-wrap;
+}
+
+.thought-list-empty {
+  padding: 20px;
+  border: 1px dashed #ddd;
+  border-radius: 10px;
+  color: #666;
+  margin-top: 10px;
+}
+
+.thought-list-empty h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.thought-list-empty p {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: #888;
+}
