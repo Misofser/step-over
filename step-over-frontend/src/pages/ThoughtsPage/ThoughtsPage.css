@@ -1,0 +1,11 @@
+.thoughts-page-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.75rem;
+}
+
+@media (max-width: 600px) {
+  .thoughts-page-actions .btn {
+    width: 100%;
+  }
+}
