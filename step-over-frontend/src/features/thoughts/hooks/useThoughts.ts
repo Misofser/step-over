@@ -1,7 +1,15 @@
 import { useEffect, useState } from "react";
 
-import { addThought as apiAddThought, fetchThoughts } from "../api/thoughts";
-import type { Thought, ThoughtToCreate } from "../types/thoughts.types";
+import {
+  addThought as apiAddThought,
+  fetchThoughts,
+  updateThought as apiUpdateThought,
+} from "../api/thoughts";
+import type {
+  Thought,
+  ThoughtDataToUpdate,
+  ThoughtToCreate,
+} from "../types/thoughts.types";
 
 export function useThoughts() {
   const [thoughts, setThoughts] = useState<Thought[]>([]);
@@ -32,5 +40,15 @@ export function useThoughts() {
     setThoughts((currentThoughts) => [...currentThoughts, newThought]);
   };
 
-  return { thoughts, addThought, loading, error };
+  const updateThought = async (id: number, data: ThoughtDataToUpdate) => {
+    await apiUpdateThought(id, data);
+
+    setThoughts((currentThoughts) =>
+      currentThoughts.map((thought) =>
+        thought.id === id ? { ...thought, ...data } : thought
+      )
+    );
+  };
+
+  return { thoughts, addThought, updateThought, loading, error };
 }
