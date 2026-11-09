@@ -1,0 +1,38 @@
+.edit-thought-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.edit-thought-form label {
+  text-align: start;
+  font-weight: 500;
+}
+
+.edit-thought-form textarea {
+  min-height: 7rem;
+  resize: vertical;
+  padding: 0.6rem 0.8rem;
+  font: inherit;
+
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  outline: none;
+}
+
+.edit-thought-form textarea:focus {
+  border-color: #4bc7b5;
+}
+
+.edit-thought-form textarea.error {
+  border-color: rgb(255, 100, 100);
+}
+
+.edit-thought-form .error-message {
+  margin: 0;
+}
+
+.edit-thought-form button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
