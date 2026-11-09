@@ -1,0 +1,28 @@
+.thought-menu {
+  position: absolute;
+  top: 2.5rem;
+  right: 0.5rem;
+
+  width: 120px;
+  background: white;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  z-index: 5;
+}
+
+.thought-menu .btn {
+  width: 100%;
+  padding: 10px 12px;
+
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: #7a7a7a;
+  cursor: pointer;
+  text-align: left;
+}
+
+.thought-menu .btn:hover {
+  background: #edfafb;
+}
