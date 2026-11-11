@@ -5,7 +5,9 @@
 }
 
 .thought-card {
+  position: relative;
   padding: 1rem;
+  padding-right: 3rem;
   border-radius: 8px;
   background-color: #e0f7fa;
   color: #00796b;
@@ -15,6 +17,27 @@
   margin: 0;
   text-align: start;
   white-space: pre-wrap;
+}
+
+.thought-menu-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  border-radius: 10px;
+
+  background: transparent;
+  color: #2d5852;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.thought-menu-button:hover {
+  background: #f7fffcea;
 }
 
 .thought-list-empty {

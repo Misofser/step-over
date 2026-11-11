@@ -29,7 +29,7 @@ export function ThoughtMenu({ open, onClose, onEdit }: ThoughtMenuProps) {
   if (!open) return null;
 
   return (
-    <div className="thought-menu" ref={ref} role="menu">
+    <div className="thought-menu" ref={ref}>
       <Button variant="edit" onClick={onEdit}>
         ✏️ Edit
       </Button>
