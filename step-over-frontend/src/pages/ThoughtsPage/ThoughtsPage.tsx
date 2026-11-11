@@ -2,12 +2,19 @@ import { useState } from "react";
 
 import { Button } from "@/components/Button/Button";
 import { Modal } from "@/components/Modal/Modal";
-import { NewThoughtForm, ThoughtList, useThoughts } from "@/features/thoughts";
+import type { Thought } from "@/features/thoughts";
+import {
+  EditThoughtForm,
+  NewThoughtForm,
+  ThoughtList,
+  useThoughts,
+} from "@/features/thoughts";
 import "./ThoughtsPage.css";
 
 export function ThoughtsPage() {
   const [isCreating, setIsCreating] = useState(false);
-  const { thoughts, addThought, loading, error } = useThoughts();
+  const [editingThought, setEditingThought] = useState<Thought | null>(null);
+  const { thoughts, addThought, updateThought, loading, error } = useThoughts();
 
   const inboxThoughts = thoughts.filter((thought) => thought.status === "Inbox");
 
@@ -20,7 +27,9 @@ export function ThoughtsPage() {
 
       {loading && <p>Loading...</p>}
       {!loading && error && <p>{error}</p>}
-      {!loading && !error && <ThoughtList thoughts={inboxThoughts} />}
+      {!loading && !error && (
+        <ThoughtList thoughts={inboxThoughts} onEdit={setEditingThought} />
+      )}
 
       {isCreating && (
         <Modal title="Add New Thought" onClose={() => setIsCreating(false)}>
@@ -29,6 +38,14 @@ export function ThoughtsPage() {
             onClose={() => setIsCreating(false)}
           />
         </Modal>
+      )}
+
+      {editingThought && (
+        <EditThoughtForm
+          thought={editingThought}
+          onClose={() => setEditingThought(null)}
+          onSave={(content) => updateThought(editingThought.id, { content })}
+        />
       )}
     </div>
   );
