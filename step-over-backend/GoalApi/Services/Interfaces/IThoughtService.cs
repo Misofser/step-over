@@ -8,4 +8,5 @@ public interface IThoughtService
     Task<ThoughtReadDto> GetThoughtByIdAsync(int userId, int thoughtId);
     Task<ThoughtReadDto> CreateThoughtAsync(int userId, ThoughtCreateDto dto);
     Task UpdateThoughtAsync(int userId, int thoughtId, ThoughtUpdateDto dto);
+    Task DeleteThoughtAsync(int userId, int habitId);
 }

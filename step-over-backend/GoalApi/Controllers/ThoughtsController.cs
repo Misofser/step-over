@@ -82,4 +82,20 @@ public class ThoughtsController(IThoughtService thoughtService, ICurrentUserServ
         await _thoughtService.UpdateThoughtAsync(userId, id, dto);
         return NoContent();
     }
+
+    /// <summary>Deletes a thought</summary>
+    /// <param name="id">The ID of the thought to delete</param>
+    /// <response code="204">Thought successfully deleted</response>
+    /// <response code="401">User is unauthorized</response>
+    /// <response code="404">Thought not found</response>
+    [HttpDelete("{id}")]
+    [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)] 
+    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var userId = _currentUser.GetUserId();
+        await _thoughtService.DeleteThoughtAsync(userId, id);
+        return NoContent();
+    }
 }

@@ -93,4 +93,14 @@ public class ThoughtService(AppDbContext db, IWorkspaceService workspaceService)
 
         await _db.SaveChangesAsync();
     }
+
+    public async Task DeleteThoughtAsync(int userId, int thoughtId)
+    {
+        var workspaceId = await _workspaceService.GetPersonalWorkspaceIdAsync(userId);
+        var thought = await _db.Thoughts.SingleOrDefaultAsync(t => t.Id == thoughtId && t.WorkspaceId == workspaceId);
+        if (thought == null) throw new NotFoundException("Thought");
+
+        _db.Thoughts.Remove(thought);
+        await _db.SaveChangesAsync();
+    }
 }
