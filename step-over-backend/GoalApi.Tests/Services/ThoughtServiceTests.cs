@@ -493,4 +493,90 @@ public class ThoughtServiceTests
         Assert.NotNull(thoughtInDb);
         Assert.Equal("Another user's thought", thoughtInDb!.Content);
     }
+
+    [Fact]
+    public async Task DeleteThoughtAsync_ShouldRemoveThought()
+    {
+        // Arrange
+        using var db = TestDbContextFactory.Create();
+        var user = new User { Username = "Test User", PasswordHash = "testhash" };
+        var workspace = new Workspace
+        {
+            Name = "Test Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var thought = new Thought
+        {
+            Content = "Thought",
+            Status = ThoughtStatus.Inbox,
+            User = user,
+            Workspace = workspace
+        };
+        db.Thoughts.Add(thought);
+        await db.SaveChangesAsync();
+
+        var service = new ThoughtService(db, new FakeWorkspaceService(workspace.Id));
+
+        // Act
+        await service.DeleteThoughtAsync(user.Id, thought.Id);
+
+        // Assert
+        var deletedThought = await db.Thoughts.FindAsync(thought.Id);
+        Assert.Null(deletedThought);
+        Assert.Equal(0, await db.Thoughts.CountAsync());
+    }
+
+    [Fact]
+    public async Task DeleteThoughtAsync_ThrowsNotFoundException_WhenThoughtNotFound()
+    {
+        // Arrange
+        using var db = TestDbContextFactory.Create();
+        var service = new ThoughtService(db, new FakeWorkspaceService());
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NotFoundException>(
+            () => service.DeleteThoughtAsync(userId: 1, thoughtId: 1)
+        );
+    }
+
+    [Fact]
+    public async Task DeleteThoughtAsync_ThrowsNotFoundException_WhenThoughtIsInAnotherWorkspace()
+    {
+        // Arrange
+        using var db = TestDbContextFactory.Create();
+        var user = new User { Username = "Test User", PasswordHash = "testhash" };
+        var anotherUser = new User { Username = "Another User", PasswordHash = "anothertesthash" };
+        var userWorkspace = new Workspace
+        {
+            Name = "User Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = user, Role = WorkspaceRole.Owner } }
+        };
+        var anotherWorkspace = new Workspace
+        {
+            Name = "Another Workspace",
+            Type = WorkspaceType.Personal,
+            Members = { new WorkspaceMember { User = anotherUser, Role = WorkspaceRole.Owner } }
+        };
+        var thought = new Thought
+        {
+            Content = "Thought",
+            Status = ThoughtStatus.Inbox,
+            User = anotherUser,
+            Workspace = anotherWorkspace
+        };
+        db.Workspaces.Add(userWorkspace);
+        db.Thoughts.Add(thought);
+        await db.SaveChangesAsync();
+        var service = new ThoughtService(db, new FakeWorkspaceService(userWorkspace.Id));
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NotFoundException>(
+            () => service.DeleteThoughtAsync(user.Id, thought.Id)
+        );
+
+        var thoughtInDb = await db.Thoughts.FindAsync(thought.Id);
+        Assert.NotNull(thoughtInDb);
+    }
 }
