@@ -34,3 +34,11 @@ export async function updateThought(id: number, dataToUpdate: ThoughtDataToUpdat
 
   if (!res.ok) throw new Error("Failed to update thought");
 }
+
+export async function deleteThought(id: number): Promise<void> {
+  const res = await authenticatedFetch(`/thoughts/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!res.ok) throw new Error("Failed to delete thought");
+}
