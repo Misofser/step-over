@@ -14,8 +14,7 @@ import "./ThoughtsPage.css";
 export function ThoughtsPage() {
   const [isCreating, setIsCreating] = useState(false);
   const [editingThought, setEditingThought] = useState<Thought | null>(null);
-  const { thoughts, addThought, updateThought, loading, error } = useThoughts();
-
+  const { thoughts, addThought, updateThought, deleteThought, loading, error } = useThoughts();
   const inboxThoughts = thoughts.filter((thought) => thought.status === "Inbox");
 
   return (
@@ -28,7 +27,11 @@ export function ThoughtsPage() {
       {loading && <p>Loading...</p>}
       {!loading && error && <p>{error}</p>}
       {!loading && !error && (
-        <ThoughtList thoughts={inboxThoughts} onEdit={setEditingThought} />
+        <ThoughtList
+          thoughts={inboxThoughts}
+          onEdit={setEditingThought}
+          onDelete={deleteThought}
+        />
       )}
 
       {isCreating && (

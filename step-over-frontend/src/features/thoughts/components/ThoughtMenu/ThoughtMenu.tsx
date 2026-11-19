@@ -7,9 +7,10 @@ type ThoughtMenuProps = {
   open: boolean;
   onClose: () => void;
   onEdit: () => void;
+  onDelete: () => void;
 };
 
-export function ThoughtMenu({ open, onClose, onEdit }: ThoughtMenuProps) {
+export function ThoughtMenu({ open, onClose, onEdit, onDelete }: ThoughtMenuProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -32,6 +33,13 @@ export function ThoughtMenu({ open, onClose, onEdit }: ThoughtMenuProps) {
     <div className="thought-menu" ref={ref}>
       <Button variant="edit" onClick={onEdit}>
         ✏️ Edit
+      </Button>
+
+      <Button
+				variant="delete"
+				onClick={onDelete}
+			>
+        ❌ Delete
       </Button>
     </div>
   );

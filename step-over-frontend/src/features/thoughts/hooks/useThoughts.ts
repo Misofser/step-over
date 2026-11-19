@@ -4,6 +4,7 @@ import {
   addThought as apiAddThought,
   fetchThoughts,
   updateThought as apiUpdateThought,
+  deleteThought as apiDeleteThought,
 } from "../api/thoughts";
 import type {
   Thought,
@@ -50,5 +51,13 @@ export function useThoughts() {
     );
   };
 
-  return { thoughts, addThought, updateThought, loading, error };
+  const deleteThought = async (id: number) => {
+    await apiDeleteThought(id);
+
+    setThoughts((currentThoughts) =>
+      currentThoughts.filter((thought) => thought.id !== id)
+    );
+  };
+
+  return { thoughts, addThought, updateThought, deleteThought, loading, error };
 }

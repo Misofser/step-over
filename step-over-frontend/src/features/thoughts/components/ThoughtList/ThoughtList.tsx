@@ -7,10 +7,19 @@ import "./ThoughtList.css";
 type ThoughtListProps = {
   thoughts: Thought[];
   onEdit: (thought: Thought) => void;
+  onDelete: (id: number) => Promise<void>;
 };
 
-export function ThoughtList({ thoughts, onEdit }: ThoughtListProps) {
+export function ThoughtList({ thoughts, onEdit, onDelete }: ThoughtListProps) {
   const [menuThoughtId, setMenuThoughtId] = useState<number | null>(null);
+
+   const handleDelete = async (id: number) => {
+    try {
+      await onDelete(id);
+    } catch {
+      alert("Could not delete thought");
+    }
+  };
 
   if (thoughts.length === 0) {
     return (
@@ -45,6 +54,10 @@ export function ThoughtList({ thoughts, onEdit }: ThoughtListProps) {
             onEdit={() => {
               setMenuThoughtId(null);
               onEdit(thought);
+            }}
+            onDelete={() => {
+              setMenuThoughtId(null);
+              handleDelete(thought.id);
             }}
           />
         </article>
